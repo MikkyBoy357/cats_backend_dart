@@ -1,12 +1,18 @@
 import 'dart:convert';
 
 import 'package:cats_backend/helpers/helpers.dart';
-import 'package:cats_backend/models/models.dart';
+import 'package:cats_backend/repositories/login_repository.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 Future<Response> onRequest(RequestContext context) async {
+  final mongoService = await context.read<Future<MongoService>>();
+
+  final loginRepository = LoginRepository(
+    database: mongoService.database,
+  );
+
   try {
     final request = context.request;
     final mongoDbService = await context.read<Future<MongoService>>();
@@ -22,14 +28,11 @@ Future<Response> onRequest(RequestContext context) async {
       print('requestBody: $requestBody');
       final requestData = jsonDecode(requestBody) as Map<String, dynamic>;
       print('requestData: $requestBody');
-      final user = User.fromMap(requestData);
-      print('user: $requestBody');
-      print("DB is initialized: ${mongoDbService.isInitialized}");
 
-      final usersCollection = mongoDbService.database.collection('users');
-
-      print('finding user with email: ${user.email}');
-      final foundUser = await usersCollection.findOne({'email': user.email});
+      print('finding user with email: ${requestData['email']}');
+      final foundUser = await loginRepository.findUserByEmail(
+        requestData['email'] as String,
+      );
       print('foundUser: $foundUser');
 
       if (foundUser == null) {
@@ -43,9 +46,9 @@ Future<Response> onRequest(RequestContext context) async {
         );
       }
 
-      final foundUserPassword = foundUser['password'] as String;
+      final foundUserPassword = foundUser.password;
       final hashedPassword = hashPassword(
-        user.password,
+        requestData['password'] as String,
       );
 
       if (hashedPassword != foundUserPassword) {
@@ -59,7 +62,7 @@ Future<Response> onRequest(RequestContext context) async {
         );
       }
 
-      final foundUserId = (foundUser['_id'] as ObjectId).oid;
+      final foundUserId = (foundUser.toMap()['_id'] as ObjectId).oid;
 
       final token = issueToken(foundUserId);
 

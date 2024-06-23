@@ -1,32 +1,30 @@
+import 'package:mongo_dart/mongo_dart.dart';
+
 class User {
-  // 1.
-  String? id;
+  ObjectId $_id;
   String name;
   String email;
   String password;
   int age;
 
-  // 2.
   User({
-    this.id,
+    required this.$_id,
     required this.name,
     required this.email,
     required this.password,
     required this.age,
   });
 
-  // 3.
   User.fromMap(Map<String, dynamic> map)
-      : id = map['id'] as String? ?? '',
+      : $_id = map['_id'] as ObjectId,
         name = map['name'] as String? ?? '',
         email = map['email'] as String,
         password = map['password'] as String,
         age = map['age'] as int? ?? 0;
 
-  // 4.
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      '_id': $_id,
       'name': name,
       'email': email,
       'password': password,
@@ -34,16 +32,15 @@ class User {
     };
   }
 
-  // 5.
   User copyWith({
-    String? id,
+    ObjectId? $_id,
     String? name,
     String? email,
     String? password,
     int? age,
   }) {
     return User(
-      id: id ?? this.id,
+      $_id: $_id ?? this.$_id,
       name: name ?? '',
       email: email ?? '',
       password: password ?? '',

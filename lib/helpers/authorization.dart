@@ -3,17 +3,14 @@ import 'package:dart_frog/dart_frog.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
 
 Middleware authorize() {
-  // 1.
   return provider<bool>((context) {
     final request = context.request;
 
-    // 2.
     final headers = request.headers;
     final authData = headers['Authorization'];
     try {
-      final token = authData!.trim();
+      final token = authData!.split(' ').last;
 
-      // 3.
       verifyJwtHS256Signature(
         token,
         Config.jwtSecret,
@@ -25,7 +22,6 @@ Middleware authorize() {
   });
 }
 
-// 4.
 String issueToken(String userId) {
   final claimSet = JwtClaim(
     subject: userId,

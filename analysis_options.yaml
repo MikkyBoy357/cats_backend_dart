@@ -14,3 +14,5 @@ linter:
     require_trailing_commas: true
     sort_constructors_first: false
     always_put_required_named_parameters_first: false
+    unnecessary_lambdas: false
+    non_constant_identifier_names: false

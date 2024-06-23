@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cats_backend/helpers/helpers.dart';
-import 'package:cats_backend/models/models.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
@@ -17,14 +16,16 @@ Future<Response> onRequest(RequestContext context) async {
       final requestBody = await request.body();
       final requestData = jsonDecode(requestBody) as Map<String, dynamic>;
 
-      final user = User.fromMap(requestData);
-
-      user.password = hashPassword(
-        user.password,
+      final email = requestData['email'] as String;
+      final password = requestData['password'] as String;
+      final hashedPassword = hashPassword(
+        requestData['password'] as String,
       );
 
       final userCollection = mongoService.database.collection('users');
-      final foundUser = await userCollection.findOne({'email': user.email});
+      final foundUser = await userCollection.findOne({
+        'email': email,
+      });
 
       if (foundUser != null) {
         return Response.json(
@@ -38,20 +39,24 @@ Future<Response> onRequest(RequestContext context) async {
       }
 
       // validate password regex
-      if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$')
-          .hasMatch(user.password)) {
+      if (!RegExp(r'^[a-zA-Z0-9!@#$%^&*)(+=._-]{6,}$').hasMatch(password)) {
         return Response.json(
           statusCode: 400,
           body: {
             'status': 400,
-            'message': 'Password must contain at least 8 characters, '
-                'including at least one letter and one number',
+            'message': 'Password must contain at least 6 characters',
             'error': 'invalid_password',
           },
         );
       }
 
-      await userCollection.insertOne(user.toMap());
+      await userCollection.insertOne({
+        'email': requestData['email'],
+        'password': hashedPassword,
+        'firstName': requestData['firstName'],
+        'lastName': requestData['lastName'],
+        'phoneNumber': requestData['phoneNumber'],
+      });
       await mongoService.close();
       return Response.json(
         body: {

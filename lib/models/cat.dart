@@ -1,38 +1,40 @@
+import 'package:mongo_dart/mongo_dart.dart';
+
 class Cat {
   const Cat({
-    required this.id,
+    required this.$_id,
     required this.name,
   });
 
-  final int id;
+  final ObjectId $_id;
   final String name;
 
   Cat copyWith({
-    int? id,
+    ObjectId? $_id,
     String? name,
   }) {
     return Cat(
-      id: id ?? this.id,
+      $_id: $_id ?? this.$_id,
       name: name ?? this.name,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'id': $_id,
       'name': name,
     };
   }
 
   factory Cat.fromJson(Map<String, dynamic> json) {
     return Cat(
-      id: json['id'] as int,
+      $_id: json['_id'] as ObjectId,
       name: json['name'] as String,
     );
   }
 
   @override
   String toString() {
-    return '{id: $id, name: $name}';
+    return '{id: ${$_id}, name: $name}';
   }
 }
