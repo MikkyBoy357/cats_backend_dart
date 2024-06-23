@@ -4,6 +4,12 @@ import 'package:cats_backend/repositories/repositories.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
+  final isAuthenticated = context.read<bool>();
+
+  if (!isAuthenticated) {
+    return Response(body: 'Unauthenticated', statusCode: 401);
+  }
+
   final repository = context.read<CatRepository>();
   final request = context.request;
   final method = request.method;

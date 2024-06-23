@@ -13,3 +13,4 @@ linter:
     camel_case_extensions: true
     require_trailing_commas: true
     sort_constructors_first: false
+    always_put_required_named_parameters_first: false
