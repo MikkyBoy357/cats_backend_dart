@@ -1,4 +1,4 @@
-import 'package:cats_backend/models/models.dart';
+import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 List<Cat> cats = [
@@ -7,15 +7,24 @@ List<Cat> cats = [
   Cat($_id: ObjectId.fromSeconds(3), name: 'Tom'),
 ];
 
-class CatRepository {
+abstract class CatRepositoryImpl {
+  Future<List<Cat>> getCats();
+  Future<Cat?> getCatById(String id);
+  Future<Cat?> addCat({required String name});
+  Future<Cat?> updateCat({required String id, required String name});
+  Future<bool> deleteCat(String id);
+}
+
+class CatRepository extends CatRepositoryImpl {
   final Db _database;
 
   CatRepository({
     required Db database,
   }) : _database = database;
 
-  DbCollection get catsCollection => _database.collection('cats');
+  DbCollection get catsCollection => _database.catsCollection;
 
+  @override
   Future<List<Cat>> getCats() async {
     final cats = await catsCollection.find().map((e) {
       return Cat.fromJson(e);
@@ -24,6 +33,7 @@ class CatRepository {
     return cats;
   }
 
+  @override
   Future<Cat?> getCatById(String id) async {
     final result = await catsCollection.findOne({
       '_id': ObjectId.fromHexString(id),
@@ -37,6 +47,7 @@ class CatRepository {
     return Cat.fromJson(result);
   }
 
+  @override
   Future<Cat?> addCat({required String name}) async {
     final result = await catsCollection.insertOne({'name': name});
     print('resultId: ${result.id}');
@@ -52,6 +63,7 @@ class CatRepository {
     return cat;
   }
 
+  @override
   Future<Cat?> updateCat({required String id, required String name}) async {
     final result = await catsCollection.updateOne({
       '_id': ObjectId.fromHexString(id),
@@ -73,6 +85,7 @@ class CatRepository {
     return updatedCat;
   }
 
+  @override
   Future<bool> deleteCat(String id) async {
     print('=======> $id');
     final result = await catsCollection.remove({

@@ -30,5 +30,6 @@ class MongoService {
 
   Future<void> close() async {
     await _database!.close();
+    print('******************> Closed MongodB Connection <******************');
   }
 }

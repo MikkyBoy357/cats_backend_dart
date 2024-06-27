@@ -57,7 +57,7 @@ Future<Response> onRequest(RequestContext context) async {
         'lastName': requestData['lastName'],
         'phoneNumber': requestData['phoneNumber'],
       });
-      await mongoService.close();
+
       return Response.json(
         body: {
           'status': 200,

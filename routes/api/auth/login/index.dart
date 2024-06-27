@@ -1,15 +1,16 @@
 import 'dart:convert';
 
-import 'package:cats_backend/helpers/helpers.dart';
-import 'package:cats_backend/repositories/login_repository.dart';
+import 'package:cats_backend/common/common.dart';
+import 'package:cats_backend/data/data.dart';
+import 'package:cats_backend/data/repositories/auth/user_repository.dart';
 import 'package:cats_backend/services/services.dart';
+import 'package:cats_backend/util/util.dart';
 import 'package:dart_frog/dart_frog.dart';
-import 'package:mongo_dart/mongo_dart.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   final mongoService = await context.read<Future<MongoService>>();
 
-  final loginRepository = LoginRepository(
+  final userRepository = UserRepository(
     database: mongoService.database,
   );
 
@@ -20,7 +21,7 @@ Future<Response> onRequest(RequestContext context) async {
 
     if (request.method == HttpMethod.post) {
       await mongoDbService.open();
-      print("DB is initialized: ${mongoDbService.isInitialized}");
+      print('DB is initialized: ${mongoDbService.isInitialized}');
 
       print('passed mongoDbService open');
 
@@ -30,7 +31,7 @@ Future<Response> onRequest(RequestContext context) async {
       print('requestData: $requestBody');
 
       print('finding user with email: ${requestData['email']}');
-      final foundUser = await loginRepository.findUserByEmail(
+      final foundUser = await userRepository.getByEmail(
         requestData['email'] as String,
       );
       print('foundUser: $foundUser');
@@ -47,9 +48,7 @@ Future<Response> onRequest(RequestContext context) async {
       }
 
       final foundUserPassword = foundUser.password;
-      final hashedPassword = hashPassword(
-        requestData['password'] as String,
-      );
+      final hashedPassword = (requestData['password'] as String).hashValue;
 
       if (hashedPassword != foundUserPassword) {
         return Response.json(
@@ -62,11 +61,9 @@ Future<Response> onRequest(RequestContext context) async {
         );
       }
 
-      final foundUserId = (foundUser.toMap()['_id'] as ObjectId).oid;
+      final foundUserId = foundUser.$_id.oid;
 
-      final token = issueToken(foundUserId);
-
-      await mongoDbService.close();
+      final token = createJwt(foundUserId);
 
       return Response.json(
         body: {

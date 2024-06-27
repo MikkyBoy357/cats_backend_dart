@@ -41,10 +41,10 @@ class User {
   }) {
     return User(
       $_id: $_id ?? this.$_id,
-      name: name ?? '',
-      email: email ?? '',
-      password: password ?? '',
-      age: age ?? 0,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      age: age ?? this.age,
     );
   }
 }

@@ -1,26 +1,31 @@
 import 'dart:convert';
 
-import 'package:cats_backend/repositories/repositories.dart';
-import 'package:cats_backend/services/mongo_service.dart';
+import 'package:cats_backend/data/data.dart';
 import 'package:dart_frog/dart_frog.dart';
 
-Future<Response> onRequest(RequestContext context) async {
-  final mongoService = await context.read<Future<MongoService>>();
-  final isAuthenticated = context.read<bool>();
-
-  if (!isAuthenticated) {
-    return Response(body: 'Unauthenticated', statusCode: 401);
-  }
-
-  final catRepository = CatRepository(
-    database: mongoService.database,
+abstract class CatRequestHandler {
+  Future<Response> handleGet(
+    Map<String, String> queryParams,
+    CatRepository catRepository,
   );
+  Future<Response> handlePost(Request request, CatRepository catRepository);
+  Future<Response> handlePut(
+    Map<String, String> queryParams,
+    Request request,
+    CatRepository catRepository,
+  );
+  Future<Response> handleDelete(
+    Map<String, String> queryParams,
+    CatRepository catRepository,
+  );
+}
 
-  final request = context.request;
-  final method = request.method;
-  final queryParams = request.uri.queryParameters;
-
-  if (method == HttpMethod.get) {
+class CatRequestHandlerImpl implements CatRequestHandler {
+  @override
+  Future<Response> handleGet(
+    Map<String, String> queryParams,
+    CatRepository catRepository,
+  ) async {
     final id = queryParams['id'];
     print('===> GET <==> Cats:');
 
@@ -36,18 +41,25 @@ Future<Response> onRequest(RequestContext context) async {
     return Response.json(body: cats);
   }
 
-  if (method == HttpMethod.post) {
+  @override
+  Future<Response> handlePost(
+    Request request,
+    CatRepository catRepository,
+  ) async {
     final body = await request.body();
     final bodyJson = jsonDecode(body) as Map<String, dynamic>;
 
-    final result = await catRepository.addCat(
-      name: bodyJson['name'].toString(),
-    );
-
+    final result =
+        await catRepository.addCat(name: bodyJson['name'].toString());
     return Response.json(body: result, statusCode: 201);
   }
 
-  if (method == HttpMethod.put) {
+  @override
+  Future<Response> handlePut(
+    Map<String, String> queryParams,
+    Request request,
+    CatRepository catRepository,
+  ) async {
     final id = queryParams['id'];
     final body = await request.body();
     final bodyJson = jsonDecode(body) as Map<String, dynamic>;
@@ -72,20 +84,21 @@ Future<Response> onRequest(RequestContext context) async {
     return Response.json(body: 'Cat not found', statusCode: 404);
   }
 
-  if (method == HttpMethod.delete) {
+  @override
+  Future<Response> handleDelete(
+    Map<String, String> queryParams,
+    CatRepository catRepository,
+  ) async {
     final id = queryParams['id'];
     if (id == null) {
       return Response.json(body: 'Missing id in query params', statusCode: 400);
     }
 
     final deletedCat = await catRepository.deleteCat(id);
-
     if (!deletedCat) {
       return Response.json(body: 'Cat not found', statusCode: 404);
     }
 
     return Response.json(body: 'Cat deleted successfully');
   }
-
-  return Response(body: 'Unsupported request method: $method', statusCode: 405);
 }
