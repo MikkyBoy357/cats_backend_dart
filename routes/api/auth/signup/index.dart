@@ -53,9 +53,11 @@ Future<Response> onRequest(RequestContext context) async {
       await userCollection.insertOne({
         'email': requestData['email'],
         'password': hashedPassword,
-        'firstName': requestData['firstName'],
-        'lastName': requestData['lastName'],
-        'phoneNumber': requestData['phoneNumber'],
+        'name': requestData['name'],
+        'age': requestData['age'],
+        'username': requestData['username'],
+        'followingsCount': 0,
+        'followersCount': 0,
       });
 
       return Response.json(

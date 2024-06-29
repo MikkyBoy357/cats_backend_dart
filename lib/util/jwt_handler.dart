@@ -12,7 +12,7 @@ class JwtHandler {
     try {
       final jwt = JWT.verify(token, SecretKey('secret passphrase'));
       final payload = jwt.payload as String;
-      return _userRepository.getById(payload);
+      return _userRepository.getQuery(UserQuery.id, payload);
     } catch (e) {
       return null;
     }

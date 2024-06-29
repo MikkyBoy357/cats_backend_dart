@@ -31,7 +31,8 @@ Future<Response> onRequest(RequestContext context) async {
       print('requestData: $requestBody');
 
       print('finding user with email: ${requestData['email']}');
-      final foundUser = await userRepository.getByEmail(
+      final foundUser = await userRepository.getQuery(
+        UserQuery.email,
         requestData['email'] as String,
       );
       print('foundUser: $foundUser');

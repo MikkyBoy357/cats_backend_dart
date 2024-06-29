@@ -1,8 +1,6 @@
 import 'package:cats_backend/config/config.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
-final mongoDbService = MongoService();
-
 class MongoService {
   MongoService();
 

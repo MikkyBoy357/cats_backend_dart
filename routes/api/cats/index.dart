@@ -18,13 +18,13 @@ Future<Response> onRequest(RequestContext context) async {
   final request = context.request;
   final method = request.method;
   final queryParams = request.uri.queryParameters;
-  final handler = CatRequestHandlerImpl();
+  final handler = CatRequestHandlerImpl(catRepository: catRepository);
 
   return switch (method) {
-    HttpMethod.get => handler.handleGet(queryParams, catRepository),
-    HttpMethod.post => handler.handlePost(request, catRepository),
-    HttpMethod.put => handler.handlePut(queryParams, request, catRepository),
-    HttpMethod.delete => handler.handleDelete(queryParams, catRepository),
+    HttpMethod.get => handler.handleGet(queryParams),
+    HttpMethod.post => handler.handlePost(request),
+    HttpMethod.put => handler.handlePut(queryParams, request),
+    HttpMethod.delete => handler.handleDelete(queryParams),
     _ => Future.value(
         Response(body: 'Unsupported request method: $method', statusCode: 405),
       ),

@@ -25,8 +25,13 @@ class AuthValidationResponse {
         );
 }
 
-Middleware authenticationValidator() {
+Middleware authenticationValidator({
+  List<HttpMethod> excludedMethods = const [],
+}) {
   return bearerAuthentication<AuthValidationResponse>(
+    applies: (context) => Future.value(
+      !excludedMethods.contains(context.request.method),
+    ),
     authenticator: (context, token) async {
       try {
         final mongoService = await context.read<Future<MongoService>>();
@@ -37,7 +42,7 @@ Middleware authenticationValidator() {
         print('payload: $payload');
 
         final userRepository = UserRepository(database: db);
-        final user = await userRepository.getById(payload);
+        final user = await userRepository.getQuery(UserQuery.id, payload);
 
         return AuthValidationResponse(isValid: true, user: user);
       } on JWTException catch (jwtException) {

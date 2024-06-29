@@ -1,12 +1,6 @@
 import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
-List<Cat> cats = [
-  Cat($_id: ObjectId.fromSeconds(1), name: ''),
-  Cat($_id: ObjectId.fromSeconds(2), name: 'Whiskers'),
-  Cat($_id: ObjectId.fromSeconds(3), name: 'Tom'),
-];
-
 abstract class CatRepositoryImpl {
   Future<List<Cat>> getCats();
   Future<Cat?> getCatById(String id);
