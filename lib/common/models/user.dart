@@ -5,7 +5,7 @@ class User {
   ObjectId $_id;
   String name;
   String email;
-  String password;
+  String? password;
   int age;
   String username;
   int followingsCount;
@@ -26,7 +26,7 @@ class User {
       : $_id = map['_id'] as ObjectId,
         name = map['name'] as String? ?? '',
         email = map['email'] as String,
-        password = map['password'] as String,
+        password = map['password'] as String?,
         age = map['age'] as int? ?? 0,
         username = map['username'] as String? ?? '',
         followingsCount = map['followingsCount'] as int? ?? 0,
@@ -70,7 +70,7 @@ class User {
   void validate() {
     Validator.validateRequiredString(name, fieldName: 'Name');
     Validator.validateEmail(email);
-    Validator.validatePassword(password);
+    Validator.validatePassword(password!);
     if (age < 0) {
       throw Exception('Age must be a positive number');
     }

@@ -1,4 +1,6 @@
 import 'package:cats_backend/common/common.dart';
+import 'package:cats_backend/common/extensions/saint_lookup.dart';
+import 'package:cats_backend/helpers/populate.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 enum UserQuery {
@@ -21,10 +23,11 @@ enum FollowedFollowerQuery {
 
 abstract class UserRepositoryImpl {
   Future<User?> getQuery(UserQuery query, String keyword);
-  Future<List<FollowedFollower>?> getFollowedFollowerQuery(
+  Future<List<Map<String, dynamic>>?> getFollowedFollowerQuery(
     FollowedFollowerQuery query,
-    String keyword,
-  );
+    String keyword, {
+    List<SaintLookup>? lookups,
+  });
 
   Future<FollowedFollower?> postFollowedFollower(
     FollowedFollower followedFollower,
@@ -60,23 +63,27 @@ class UserRepository implements UserRepositoryImpl {
   }
 
   @override
-  Future<List<FollowedFollower>?> getFollowedFollowerQuery(
+  Future<List<Map<String, dynamic>>?> getFollowedFollowerQuery(
     FollowedFollowerQuery query,
-    String keyword,
-  ) async {
+    String keyword, {
+    List<SaintLookup>? lookups,
+  }) async {
     final parsedKeyword = ObjectId.fromHexString(keyword);
 
-    final followers = await followersCollection.find({
-      query.value: parsedKeyword,
-    }).toList();
+    final followedFollowers = await followersCollection.findAndPopulate(
+      {
+        query.value: parsedKeyword,
+      },
+      lookups: lookups ?? [],
+    );
 
-    print('lol -> \n$followers');
+    if (followedFollowers == null) {
+      return null;
+    }
 
-    final parsedFollowers = followers.map((f) {
-      return FollowedFollower.fromJson(f);
-    }).toList();
+    print('====> test: $followedFollowers');
 
-    return parsedFollowers;
+    return followedFollowers;
   }
 
   @override

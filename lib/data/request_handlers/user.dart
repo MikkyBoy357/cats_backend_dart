@@ -2,6 +2,8 @@ import 'package:cats_backend/common/models/models.dart';
 import 'package:cats_backend/data/data.dart';
 import 'package:dart_frog/dart_frog.dart';
 
+import '../../common/extensions/saint_lookup.dart';
+
 abstract class UserRequestHandler {
   Future<Response> getUserByQuery(
     UserQuery query,
@@ -40,24 +42,21 @@ class UserRequestHandlerImpl implements UserRequestHandler {
     FollowedFollowerQuery query,
     String keyword,
   ) async {
-    final followersFollowings =
-        await _userRepository.getFollowedFollowerQuery(query, keyword);
-    final followersIds =
-        followersFollowings?.map((ff) => ff.followerId).toList();
+    final followedFollower = await _userRepository.getFollowedFollowerQuery(
+      query,
+      keyword,
+      lookups: [
+        SaintLookup(
+          from: 'users',
+          localField: 'followerId',
+          foreignField: '_id',
+          as: 'followerObject',
+        ),
+      ],
+    );
 
-    final followers = <User>[];
-    if (followersIds!.isNotEmpty) {
-      for (final followerId in followersIds) {
-        final follower = await _userRepository.getQuery(
-          UserQuery.id,
-          followerId.oid,
-        );
-        print('==Loop==> follower: $follower');
-        if (follower != null) {
-          followers.add(follower);
-        }
-      }
-    }
+    final followers =
+        followedFollower!.map((e) => e['followerObject']).toList();
 
     return Response.json(body: followers);
   }
@@ -67,9 +66,21 @@ class UserRequestHandlerImpl implements UserRequestHandler {
     FollowedFollowerQuery query,
     String keyword,
   ) async {
-    final followersFollowings =
-        await _userRepository.getFollowedFollowerQuery(query, keyword);
-    final followings = followersFollowings?.map((ff) => ff.followedId).toList();
+    final followedFollower = await _userRepository.getFollowedFollowerQuery(
+      query,
+      keyword,
+      lookups: [
+        SaintLookup(
+          from: 'users',
+          localField: 'followedId',
+          foreignField: '_id',
+          as: 'followedObject',
+        ),
+      ],
+    );
+
+    final followings =
+        followedFollower!.map((e) => e['followedObject']).toList();
 
     return Response.json(body: followings);
   }

@@ -10,7 +10,6 @@ Future<Response> onRequest(RequestContext context, String username) async {
   final userRepository = UserRepository(database: mongoService.database);
   final request = context.request;
   final method = request.method;
-  final queryParams = request.uri.queryParameters;
   final handler = UserRequestHandlerImpl(userRepository: userRepository);
 
   // get user by username
@@ -26,7 +25,9 @@ Future<Response> onRequest(RequestContext context, String username) async {
 
   return switch (method) {
     HttpMethod.get => await handler.getUserFollowings(
-        FollowedFollowerQuery.followerId, user.$_id.oid,),
+        FollowedFollowerQuery.followerId,
+        user.$_id.oid,
+      ),
     _ => Response(
         body: 'Unsupported request method: $method',
         statusCode: 405,
