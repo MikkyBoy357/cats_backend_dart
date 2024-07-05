@@ -21,6 +21,8 @@ enum FollowedFollowerQuery {
   const FollowedFollowerQuery(this.value);
 }
 
+typedef FollowersFollowingsCounts = Map<String, int>;
+
 abstract class UserRepositoryImpl {
   Future<User?> getQuery(UserQuery query, String keyword);
   Future<List<Map<String, dynamic>>?> getFollowedFollowerQuery(
@@ -35,6 +37,10 @@ abstract class UserRepositoryImpl {
 
   Future<bool> deleteFollowedFollower(
     FollowedFollower followedFollower,
+  );
+
+  Future<FollowersFollowingsCounts> getFollowersFollowingsCounts(
+    String userId,
   );
 }
 
@@ -117,5 +123,45 @@ class UserRepository implements UserRepositoryImpl {
     }
 
     return true;
+  }
+
+  @override
+  Future<FollowersFollowingsCounts> getFollowersFollowingsCounts(
+    String userId,
+  ) async {
+    final parsedKeyword = ObjectId.fromHexString(userId);
+    print('meh -> $parsedKeyword');
+    print('meh2 -> ${FollowedFollowerQuery.followedId}');
+
+    final fallback = {
+      'followersCount': 0,
+      'followingsCount': 0,
+    };
+
+    final followers = await getFollowedFollowerQuery(
+      FollowedFollowerQuery.followedId,
+      userId,
+    );
+
+    if (followers == null) {
+      return fallback;
+    }
+
+    final followersCount = followers.length;
+
+    final followings = await getFollowedFollowerQuery(
+      FollowedFollowerQuery.followerId,
+      userId,
+    );
+
+    if (followings == null) {
+      return fallback;
+    }
+    final followingsCount = followings.length;
+
+    return {
+      'followersCount': followersCount,
+      'followingsCount': followingsCount,
+    };
   }
 }

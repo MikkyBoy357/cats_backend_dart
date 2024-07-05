@@ -8,8 +8,8 @@ class User {
   String? password;
   int age;
   String username;
-  int followingsCount;
-  int followersCount;
+  int? followingsCount;
+  int? followersCount;
 
   User({
     required this.$_id,
@@ -29,8 +29,8 @@ class User {
         password = map['password'] as String?,
         age = map['age'] as int? ?? 0,
         username = map['username'] as String? ?? '',
-        followingsCount = map['followingsCount'] as int? ?? 0,
-        followersCount = map['followersCount'] as int? ?? 0;
+        followingsCount = map['followingsCount'] as int?,
+        followersCount = map['followersCount'] as int?;
 
   Map<String, dynamic> toJson() {
     return {
@@ -71,9 +71,6 @@ class User {
     Validator.validateRequiredString(name, fieldName: 'Name');
     Validator.validateEmail(email);
     Validator.validatePassword(password!);
-    if (age < 0) {
-      throw Exception('Age must be a positive number');
-    }
     Validator.validateRequiredString(username, fieldName: 'Username');
   }
 }

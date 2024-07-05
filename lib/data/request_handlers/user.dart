@@ -55,10 +55,23 @@ class UserRequestHandlerImpl implements UserRequestHandler {
       ],
     );
 
-    final followers =
-        followedFollower!.map((e) => e['followerObject']).toList();
+    final followers = followedFollower!.map((e) {
+      return e['followerObject'] as Map<String, dynamic>;
+    }).toList();
 
-    return Response.json(body: followers);
+    final followersUserObjects = followers.map((e) => User.fromMap(e)).toList();
+
+    // Get followers count and following count of each user
+    for (final user in followersUserObjects) {
+      final followersFollowingsCounts =
+          await _userRepository.getFollowersFollowingsCounts(user.$_id.oid);
+
+      user
+        ..followersCount = followersFollowingsCounts['followersCount']
+        ..followingsCount = followersFollowingsCounts['followingsCount'];
+    }
+
+    return Response.json(body: followersUserObjects);
   }
 
   @override
@@ -79,10 +92,24 @@ class UserRequestHandlerImpl implements UserRequestHandler {
       ],
     );
 
-    final followings =
-        followedFollower!.map((e) => e['followedObject']).toList();
+    final followings = followedFollower!.map((e) {
+      return e['followedObject'] as Map<String, dynamic>;
+    }).toList();
 
-    return Response.json(body: followings);
+    final followingsUserObjects =
+        followings.map((e) => User.fromMap(e)).toList();
+
+    // Get followings count and following count of each user
+    for (final user in followingsUserObjects) {
+      final followersFollowingsCounts =
+          await _userRepository.getFollowersFollowingsCounts(user.$_id.oid);
+
+      user
+        ..followersCount = followersFollowingsCounts['followersCount']
+        ..followingsCount = followersFollowingsCounts['followingsCount'];
+    }
+
+    return Response.json(body: followingsUserObjects);
   }
 
   @override
