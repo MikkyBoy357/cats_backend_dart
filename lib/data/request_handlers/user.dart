@@ -32,6 +32,15 @@ class UserRequestHandlerImpl implements UserRequestHandler {
   Future<Response> getUserByQuery(UserQuery query, String keyword) async {
     final user = await _userRepository.getQuery(query, keyword);
     if (user != null) {
+      // get followers count and following count of the user
+      final followersFollowingsCounts =
+          await _userRepository.getFollowersFollowingsCounts(user.$_id.oid);
+      user
+        ..followersCount = followersFollowingsCounts.followersCount
+        ..followingsCount = followersFollowingsCounts.followingsCount
+
+        // omit password
+        ..password = null;
       return Response.json(body: user);
     }
     return Response.json(body: 'User not found', statusCode: 404);
@@ -66,9 +75,11 @@ class UserRequestHandlerImpl implements UserRequestHandler {
       final followersFollowingsCounts =
           await _userRepository.getFollowersFollowingsCounts(user.$_id.oid);
 
+      print('====> followersFollowingsCounts: $followersFollowingsCounts');
+
       user
-        ..followersCount = followersFollowingsCounts['followersCount']
-        ..followingsCount = followersFollowingsCounts['followingsCount'];
+        ..followersCount = followersFollowingsCounts.followersCount
+        ..followingsCount = followersFollowingsCounts.followingsCount;
     }
 
     return Response.json(body: followersUserObjects);
@@ -105,8 +116,8 @@ class UserRequestHandlerImpl implements UserRequestHandler {
           await _userRepository.getFollowersFollowingsCounts(user.$_id.oid);
 
       user
-        ..followersCount = followersFollowingsCounts['followersCount']
-        ..followingsCount = followersFollowingsCounts['followingsCount'];
+        ..followersCount = followersFollowingsCounts.followersCount
+        ..followingsCount = followersFollowingsCounts.followingsCount;
     }
 
     return Response.json(body: followingsUserObjects);

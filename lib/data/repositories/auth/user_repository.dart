@@ -21,7 +21,7 @@ enum FollowedFollowerQuery {
   const FollowedFollowerQuery(this.value);
 }
 
-typedef FollowersFollowingsCounts = Map<String, int>;
+// typedef FollowersFollowingsCounts = Map<String, int>;
 
 abstract class UserRepositoryImpl {
   Future<User?> getQuery(UserQuery query, String keyword);
@@ -133,10 +133,7 @@ class UserRepository implements UserRepositoryImpl {
     print('meh -> $parsedKeyword');
     print('meh2 -> ${FollowedFollowerQuery.followedId}');
 
-    final fallback = {
-      'followersCount': 0,
-      'followingsCount': 0,
-    };
+    final fallback = FollowersFollowingsCounts.zero();
 
     final followers = await getFollowedFollowerQuery(
       FollowedFollowerQuery.followedId,
@@ -159,9 +156,9 @@ class UserRepository implements UserRepositoryImpl {
     }
     final followingsCount = followings.length;
 
-    return {
-      'followersCount': followersCount,
-      'followingsCount': followingsCount,
-    };
+    return FollowersFollowingsCounts(
+      followersCount: followersCount,
+      followingsCount: followingsCount,
+    );
   }
 }
