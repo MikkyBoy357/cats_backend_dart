@@ -25,7 +25,8 @@ class Validator {
     }
     if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$').hasMatch(password)) {
       throw Exception(
-          'Password must contain at least one letter and one number',);
+        'Password must contain at least one letter and one number',
+      );
     }
   }
 

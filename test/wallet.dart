@@ -4,13 +4,13 @@ import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 void main() {
-  ObjectId myWalletId = ObjectId();
-  ObjectId friendWalletId = ObjectId();
+  final myWalletId = ObjectId();
+  final friendWalletId = ObjectId();
 
-  List<Transaction> myTransactions = [
+  final myTransactions = <Transaction>[
     Transaction(
       $_id: ObjectId(),
-      amount: 50.0,
+      amount: 50,
       date: DateTime.now().subtract(
         const Duration(hours: 23),
       ),
@@ -20,7 +20,7 @@ void main() {
     ),
     Transaction(
       $_id: ObjectId(),
-      amount: 50.0,
+      amount: 50,
       date: DateTime.now().subtract(
         const Duration(hours: 23),
       ),
@@ -30,7 +30,7 @@ void main() {
     ),
   ];
 
-  Wallet myWallet = Wallet(
+  final myWallet = Wallet(
     $_id: myWalletId,
     transactions: myTransactions,
   );
@@ -43,7 +43,7 @@ void main() {
     myWallet.transactions.add(
       Transaction(
         $_id: ObjectId(),
-        amount: 50.0,
+        amount: 50,
         date: DateTime.now().subtract(
           const Duration(hours: 23),
         ),
@@ -64,7 +64,7 @@ void main() {
       myWallet.transactions.add(
         Transaction(
           $_id: ObjectId(),
-          amount: 25.0,
+          amount: 25,
           date: DateTime.now().subtract(
             const Duration(hours: 23),
           ),
