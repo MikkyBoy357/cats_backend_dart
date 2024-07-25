@@ -7,6 +7,10 @@
 An example application built with dart_frog
 This is a sample application that demonstrates how to use the dart_frog package to build a backend application.
 
+## Docs
+
+- [Pull Request Template](/docs/pull_request_template.md)
+
 # Author
 - [Saint Rikky](https://github.com/MikkyBoy357)
 
