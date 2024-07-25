@@ -17,6 +17,9 @@ class Transaction {
     required this.receiverId,
   });
 
+  bool idIsSender(ObjectId id) => senderId == id;
+  bool idIsReceiver(ObjectId id) => receiverId == id;
+
   Transaction.fromMap(Map<String, dynamic> map)
       : $_id = map['_id'] as ObjectId,
         amount = map['amount'] as double,
