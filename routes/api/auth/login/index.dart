@@ -4,7 +4,7 @@ import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/data/repositories/auth/user_repository.dart';
 import 'package:cats_backend/services/services.dart';
-import 'package:cats_backend/util/util.dart';
+import 'package:cats_backend/util/issue_token.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
@@ -64,7 +64,7 @@ Future<Response> onRequest(RequestContext context) async {
 
       final foundUserId = foundUser.$_id.oid;
 
-      final token = createJwt(foundUserId);
+      final token = issueToken(foundUserId);
 
       return Response.json(
         body: {

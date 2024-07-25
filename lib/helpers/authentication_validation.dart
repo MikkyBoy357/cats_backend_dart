@@ -4,7 +4,7 @@ import 'package:cats_backend/data/repositories/auth/user_repository.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:dart_frog_auth/dart_frog_auth.dart';
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:jaguar_jwt/jaguar_jwt.dart';
 
 class AuthValidationResponse {
   final bool isValid;
@@ -36,17 +36,20 @@ Middleware authenticationValidator({
       try {
         final mongoService = await context.read<Future<MongoService>>();
         final db = mongoService.database;
-        final jwt = JWT.verify(token, SecretKey(Config.jwtSecret));
+        final jwtClaim = verifyJwtHS256Signature(
+          token,
+          Config.jwtSecret,
+        );
 
-        final payload = jwt.payload as String;
+        final payload = jwtClaim.payload as String;
         print('payload: $payload');
 
         final userRepository = UserRepository(database: db);
         final user = await userRepository.getQuery(UserQuery.id, payload);
 
         return AuthValidationResponse(isValid: true, user: user);
-      } on JWTException catch (jwtException) {
-        print('JWTException: ${jwtException.message}');
+      } on JwtException catch (jwtException) {
+        print('JwtException: ${jwtException.message}.');
         return AuthValidationResponse(
           isValid: false,
           errorMessage: jwtException.message,
@@ -55,20 +58,3 @@ Middleware authenticationValidator({
     },
   );
 }
-
-// String issueToken(String userId) {
-//   final claimSet = JwtClaim(
-//     subject: userId,
-//     issuer: Config.jwtIssuer,
-//     otherClaims: <String, dynamic>{
-//       'roles': ['user'],
-//     },
-//     issuedAt: DateTime.now(),
-//     expiry: DateTime.now().add(
-//       const Duration(hours: 24),
-//     ),
-//   );
-//
-//   final token = issueJwtHS256(claimSet, Config.jwtSecret);
-//   return token;
-// }

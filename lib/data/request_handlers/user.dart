@@ -1,8 +1,6 @@
-import 'package:cats_backend/common/models/models.dart';
+import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/data/data.dart';
 import 'package:dart_frog/dart_frog.dart';
-
-import '../../common/extensions/saint_lookup.dart';
 
 abstract class UserRequestHandler {
   Future<Response> getUserByQuery(

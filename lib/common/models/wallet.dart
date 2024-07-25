@@ -1,28 +1,43 @@
 import 'package:cats_backend/common/models/transaction.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 
 class Wallet {
-  double balance;
-  List<Transaction> transactions;
+  final ObjectId $_id;
+  final List<Transaction> transactions;
+
+  double get balance {
+    return transactions.fold(
+      0,
+      (previousValue, element) {
+        if (element.senderId == $_id) {
+          return previousValue - element.amount;
+        } else {
+          return previousValue + element.amount;
+        }
+      },
+    );
+  }
 
   Wallet({
-    required this.balance,
+    required this.$_id,
     required this.transactions,
   });
 
-  factory Wallet.fromMap(Map<String, dynamic> map) {
+  factory Wallet.fromJson(Map<String, dynamic> map) {
     return Wallet(
-      balance: map['balance'] as double,
+      $_id: map['_id'] as ObjectId,
       transactions: (map['transactions'] as List<Map<String, dynamic>>)
           .map((transaction) => Transaction.fromMap(transaction))
           .toList(),
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
-      'balance': balance,
-      'transactions':
-          transactions.map((transaction) => transaction.toMap()).toList(),
+      '_id': $_id,
+      'transactions': transactions.map((transaction) {
+        return transaction.toMap();
+      }).toList(),
     };
   }
 }

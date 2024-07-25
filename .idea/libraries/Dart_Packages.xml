@@ -9,13 +9,6 @@
             </list>
           </value>
         </entry>
-        <entry key="adaptive_number">
-          <value>
-            <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/adaptive_number-1.0.0/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="analyzer">
           <value>
             <list>
@@ -128,24 +121,10 @@
             </list>
           </value>
         </entry>
-        <entry key="dart_jsonwebtoken">
-          <value>
-            <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/dart_jsonwebtoken-2.14.0/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="decimal">
           <value>
             <list>
               <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/decimal-2.3.3/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="ed25519_edwards">
-          <value>
-            <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/ed25519_edwards-0.3.1/lib" />
             </list>
           </value>
         </entry>
@@ -271,7 +250,7 @@
         <entry key="logman">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/logman-0.0.18/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/logman-0.0.20/lib" />
             </list>
           </value>
         </entry>
@@ -615,7 +594,6 @@
     </properties>
     <CLASSES>
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-67.0.0/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/adaptive_number-1.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/analyzer-6.4.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/args-2.5.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/async-2.11.0/lib" />
@@ -632,9 +610,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/crypto-3.0.3/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/dart_frog-1.1.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/dart_frog_auth-1.1.0/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/dart_jsonwebtoken-2.14.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/decimal-2.3.3/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/ed25519_edwards-0.3.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file-7.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/fixnum-1.1.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/frontend_server_client-4.0.0/lib" />
@@ -651,7 +627,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/json_annotation-4.9.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/logger-2.3.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/logging-1.2.0/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/logman-0.0.18/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/logman-0.0.20/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/matcher-0.12.16+1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/material_color_utilities-0.8.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/meta-1.12.0/lib" />
