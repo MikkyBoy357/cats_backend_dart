@@ -144,9 +144,19 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
   Future<Response> handleSendMessageByChatId({
     required ObjectId chatId,
     required ObjectId senderId,
-    required String message,
+    required String? message,
   }) async {
     print('===> POST <==> Chat:');
+
+    if (message == null || message.isEmpty) {
+      return Response.json(
+        body: {
+          'message': 'Message cannot be empty nor null',
+        },
+        statusCode: 400,
+      );
+    }
+
     final chat = await _chatRepository.getChatById(chatId: chatId);
 
     if (chat == null) {

@@ -56,16 +56,6 @@ Future<Response> onRequest(RequestContext context, String id) async {
       ),
     HttpMethod.post => () {
         final message = bodyJson['message'] as String?;
-        if (message == null || message.isEmpty) {
-          return Future.value(
-            Response.json(
-              body: {
-                'message': 'Error: Message cannot be empty nor null.',
-              },
-              statusCode: 400,
-            ),
-          );
-        }
 
         return handler.handleSendMessageByChatId(
           chatId: chatId,

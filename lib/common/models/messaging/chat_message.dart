@@ -9,6 +9,7 @@ class ChatMessage {
   final DateTime msgTimestamp;
   final String message;
   final MessageType messageType;
+  final String? mediaUrl;
 
   ChatMessage({
     required this.id,
@@ -17,6 +18,7 @@ class ChatMessage {
     required this.msgTimestamp,
     required this.message,
     this.messageType = MessageType.text,
+    this.mediaUrl,
   });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,7 @@ class ChatMessage {
       messageType: MessageType.values.firstWhere(
         (e) => e.name == json['messageType'],
       ),
+      mediaUrl: json['mediaUrl'] as String?,
     );
   }
 
@@ -44,6 +47,7 @@ class ChatMessage {
       'msgTimestamp': msgTimestamp.toString(),
       'message': message,
       'messageType': messageType.name,
+      'mediaUrl': mediaUrl,
     };
   }
 }
