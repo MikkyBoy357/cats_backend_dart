@@ -7,7 +7,6 @@ import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context, String username) async {
   print('======= username =======> $username');
-  final mongoService = await context.read<Future<MongoService>>();
   final authValidationResponse = context.read<AuthValidationResponse>();
 
   if (!authValidationResponse.isValid) {
@@ -19,7 +18,7 @@ Future<Response> onRequest(RequestContext context, String username) async {
 
   final saint = authValidationResponse.user!;
 
-  final userRepository = UserRepository(database: mongoService.database);
+  final userRepository = UserRepository(database: mongoDbService.database);
 
   final passedUser = await userRepository.getQuery(
     UserQuery.username,
@@ -33,7 +32,7 @@ Future<Response> onRequest(RequestContext context, String username) async {
     );
   }
 
-  final chatRepository = ChatRepository(database: mongoService.database);
+  final chatRepository = ChatRepository(database: mongoDbService.database);
   final request = context.request;
   final method = request.method;
   final queryParams = request.uri.queryParameters;

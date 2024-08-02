@@ -4,7 +4,6 @@ import 'package:cats_backend/services/mongo_service.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
-  final mongoService = await context.read<Future<MongoService>>();
   final authValidationResponse = context.read<AuthValidationResponse>();
 
   if (!authValidationResponse.isValid) {
@@ -14,7 +13,7 @@ Future<Response> onRequest(RequestContext context) async {
     );
   }
 
-  final catRepository = CatRepository(database: mongoService.database);
+  final catRepository = CatRepository(database: mongoDbService.database);
   final request = context.request;
   final method = request.method;
   final queryParams = request.uri.queryParameters;

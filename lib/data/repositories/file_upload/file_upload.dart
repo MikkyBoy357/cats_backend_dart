@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
-import 'package:firebase_dart/firebase_dart.dart';
 
 class FileUpload {
   static Future<UploadedFile?> getFirstFileFromFormData(
@@ -22,7 +22,6 @@ class FileUpload {
     required UploadedFile uploadedFile,
   }) async {
     // Upload file to cloud storage
-    final storage = FirebaseStorage.instance;
 
     // Filename is the same as the original filename with
     // a timestamp to avoid conflicts
@@ -41,9 +40,12 @@ class FileUpload {
       print('====> Upload complete (${ref.fullPath})');
     });
 
-    await snapshot.ref.getDownloadURL().then((value) {
-      print('====> Download URL: $value');
-    });
+    try {
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('====> Error getting download URL: $e <====');
+    }
 
     return null;
   }

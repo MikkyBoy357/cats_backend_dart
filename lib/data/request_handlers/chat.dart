@@ -147,7 +147,7 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
     required ObjectId senderId,
     required FormData? formData,
   }) async {
-    late final String? downloadUrl;
+    String? downloadUrl;
     print('===> POST <==> Chat:');
 
     /// Validate form data

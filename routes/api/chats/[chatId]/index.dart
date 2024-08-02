@@ -7,7 +7,6 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 Future<Response> onRequest(RequestContext context, String id) async {
   print('======= chatId =======> $id');
-  final mongoService = await context.read<Future<MongoService>>();
   final authValidationResponse = context.read<AuthValidationResponse>();
 
   if (!authValidationResponse.isValid) {
@@ -24,7 +23,7 @@ Future<Response> onRequest(RequestContext context, String id) async {
     return Response.json(body: 'Error: Cannot Parse Invalid Chat ID.');
   }
 
-  final chatRepository = ChatRepository(database: mongoService.database);
+  final chatRepository = ChatRepository(database: mongoDbService.database);
   final request = context.request;
   final method = request.method;
   final queryParams = request.uri.queryParameters;

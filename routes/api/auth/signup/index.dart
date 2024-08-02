@@ -8,10 +8,9 @@ import 'package:dart_frog/dart_frog.dart';
 Future<Response> onRequest(RequestContext context) async {
   try {
     final request = context.request;
-    final mongoService = await context.read<Future<MongoService>>();
 
     if (request.method == HttpMethod.post) {
-      await mongoService.open();
+      await mongoDbService.open();
 
       final requestBody = await request.body();
       final requestData = jsonDecode(requestBody) as Map<String, dynamic>;
@@ -22,7 +21,7 @@ Future<Response> onRequest(RequestContext context) async {
         requestData['password'] as String,
       );
 
-      final userCollection = mongoService.database.collection('users');
+      final userCollection = mongoDbService.database.collection('users');
       final foundUser = await userCollection.findOne({
         'email': email,
       });
@@ -71,16 +70,15 @@ Future<Response> onRequest(RequestContext context) async {
         statusCode: 404,
         body: {
           'status': 404,
-          'message': 'Invalid request',
+          'message': 'Unsupported request method: ${request.method}',
         },
       );
     }
   } catch (e) {
     return Response.json(
-      statusCode: 500,
+      statusCode: 400,
       body: {
-        'status': 500,
-        'message': 'Server error. Something went wrong',
+        'message': 'Check the request body and try again',
         'error': e.toString(),
       },
     );

@@ -34,8 +34,7 @@ Middleware authenticationValidator({
     ),
     authenticator: (context, token) async {
       try {
-        final mongoService = await context.read<Future<MongoService>>();
-        final db = mongoService.database;
+        final db = mongoDbService.database;
         final jwtClaim = verifyJwtHS256Signature(
           token,
           Config.jwtSecret,

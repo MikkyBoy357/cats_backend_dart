@@ -135,13 +135,6 @@
             </list>
           </value>
         </entry>
-        <entry key="dartz">
-          <value>
-            <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/dartz-0.10.1/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="decimal">
           <value>
             <list>
@@ -675,7 +668,6 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/crypto_keys-0.3.0+1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/dart_frog-1.1.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/dart_frog_auth-1.1.0/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/dartz-0.10.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/decimal-2.3.3/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/expressions-0.2.5+1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file-7.0.0/lib" />

@@ -30,7 +30,7 @@ class ChatMessage {
       id: json['_id'] as ObjectId,
       chatId: json['chatId'] as ObjectId,
       senderId: json['senderId'] as ObjectId,
-      msgTimestamp: json['msgTimestamp'] as DateTime,
+      msgTimestamp: DateTime.parse(json['msgTimestamp'].toString()),
       message: json['message'] as String,
       messageType: MessageType.values.firstWhere(
         (e) => e.name == json['messageType'],
