@@ -14,3 +14,6 @@ build/
 
 # Test related files
 coverage/
+
+# Firebase related files
+firebase_options.json

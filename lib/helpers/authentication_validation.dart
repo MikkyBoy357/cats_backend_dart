@@ -34,18 +34,27 @@ Middleware authenticationValidator({
     ),
     authenticator: (context, token) async {
       try {
-        final mongoService = await context.read<Future<MongoService>>();
-        final db = mongoService.database;
+        final db = mongoDbService.database;
         final jwtClaim = verifyJwtHS256Signature(
           token,
           Config.jwtSecret,
         );
 
-        final payload = jwtClaim.payload as String;
-        print('payload: $payload');
+        print('jwtClaim:');
+        print(jwtClaim);
+
+        final userId = jwtClaim.subject;
+        print('userId: $userId');
+        if (userId == null) {
+          return AuthValidationResponse(
+            isValid: false,
+            errorMessage: 'Invalid user id in token',
+          );
+        }
 
         final userRepository = UserRepository(database: db);
-        final user = await userRepository.getQuery(UserQuery.id, payload);
+        final user = await userRepository.getQuery(UserQuery.id, userId);
+        print('======> Logged in as: ${user?.toJson()}');
 
         return AuthValidationResponse(isValid: true, user: user);
       } on JwtException catch (jwtException) {

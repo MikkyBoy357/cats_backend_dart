@@ -8,10 +8,8 @@ import 'package:cats_backend/util/issue_token.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
-  final mongoService = await context.read<Future<MongoService>>();
-
   final userRepository = UserRepository(
-    database: mongoService.database,
+    database: mongoDbService.database,
   );
 
   try {

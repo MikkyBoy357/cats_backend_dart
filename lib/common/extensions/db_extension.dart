@@ -5,4 +5,6 @@ extension DbX on Db {
   DbCollection get catsCollection => collection('cats');
   DbCollection get followersCollection => collection('followers');
   DbCollection get transactionsCollection => collection('transactions');
+  DbCollection get chatsCollection => collection('chats');
+  DbCollection get chatMessagesCollection => collection('chatMessages');
 }
