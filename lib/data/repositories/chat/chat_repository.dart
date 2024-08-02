@@ -22,6 +22,7 @@ abstract class ChatRepositoryImpl {
     required ObjectId chatId,
     required ObjectId senderId,
     required String message,
+    String? mediaUrl,
   });
 
   // Future<List<Chat>> getAllChats({
@@ -156,6 +157,7 @@ class ChatRepository extends ChatRepositoryImpl {
     required ObjectId chatId,
     required ObjectId senderId,
     required String message,
+    String? mediaUrl,
   }) async {
     final chatMessage = ChatMessage(
       id: ObjectId(),
@@ -163,6 +165,8 @@ class ChatRepository extends ChatRepositoryImpl {
       senderId: senderId,
       message: message,
       msgTimestamp: DateTime.now(),
+      messageType: mediaUrl == null ? MessageType.text : MessageType.media,
+      mediaUrl: mediaUrl,
     );
 
     final chatMessageMap = chatMessage.toJson();

@@ -1,4 +1,5 @@
 import 'package:cats_backend/data/data.dart';
+import 'package:cats_backend/data/repositories/file_upload/file_upload.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -25,7 +26,7 @@ abstract class ChatRequestHandler {
   Future<Response> handleSendMessageByChatId({
     required ObjectId chatId,
     required ObjectId senderId,
-    required String message,
+    required FormData formData,
   });
 }
 
@@ -144,10 +145,13 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
   Future<Response> handleSendMessageByChatId({
     required ObjectId chatId,
     required ObjectId senderId,
-    required String? message,
+    required FormData? formData,
   }) async {
+    late final String? downloadUrl;
     print('===> POST <==> Chat:');
 
+    /// Validate form data
+    final message = formData?.fields['message'];
     if (message == null || message.isEmpty) {
       return Response.json(
         body: {
@@ -155,6 +159,18 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
         },
         statusCode: 400,
       );
+    }
+
+    /// Check if there is image in the form data
+    if (formData != null) {
+      final files = formData.files;
+      if (files.isNotEmpty) {
+        final firstFile = await FileUpload.getFirstFileFromFormData(formData);
+
+        downloadUrl = await FileUpload.uploadFileAndReturnUrl(
+          uploadedFile: firstFile!,
+        );
+      }
     }
 
     final chat = await _chatRepository.getChatById(chatId: chatId);
@@ -173,6 +189,7 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
       chatId: chatId,
       senderId: senderId,
       message: message,
+      mediaUrl: downloadUrl,
     );
 
     return Response.json(

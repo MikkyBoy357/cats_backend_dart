@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cats_backend/data/repositories/repositories.dart';
 import 'package:cats_backend/data/request_handlers/request_handlers.dart';
 import 'package:cats_backend/helpers/helpers.dart';
@@ -32,9 +30,6 @@ Future<Response> onRequest(RequestContext context, String id) async {
   final queryParams = request.uri.queryParameters;
   final handler = ChatRequestHandlerImpl(chatRepository: chatRepository);
 
-  final body = await request.body();
-  final bodyJson = jsonDecode(body) as Map<String, dynamic>;
-
   final currentChat = await chatRepository.getChatById(chatId: chatId);
 
   if (currentChat == null) {
@@ -54,13 +49,13 @@ Future<Response> onRequest(RequestContext context, String id) async {
     HttpMethod.get => handler.handleGetChatById(
         chatId: chatId,
       ),
-    HttpMethod.post => () {
-        final message = bodyJson['message'] as String?;
+    HttpMethod.post => () async {
+        final formData = await request.formData();
 
         return handler.handleSendMessageByChatId(
           chatId: chatId,
           senderId: saint.$_id,
-          message: message,
+          formData: formData,
         );
       }(),
     _ => Future.value(
