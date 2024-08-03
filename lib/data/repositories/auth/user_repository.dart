@@ -64,7 +64,7 @@ class UserRepository implements UserRepositoryImpl {
       query.value: parsedKeyword,
     });
     print('====> foundUser: $foundUser');
-    return foundUser != null ? User.fromMap(foundUser) : null;
+    return foundUser != null ? User.fromJson(foundUser) : null;
   }
 
   @override

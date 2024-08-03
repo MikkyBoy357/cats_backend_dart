@@ -66,7 +66,8 @@ class UserRequestHandlerImpl implements UserRequestHandler {
       return e['followerObject'] as Map<String, dynamic>;
     }).toList();
 
-    final followersUserObjects = followers.map((e) => User.fromMap(e)).toList();
+    final followersUserObjects =
+        followers.map((e) => User.fromJson(e)).toList();
 
     // Get followers count and following count of each user
     for (final user in followersUserObjects) {
@@ -106,7 +107,7 @@ class UserRequestHandlerImpl implements UserRequestHandler {
     }).toList();
 
     final followingsUserObjects =
-        followings.map((e) => User.fromMap(e)).toList();
+        followings.map((e) => User.fromJson(e)).toList();
 
     // Get followings count and following count of each user
     for (final user in followingsUserObjects) {

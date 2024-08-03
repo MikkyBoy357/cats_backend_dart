@@ -8,6 +8,8 @@ class User {
   String? password;
   int age;
   String username;
+  String? avatarUrl;
+  String? bio;
   int? followingsCount;
   int? followersCount;
 
@@ -18,17 +20,21 @@ class User {
     required this.password,
     required this.age,
     required this.username,
+    this.avatarUrl,
+    this.bio,
     required this.followingsCount,
     required this.followersCount,
   });
 
-  User.fromMap(Map<String, dynamic> map)
+  User.fromJson(Map<String, dynamic> map)
       : $_id = map['_id'] as ObjectId,
         name = map['name'] as String? ?? '',
         email = map['email'] as String,
         password = map['password'] as String?,
         age = map['age'] as int? ?? 0,
         username = map['username'] as String? ?? '',
+        avatarUrl = map['avatarUrl'] as String?,
+        bio = map['bio'] as String?,
         followingsCount = map['followingsCount'] as int?,
         followersCount = map['followersCount'] as int?;
 
@@ -40,6 +46,8 @@ class User {
       'password': password,
       'age': age,
       'username': username,
+      'avatarUrl': avatarUrl,
+      'bio': bio,
       'followingsCount': followingsCount,
       'followersCount': followersCount,
     };
@@ -52,6 +60,8 @@ class User {
     String? password,
     int? age,
     String? username,
+    String? avatarUrl,
+    String? bio,
     int? followingsCount,
     int? followersCount,
   }) {
@@ -62,6 +72,8 @@ class User {
       password: password ?? this.password,
       age: age ?? this.age,
       username: username ?? this.username,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      bio: bio ?? this.bio,
       followingsCount: followingsCount ?? this.followingsCount,
       followersCount: followersCount ?? this.followersCount,
     );
