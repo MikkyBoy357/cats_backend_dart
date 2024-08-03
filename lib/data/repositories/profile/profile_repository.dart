@@ -6,10 +6,8 @@ abstract class ProfileRepositoryImpl {
     required User user,
     required String imageUrl,
   });
-  Future<User?> changeProfileBio({
-    required User user,
-    required String bio,
-  });
+  // implement changeProfileBio
+  // see changeProfileAvatar for example
 }
 
 class ProfileRepository extends ProfileRepositoryImpl {
@@ -42,13 +40,6 @@ class ProfileRepository extends ProfileRepositoryImpl {
     return User.fromJson(updatedUser.toJson());
   }
 
-  @override
-  Future<User?> changeProfileBio({
-    required User user,
-    required String bio,
-  }) async {
-    // TODO: implement changeProfileBio
-    // see changeProfileAvatar for example
-    return null;
-  }
+  // implement changeProfileBio
+  // see changeProfileAvatar for example
 }
