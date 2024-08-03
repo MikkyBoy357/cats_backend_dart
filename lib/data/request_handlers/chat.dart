@@ -1,3 +1,4 @@
+import 'package:cats_backend/common/constants/storage_directories.dart';
 import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/data/repositories/file_upload/file_upload.dart';
 import 'package:dart_frog/dart_frog.dart';
@@ -148,6 +149,7 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
     required FormData? formData,
   }) async {
     String? downloadUrl;
+    String? uploadError;
     print('===> POST <==> Chat:');
 
     /// Validate form data
@@ -167,9 +169,23 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
       if (files.isNotEmpty) {
         final firstFile = await FileUpload.getFirstFileFromFormData(formData);
 
-        downloadUrl = await FileUpload.uploadFileAndReturnUrl(
+        final urlOrError = await FileUpload.uploadFileAndReturnUrl(
           uploadedFile: firstFile!,
+          storageDir: StorageDirectories.chatsById(chatId: chatId.oid),
         );
+
+        downloadUrl = urlOrError.url;
+        uploadError = urlOrError.error;
+
+        if (uploadError != null) {
+          return Response.json(
+            body: {
+              'message': 'Failed to upload image',
+              'error': uploadError,
+            },
+            statusCode: 500,
+          );
+        }
       }
     }
 

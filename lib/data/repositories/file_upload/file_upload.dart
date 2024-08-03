@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
+typedef UrlOrError = ({String? url, String? error});
+
 class FileUpload {
   static Future<UploadedFile?> getFirstFileFromFormData(
     FormData formData,
@@ -18,20 +20,34 @@ class FileUpload {
     return firstFile;
   }
 
-  static Future<String?> uploadFileAndReturnUrl({
+  static Future<UrlOrError> uploadFileAndReturnUrl({
     required UploadedFile uploadedFile,
+    required String storageDir,
+    double maxSizeInMB = 1,
   }) async {
-    // Upload file to cloud storage
+    // Validate file size limit
+    final bytes = await uploadedFile.readAsBytes();
+    final data = Uint8List.fromList(bytes);
+
+    final maxBytes = maxSizeInMB * 1024 * 1024;
+    final fileSize = data.lengthInBytes;
+    if (fileSize >= maxBytes) {
+      print('====> ⚠️ File ($fileSize B) exceeds max size ($maxBytes B) <====');
+      return (
+        url: null,
+        error: 'File exceeds max size\n'
+            'Try uploading a smaller file\n'
+            'Max size: $maxSizeInMB MB',
+      );
+    }
 
     // Filename is the same as the original filename with
     // a timestamp to avoid conflicts
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final filename = '${uploadedFile.name}_$timestamp';
-    final ref = storage.ref().child('uploads/$filename');
+    final ref = storage.ref().child('$storageDir/$filename');
 
     // Upload file
-    final bytes = await uploadedFile.readAsBytes();
-    final data = Uint8List.fromList(bytes);
     final uploadTask = ref.putData(data);
 
     // Wait for upload to complete
@@ -42,11 +58,11 @@ class FileUpload {
 
     try {
       final downloadUrl = await snapshot.ref.getDownloadURL();
-      return downloadUrl;
+      return (url: downloadUrl, error: null);
     } catch (e) {
       print('====> Error getting download URL: $e <====');
     }
 
-    return null;
+    return (url: null, error: 'Error getting download URL');
   }
 }
