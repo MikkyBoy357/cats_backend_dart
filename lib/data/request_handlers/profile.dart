@@ -10,6 +10,11 @@ abstract class ProfileRequestHandler {
     required User user,
     required FormData formData,
   });
+
+  Future<Response> handleChangeBio({
+    required User user,
+    required String bio,
+  });
 }
 
 class ProfileRequestHandlerImpl implements ProfileRequestHandler {
@@ -59,6 +64,22 @@ class ProfileRequestHandlerImpl implements ProfileRequestHandler {
 
     return Response.json(
       body: updatedUser,
+    );
+  }
+
+  @override
+  Future<Response> handleChangeBio({
+    required User user,
+    required String bio,
+  }) async {
+    final updatedUser = await _profileRepository.changeProfileBio(
+      user: user,
+      bio: bio,
+    );
+
+    return Response.json(
+      body: updatedUser,
+      statusCode: updatedUser != null ? 200 : 500,
     );
   }
 }
