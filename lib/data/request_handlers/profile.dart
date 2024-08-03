@@ -72,6 +72,13 @@ class ProfileRequestHandlerImpl implements ProfileRequestHandler {
     required User user,
     required String bio,
   }) async {
+    if (bio.length > 69) {
+      return Response.json(
+        body: 'Error: Bio cannot be more than 69 characters.',
+        statusCode: 400,
+      );
+    }
+
     final updatedUser = await _profileRepository.changeProfileBio(
       user: user,
       bio: bio,
