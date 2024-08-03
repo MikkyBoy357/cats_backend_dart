@@ -59,7 +59,7 @@ class ProfileRequestHandlerImpl implements ProfileRequestHandler {
     // Update user avatarUrl
     final updatedUser = await _profileRepository.changeProfileAvatar(
       user: user,
-      imageUrl: downloadUrl!,
+      imageUrl: downloadUrl,
     );
 
     return Response.json(
