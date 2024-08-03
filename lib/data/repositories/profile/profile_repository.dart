@@ -6,8 +6,11 @@ abstract class ProfileRepositoryImpl {
     required User user,
     required String imageUrl,
   });
-  // implement changeProfileBio
-  // see changeProfileAvatar for example
+
+  Future<User?> changeProfileBio({
+    required User user,
+    required String bio,
+  });
 }
 
 class ProfileRepository extends ProfileRepositoryImpl {
@@ -37,9 +40,27 @@ class ProfileRepository extends ProfileRepositoryImpl {
 
     final updatedUser = user.copyWith(avatarUrl: imageUrl);
 
-    return User.fromJson(updatedUser.toJson());
+    return updatedUser;
   }
 
-  // implement changeProfileBio
-  // see changeProfileAvatar for example
+  @override
+  Future<User?> changeProfileBio({
+    required User user,
+    required String bio,
+  }) async {
+    final result = await usersCollection.updateOne(
+      where.id(user.$_id),
+      modify.set('bio', bio),
+    );
+
+    print('📍 Write result: $result');
+
+    if (result.writeError != null) {
+      return null;
+    }
+
+    final updatedUser = user.copyWith(bio: bio);
+
+    return updatedUser;
+  }
 }

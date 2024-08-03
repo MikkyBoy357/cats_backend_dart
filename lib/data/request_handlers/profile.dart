@@ -10,6 +10,11 @@ abstract class ProfileRequestHandler {
     required User user,
     required FormData formData,
   });
+
+  Future<Response> handleChangeBio({
+    required User user,
+    required String bio,
+  });
 }
 
 class ProfileRequestHandlerImpl implements ProfileRequestHandler {
@@ -39,26 +44,49 @@ class ProfileRequestHandlerImpl implements ProfileRequestHandler {
 
       downloadUrl = urlOrError.url;
       uploadError = urlOrError.error;
+    }
 
-      if (uploadError != null) {
-        return Response.json(
-          body: {
-            'message': 'Failed to upload avatar',
-            'error': uploadError,
-          },
-          statusCode: 500,
-        );
-      }
+    if (downloadUrl == null) {
+      return Response.json(
+        body: {
+          'message': 'Failed to upload avatar',
+          'error': uploadError,
+        },
+        statusCode: 500,
+      );
     }
 
     // Update user avatarUrl
     final updatedUser = await _profileRepository.changeProfileAvatar(
       user: user,
-      imageUrl: downloadUrl!,
+      imageUrl: downloadUrl,
     );
 
     return Response.json(
       body: updatedUser,
+    );
+  }
+
+  @override
+  Future<Response> handleChangeBio({
+    required User user,
+    required String bio,
+  }) async {
+    if (bio.length > 69) {
+      return Response.json(
+        body: 'Error: Bio cannot be more than 69 characters.',
+        statusCode: 400,
+      );
+    }
+
+    final updatedUser = await _profileRepository.changeProfileBio(
+      user: user,
+      bio: bio,
+    );
+
+    return Response.json(
+      body: updatedUser,
+      statusCode: updatedUser != null ? 200 : 500,
     );
   }
 }
