@@ -4,6 +4,7 @@ import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/data/repositories/file_upload/file_upload.dart';
 import 'package:cats_backend/data/repositories/repositories.dart';
 import 'package:dart_frog/dart_frog.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 
 abstract class ProfileRequestHandler {
   Future<Response> handleChangeProfileAvatar({
@@ -11,8 +12,10 @@ abstract class ProfileRequestHandler {
     required FormData formData,
   });
 
-  // implement handleChangeProfileBio
-  // see handleChangeProfileAvatar for example
+  Future<Response> handleChangeProfileBio({
+    required ObjectId userId,
+    required String bio,
+  });
 }
 
 class ProfileRequestHandlerImpl implements ProfileRequestHandler {
@@ -65,6 +68,13 @@ class ProfileRequestHandlerImpl implements ProfileRequestHandler {
     );
   }
 
-  // implement handleChangeProfileBio
-  // see handleChangeProfileAvatar for example
+  @override
+  Future<Response> handleChangeProfileBio({
+    required ObjectId userId,
+    required String bio,
+  }) async {
+    // TODO: implement handleChangeProfileBio
+    // see handleChangeProfileAvatar for example
+    throw UnimplementedError();
+  }
 }
