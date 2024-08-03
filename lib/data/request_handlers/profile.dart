@@ -65,7 +65,6 @@ class ProfileRequestHandlerImpl implements ProfileRequestHandler {
 
     return Response.json(
       body: updatedUser,
-      statusCode: 200,
     );
   }
 
@@ -75,6 +74,7 @@ class ProfileRequestHandlerImpl implements ProfileRequestHandler {
     required String bio,
   }) async {
     // TODO: implement handleChangeProfileBio
+    // see handleChangeProfileAvatar for example
     throw UnimplementedError();
   }
 }

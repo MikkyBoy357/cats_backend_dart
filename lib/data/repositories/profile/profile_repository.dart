@@ -47,17 +47,8 @@ class ProfileRepository extends ProfileRepositoryImpl {
     required User user,
     required String bio,
   }) async {
-    final result = await usersCollection.update(
-      where.id(user.$_id),
-      modify.set('bio', bio),
-    );
-
-    print('📍 Write result: $result');
-
-    if (result['n'] == 0) {
-      return null;
-    }
-
-    final updatedUser = user.copyWith(bio: bio);
+    // TODO: implement changeProfileBio
+    // see changeProfileAvatar for example
+    return null;
   }
 }
