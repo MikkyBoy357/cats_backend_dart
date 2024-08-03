@@ -176,17 +176,17 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
 
         downloadUrl = urlOrError.url;
         uploadError = urlOrError.error;
-
-        if (uploadError != null) {
-          return Response.json(
-            body: {
-              'message': 'Failed to upload image',
-              'error': uploadError,
-            },
-            statusCode: 500,
-          );
-        }
       }
+    }
+
+    if (downloadUrl == null) {
+      return Response.json(
+        body: {
+          'message': 'Failed to upload image',
+          'error': uploadError,
+        },
+        statusCode: 500,
+      );
     }
 
     final chat = await _chatRepository.getChatById(chatId: chatId);

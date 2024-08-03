@@ -44,16 +44,16 @@ class ProfileRequestHandlerImpl implements ProfileRequestHandler {
 
       downloadUrl = urlOrError.url;
       uploadError = urlOrError.error;
+    }
 
-      if (uploadError != null) {
-        return Response.json(
-          body: {
-            'message': 'Failed to upload avatar',
-            'error': uploadError,
-          },
-          statusCode: 500,
-        );
-      }
+    if (downloadUrl == null) {
+      return Response.json(
+        body: {
+          'message': 'Failed to upload avatar',
+          'error': uploadError,
+        },
+        statusCode: 500,
+      );
     }
 
     // Update user avatarUrl
