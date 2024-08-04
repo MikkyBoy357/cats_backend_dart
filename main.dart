@@ -14,6 +14,16 @@ Future<void> init(InternetAddress ip, int port) async {
 
   // Initialize the firebase
   await FirebaseService.initializeFirebase();
+
+  // // Connect to the remote WebSocket endpoint.
+  // final uri = Uri.parse('ws://localhost:8080/ws');
+  // final channel = WebSocketChannel.connect(uri);
+  //
+  // // Listen to incoming messages from the server.
+  // channel.stream.listen(print);
+  //
+  // // Send messages to the server.
+  // channel.sink.add('ping');
 }
 
 Future<HttpServer> run(Handler handler, InternetAddress ip, int port) {
