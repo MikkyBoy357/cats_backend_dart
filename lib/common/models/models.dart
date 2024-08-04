@@ -5,3 +5,4 @@ export 'messaging/messaging.dart';
 export 'transaction.dart';
 export 'user.dart';
 export 'wallet.dart';
+export 'ws/wsEventMessage.dart';
