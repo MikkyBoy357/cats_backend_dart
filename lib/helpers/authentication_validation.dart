@@ -25,6 +25,50 @@ class AuthValidationResponse {
         );
 }
 
+Future<AuthValidationResponse> getAuthResult({
+  required String? token,
+}) async {
+  if (token == null) {
+    print('Token is required');
+    return AuthValidationResponse(
+      isValid: false,
+      errorMessage: 'Token is required',
+    );
+  }
+
+  try {
+    final db = mongoDbService.database;
+    final jwtClaim = verifyJwtHS256Signature(
+      token,
+      Config.jwtSecret,
+    );
+
+    print('jwtClaim:');
+    print(jwtClaim);
+
+    final userId = jwtClaim.subject;
+    print('userId: $userId');
+    if (userId == null) {
+      return AuthValidationResponse(
+        isValid: false,
+        errorMessage: 'Invalid user id in token',
+      );
+    }
+
+    final userRepository = UserRepository(database: db);
+    final user = await userRepository.getQuery(UserQuery.id, userId);
+    print('======> Logged in as: ${user?.toJson()}');
+
+    return AuthValidationResponse(isValid: true, user: user);
+  } on JwtException catch (jwtException) {
+    print('JwtException: ${jwtException.message}.');
+    return AuthValidationResponse(
+      isValid: false,
+      errorMessage: jwtException.message,
+    );
+  }
+}
+
 Middleware authenticationValidator({
   List<HttpMethod> excludedMethods = const [],
 }) {
@@ -33,37 +77,7 @@ Middleware authenticationValidator({
       !excludedMethods.contains(context.request.method),
     ),
     authenticator: (context, token) async {
-      try {
-        final db = mongoDbService.database;
-        final jwtClaim = verifyJwtHS256Signature(
-          token,
-          Config.jwtSecret,
-        );
-
-        print('jwtClaim:');
-        print(jwtClaim);
-
-        final userId = jwtClaim.subject;
-        print('userId: $userId');
-        if (userId == null) {
-          return AuthValidationResponse(
-            isValid: false,
-            errorMessage: 'Invalid user id in token',
-          );
-        }
-
-        final userRepository = UserRepository(database: db);
-        final user = await userRepository.getQuery(UserQuery.id, userId);
-        print('======> Logged in as: ${user?.toJson()}');
-
-        return AuthValidationResponse(isValid: true, user: user);
-      } on JwtException catch (jwtException) {
-        print('JwtException: ${jwtException.message}.');
-        return AuthValidationResponse(
-          isValid: false,
-          errorMessage: jwtException.message,
-        );
-      }
+      return getAuthResult(token: token);
     },
   );
 }
