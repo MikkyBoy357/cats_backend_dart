@@ -23,7 +23,7 @@ class Transaction {
   Transaction.fromMap(Map<String, dynamic> map)
       : $_id = map['_id'] as ObjectId,
         amount = map['amount'] as double,
-        date = DateTime.parse(map['date'] as String),
+        date = DateTime.parse(map['date'].toString()),
         description = map['description'] as String,
         senderId = map['senderId'] as ObjectId,
         receiverId = map['receiverId'] as ObjectId;
@@ -32,7 +32,7 @@ class Transaction {
     return {
       '_id': $_id,
       'amount': amount,
-      'date': date.toIso8601String(),
+      'date': date.toString(),
       'description': description,
       'senderId': senderId,
       'receiverId': receiverId,

@@ -11,6 +11,11 @@ abstract class ProfileRepositoryImpl {
     required User user,
     required String bio,
   });
+
+  Future<User?> changeOnlineStatus({
+    required User user,
+    required bool isOnline,
+  });
 }
 
 class ProfileRepository extends ProfileRepositoryImpl {
@@ -60,6 +65,31 @@ class ProfileRepository extends ProfileRepositoryImpl {
     }
 
     final updatedUser = user.copyWith(bio: bio);
+
+    return updatedUser;
+  }
+
+  @override
+  Future<User?> changeOnlineStatus({
+    required User user,
+    required bool isOnline,
+  }) async {
+    final lastSeen = DateTime.now();
+    final result = await usersCollection.updateOne(
+      where.id(user.$_id),
+      modify.set('isOnline', isOnline).set('lastSeen', lastSeen),
+    );
+
+    print('📍 Write result: $result');
+
+    if (result.writeError != null) {
+      return null;
+    }
+
+    final updatedUser = user.copyWith(
+      isOnline: isOnline,
+      lastSeen: lastSeen,
+    );
 
     return updatedUser;
   }

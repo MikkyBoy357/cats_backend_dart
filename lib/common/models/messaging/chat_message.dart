@@ -22,15 +22,13 @@ class ChatMessage {
   });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
-    final msgTimestamp = json['msgTimestamp'];
-    // print type of msgTimestamp
-    print(msgTimestamp.runtimeType);
-    print('OMO => ${json['msgTimestamp']}');
     return ChatMessage(
       id: json['_id'] as ObjectId,
       chatId: json['chatId'] as ObjectId,
       senderId: json['senderId'] as ObjectId,
-      msgTimestamp: DateTime.parse(json['msgTimestamp'].toString()),
+      msgTimestamp: json['msgTimestamp'] != null
+          ? DateTime.parse(json['msgTimestamp'].toString())
+          : DateTime.now(),
       message: json['message'] as String,
       messageType: MessageType.values.firstWhere(
         (e) => e.name == json['messageType'],

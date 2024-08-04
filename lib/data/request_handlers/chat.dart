@@ -179,7 +179,7 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
       }
     }
 
-    if (downloadUrl == null) {
+    if (uploadError != null) {
       return Response.json(
         body: {
           'message': 'Failed to upload image',

@@ -1,5 +1,7 @@
 import 'package:cats_backend/common/common.dart';
+import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/helpers/authentication_validation.dart';
+import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:dart_frog_web_socket/dart_frog_web_socket.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -15,6 +17,10 @@ Future<Response> onRequest(RequestContext context, String id) async {
   final token = headers['authorization'] ?? queryParameters['token'];
 
   final authValidationResponse = await getAuthResult(token: token);
+
+  final profileRepository = ProfileRepository(
+    database: mongoDbService.database,
+  );
 
   if (!authValidationResponse.isValid) {
     return Response.json(
@@ -32,6 +38,11 @@ Future<Response> onRequest(RequestContext context, String id) async {
 
   final handler = webSocketHandler((channel, protocol) {
     print('WebSocket connection established. Protocol: $protocol');
+
+    profileRepository.changeOnlineStatus(
+      user: saint,
+      isOnline: true,
+    );
 
     final headers = context.request.headers;
     print('Headers: $headers');
@@ -70,6 +81,10 @@ Future<Response> onRequest(RequestContext context, String id) async {
       },
       onError: (dynamic error) {
         printRed('Client: $error');
+        profileRepository.changeOnlineStatus(
+          user: saint,
+          isOnline: false,
+        );
         channel.sink.add({
           'eventType': ChatEvent.connect,
           'message': 'User @${saint.username} disconnected',
@@ -78,6 +93,10 @@ Future<Response> onRequest(RequestContext context, String id) async {
       },
       onDone: () {
         printRed('User @${saint.username} disconnected');
+        profileRepository.changeOnlineStatus(
+          user: saint,
+          isOnline: false,
+        );
         channel.sink.add({
           'eventType': ChatEvent.connect,
           'message': 'User @${saint.username} disconnected',

@@ -10,6 +10,8 @@ class User {
   String username;
   String? avatarUrl;
   String? bio;
+  bool isOnline;
+  DateTime lastSeen;
   int? followingsCount;
   int? followersCount;
 
@@ -22,6 +24,8 @@ class User {
     required this.username,
     this.avatarUrl,
     this.bio,
+    this.isOnline = false,
+    required this.lastSeen,
     required this.followingsCount,
     required this.followersCount,
   });
@@ -35,6 +39,10 @@ class User {
         username = map['username'] as String? ?? '',
         avatarUrl = map['avatarUrl'] as String?,
         bio = map['bio'] as String?,
+        isOnline = map['isOnline'] as bool? ?? false,
+        lastSeen = map['lastSeen'] != null
+            ? DateTime.parse(map['lastSeen'].toString())
+            : DateTime.now(),
         followingsCount = map['followingsCount'] as int?,
         followersCount = map['followersCount'] as int?;
 
@@ -48,6 +56,8 @@ class User {
       'username': username,
       'avatarUrl': avatarUrl,
       'bio': bio,
+      'isOnline': isOnline,
+      'lastSeen': lastSeen.toString(),
       'followingsCount': followingsCount,
       'followersCount': followersCount,
     };
@@ -62,6 +72,8 @@ class User {
     String? username,
     String? avatarUrl,
     String? bio,
+    bool? isOnline,
+    DateTime? lastSeen,
     int? followingsCount,
     int? followersCount,
   }) {
@@ -74,6 +86,8 @@ class User {
       username: username ?? this.username,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       bio: bio ?? this.bio,
+      isOnline: isOnline ?? this.isOnline,
+      lastSeen: lastSeen ?? this.lastSeen,
       followingsCount: followingsCount ?? this.followingsCount,
       followersCount: followersCount ?? this.followersCount,
     );
