@@ -1,3 +1,5 @@
+import 'package:cats_backend/common/common.dart';
+import 'package:cats_backend/common/models/messaging/read_receipt.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 enum MessageType { text, media, event }
@@ -10,6 +12,7 @@ class ChatMessage {
   final String message;
   final MessageType messageType;
   final String? mediaUrl;
+  final ReadReceipt readReceipt;
 
   ChatMessage({
     required this.id,
@@ -19,6 +22,7 @@ class ChatMessage {
     required this.message,
     this.messageType = MessageType.text,
     this.mediaUrl,
+    required this.readReceipt,
   });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
@@ -34,6 +38,16 @@ class ChatMessage {
         (e) => e.name == json['messageType'],
       ),
       mediaUrl: json['mediaUrl'] as String?,
+      readReceipt: () {
+        /// Some messages were sent before the read receipt feature was added
+        /// So we need to check if the read receipt is null and return an empty
+        final res = json['readReceipt'];
+        return res == null
+            ? ReadReceipt.empty()
+            : ReadReceipt.fromJson(
+                res as Map<String, dynamic>,
+              );
+      }(),
     );
   }
 
@@ -46,6 +60,7 @@ class ChatMessage {
       'message': message,
       'messageType': messageType.name,
       'mediaUrl': mediaUrl,
+      'readReceipt': readReceipt.toJson(),
     };
   }
 }
