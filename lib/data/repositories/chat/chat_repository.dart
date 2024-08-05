@@ -3,11 +3,14 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 abstract class ChatRepositoryImpl {
   Future<List<Chat>> getAllSaintChats({required ObjectId saintId});
+
   Future<Chat?> getSingleSaintChat({
     required ObjectId saintId,
     required List<ObjectId> participants,
   });
+
   Future<Chat?> getChatById({required ObjectId chatId});
+
   Future<Chat?> createChat({
     required ObjectId saintId,
     required List<ObjectId> participants,
@@ -15,7 +18,11 @@ abstract class ChatRepositoryImpl {
 
   // Get Chat with messages
   Future<List<ChatMessage>> getChatMessagesByChatId({required ObjectId chatId});
+
   Future<Chat?> getChatByIdWithMessages({required ObjectId chatId});
+
+  // Get ChatMessages
+  Future<ChatMessage?> getChatMessageById({required ObjectId messageId});
 
   // Send
   Future<ChatMessage?> sendMessageByChatId({
@@ -25,19 +32,26 @@ abstract class ChatRepositoryImpl {
     String? mediaUrl,
   });
 
-  // Future<List<Chat>> getAllChats({
-  //   required ObjectId userId,
-  // });
-  // Future<Chat> getChatById(ObjectId chatId);
-  // Future<Chat> createChat({
-  //   required ObjectId userId,
-  //   required ObjectId receiverId,
-  // });
-  // Future<ChatMessage> sendMessage({
-  //   required ObjectId chatId,
-  //   required ObjectId senderId,
-  //   required String message,
-  // });
+  // Receipt
+  Future<bool?> updateMessageReadReceipt({
+    required ObjectId chatId,
+    required User user,
+    required ReceiptPayload receiptPayload,
+  });
+
+// Future<List<Chat>> getAllChats({
+//   required ObjectId userId,
+// });
+// Future<Chat> getChatById(ObjectId chatId);
+// Future<Chat> createChat({
+//   required ObjectId userId,
+//   required ObjectId receiverId,
+// });
+// Future<ChatMessage> sendMessage({
+//   required ObjectId chatId,
+//   required ObjectId senderId,
+//   required String message,
+// });
 }
 
 class ChatRepository extends ChatRepositoryImpl {
@@ -48,6 +62,7 @@ class ChatRepository extends ChatRepositoryImpl {
   }) : _database = database;
 
   DbCollection get chatsCollection => _database.chatsCollection;
+
   DbCollection get chatMessagesCollection => _database.chatMessagesCollection;
 
   @override
@@ -153,6 +168,17 @@ class ChatRepository extends ChatRepositoryImpl {
   }
 
   @override
+  Future<ChatMessage?> getChatMessageById({required ObjectId messageId}) async {
+    final result = await chatMessagesCollection.findOne({'_id': messageId});
+    if (result == null) {
+      return null;
+    }
+
+    final chatMessage = ChatMessage.fromJson(result);
+    return chatMessage;
+  }
+
+  @override
   Future<ChatMessage?> sendMessageByChatId({
     required ObjectId chatId,
     required ObjectId senderId,
@@ -167,11 +193,73 @@ class ChatRepository extends ChatRepositoryImpl {
       msgTimestamp: DateTime.now(),
       messageType: mediaUrl == null ? MessageType.text : MessageType.media,
       mediaUrl: mediaUrl,
+      readReceipt: ReadReceipt.empty(),
     );
 
     final chatMessageMap = chatMessage.toJson();
     await chatMessagesCollection.insert(chatMessageMap);
 
     return chatMessage;
+  }
+
+  @override
+  Future<bool?> updateMessageReadReceipt({
+    required ObjectId chatId,
+    required User user,
+    required ReceiptPayload receiptPayload,
+  }) async {
+    final messageId = ObjectId.tryParse(receiptPayload.messageId);
+    if (messageId == null) {
+      printRed('Error: Cannot parse messageId');
+      return null;
+    }
+
+    final chatMessage = await getChatMessageById(messageId: messageId);
+
+    if (chatMessage == null) {
+      printRed('Error: ChatMessage with id $messageId not found');
+      return null;
+    }
+
+    return switch (receiptPayload.status) {
+      ReadStatus.delivered => await () async {
+          if (chatMessage.readReceipt.deliveredTo.contains(user.$_id)) {
+            printYellow('Warning: Message already delivered to: ${user.$_id}');
+            return null;
+          }
+
+          final res = await chatMessagesCollection.updateOne(
+            where.id(chatMessage.id),
+            modify.push('readReceipt.deliveredTo', user.$_id),
+          );
+
+          if (res.writeError != null) {
+            printRed('Error: ${res.writeError}');
+            return null;
+          }
+
+          printGreen('MessageId ${chatMessage.id} delivered to: ${user.$_id}');
+          return true;
+        }(),
+      ReadStatus.read => await () async {
+          if (chatMessage.readReceipt.readBy.contains(user.$_id)) {
+            printYellow('Warning: Message already read by user ${user.$_id}');
+            return null;
+          }
+
+          final res = await chatMessagesCollection.updateOne(
+            where.id(chatMessage.id),
+            modify.push('readReceipt.readBy', user.$_id),
+          );
+
+          if (res.writeError != null) {
+            printRed('Error: ${res.writeError}');
+            return null;
+          }
+
+          printGreen('MessageId ${chatMessage.id} read by: ${user.$_id}');
+          return true;
+        }(),
+    };
   }
 }

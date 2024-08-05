@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-enum WsEventType { message, typing, read, connect }
+enum WsEventType { message, typing, receipt, connect }
 
 class WsEventMessage {
   final String? id;
   final WsEventType eventType;
-  final String? message;
+  final dynamic message;
   final String? senderId;
 
   WsEventMessage({
@@ -21,7 +21,7 @@ class WsEventMessage {
       eventType: WsEventType.values.firstWhere((e) {
         return e.name.toLowerCase() == json['eventType'];
       }),
-      message: json['message'] as String?,
+      message: json['message'],
       senderId: json['senderId'] as String?,
     );
   }
@@ -38,7 +38,7 @@ class WsEventMessage {
   WsEventMessage copyWith({
     String? id,
     WsEventType? eventType,
-    String? message,
+    dynamic message,
     String? senderId,
   }) {
     return WsEventMessage(

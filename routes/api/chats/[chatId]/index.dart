@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cats_backend/data/repositories/repositories.dart';
 import 'package:cats_backend/data/request_handlers/request_handlers.dart';
 import 'package:cats_backend/helpers/helpers.dart';
@@ -18,6 +20,11 @@ Future<Response> onRequest(RequestContext context, String id) async {
 
   final saint = authValidationResponse.user!;
 
+  final body = await context.request.body();
+  print('LeBody ==> $body');
+  final bodyJson = jsonDecode(body) as Map<String, dynamic>;
+  print('LeJSON ==> $bodyJson');
+
   final chatId = ObjectId.tryParse(id);
   if (chatId == null) {
     return Response.json(body: 'Error: Cannot Parse Invalid Chat ID.');
@@ -26,7 +33,6 @@ Future<Response> onRequest(RequestContext context, String id) async {
   final chatRepository = ChatRepository(database: mongoDbService.database);
   final request = context.request;
   final method = request.method;
-  final queryParams = request.uri.queryParameters;
   final handler = ChatRequestHandlerImpl(chatRepository: chatRepository);
 
   final currentChat = await chatRepository.getChatById(chatId: chatId);
@@ -64,6 +70,4 @@ Future<Response> onRequest(RequestContext context, String id) async {
         ),
       ),
   };
-
-  return Response.json(body: 'Chats Endpoint not yet implemented.');
 }

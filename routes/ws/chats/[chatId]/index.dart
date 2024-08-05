@@ -8,7 +8,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 final clients = <WebSocketChannel>[];
 
-enum ChatEvent { message, typing, read, connect, disconnect }
+enum ChatEvent { message, typing, receipt, connect, disconnect }
 
 Future<Response> onRequest(RequestContext context, String id) async {
   print('======= chatId =======> $id');
@@ -19,6 +19,10 @@ Future<Response> onRequest(RequestContext context, String id) async {
   final authValidationResponse = await getAuthResult(token: token);
 
   final profileRepository = ProfileRepository(
+    database: mongoDbService.database,
+  );
+
+  final chatRepository = ChatRepository(
     database: mongoDbService.database,
   );
 
@@ -77,6 +81,30 @@ Future<Response> onRequest(RequestContext context, String id) async {
           if (client != channel) {
             client.sink.add(wsEventMessage.toString());
           }
+        }
+
+        if (wsEventMessage.eventType == WsEventType.receipt) {
+          if (wsEventMessage.message == null) {
+            printRed('Error: Receipt message is null');
+            return;
+          }
+
+          if (wsEventMessage.message is! Map<String, dynamic>) {
+            printYellow('Error: Receipt message is not a Map<String, dynamic>');
+            return;
+          }
+
+          final myJson = wsEventMessage.message as Map<String, dynamic>;
+          final receiptPayload = ReceiptPayload.fromJson(myJson);
+
+          printGreen('Receipt: ${receiptPayload.toJson()}');
+
+          // Implement message receipt logic here
+          chatRepository.updateMessageReadReceipt(
+            chatId: chatId,
+            user: saint,
+            receiptPayload: receiptPayload,
+          );
         }
       },
       onError: (dynamic error) {
