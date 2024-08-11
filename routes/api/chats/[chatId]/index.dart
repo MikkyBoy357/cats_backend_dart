@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cats_backend/data/repositories/repositories.dart';
 import 'package:cats_backend/data/request_handlers/request_handlers.dart';
 import 'package:cats_backend/helpers/helpers.dart';
@@ -19,11 +17,6 @@ Future<Response> onRequest(RequestContext context, String id) async {
   }
 
   final saint = authValidationResponse.user!;
-
-  final body = await context.request.body();
-  print('LeBody ==> $body');
-  final bodyJson = jsonDecode(body) as Map<String, dynamic>;
-  print('LeJSON ==> $bodyJson');
 
   final chatId = ObjectId.tryParse(id);
   if (chatId == null) {
