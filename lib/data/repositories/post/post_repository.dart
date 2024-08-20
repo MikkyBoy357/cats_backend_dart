@@ -37,6 +37,8 @@ class PostRepository extends PostRepositoryImpl {
     required ObjectId userId,
     required String caption,
     List<String>? mediaUrls,
+    List<String>? hashTags,
+    List<String>? userTags,
   }) async {
     final post = Post(
       id: ObjectId(),
@@ -44,6 +46,8 @@ class PostRepository extends PostRepositoryImpl {
       caption: caption,
       mediaUrls: mediaUrls ?? [],
       postTimestamp: DateTime.now(),
+      hashtags: hashTags ?? [],
+      userTags: userTags ?? [],
     );
 
     await _postsCollection.insert(post.toJson());
