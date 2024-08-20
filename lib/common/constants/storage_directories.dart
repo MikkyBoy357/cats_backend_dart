@@ -8,4 +8,8 @@ class StorageDirectories {
   static String avatarById({required String userId}) {
     return 'avatars/$userId';
   }
+
+  static String postsByUserId({required String userId}) {
+    return 'posts/$userId';
+  }
 }
