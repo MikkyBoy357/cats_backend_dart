@@ -5,6 +5,7 @@ List<String> extractHashtags(String caption) {
       .map((match) => match.group(0)!.substring(1))
       .toList();
 }
+
 List<String> extractUserTags(String caption) {
   final userTagRegExp = RegExp(r'\B@\w+');
   return userTagRegExp
