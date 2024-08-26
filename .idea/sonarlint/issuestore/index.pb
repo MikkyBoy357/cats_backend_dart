@@ -96,3 +96,5 @@ a
 ,routes/api/users/[username]/posts/index.dart,3\e\3e78695d17aba578c42f7967fd7f7ace49a0ebc7
 V
 &routes/api/users/[username]/index.dart,8\3\830533f03a8ffb4d2bf87913af10b0b9d36fd766
+G
+.vscode/extensions.json,7\c\7cf89ab29dcfeb05af08dbd113b027290e879286
