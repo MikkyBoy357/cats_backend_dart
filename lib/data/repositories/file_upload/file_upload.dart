@@ -6,6 +6,8 @@ import 'package:dart_frog/dart_frog.dart';
 
 typedef UrlOrError = ({String? url, String? error});
 
+
+
 class FileUpload {
   static Future<UploadedFile?> getFirstFileFromFormData(
     FormData formData,

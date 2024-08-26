@@ -6,7 +6,6 @@ class Post {
   final String caption;
   final List<String> mediaUrls;
   final DateTime postTimestamp;
-  final List<String> tags;
   final List<String> hashtags;
   final List<String> userTags;
 
@@ -16,7 +15,6 @@ class Post {
     required this.caption,
     this.mediaUrls = const [],
     required this.postTimestamp,
-    this.tags = const [],
     this.hashtags = const [],
     this.userTags = const [],
   });
@@ -32,9 +30,6 @@ class Post {
       postTimestamp: json['postTimestamp'] != null
           ? DateTime.parse(json['postTimestamp'].toString())
           : DateTime.now(),
-      tags: (json['tags'] == null)
-          ? <String>[]
-          : (json['tags'] as List).map((e) => e as String).toList(),
       hashtags: (json['hashtags'] == null)
           ? <String>[]
           : (json['hashtags'] as List).map((e) => e as String).toList(),
@@ -51,7 +46,6 @@ class Post {
       'caption': caption,
       'mediaUrls': mediaUrls,
       'postTimestamp': postTimestamp.toString(),
-      'tags': tags,
       'hashtags': hashtags,
       'userTags': userTags,
     };
@@ -73,7 +67,6 @@ class Post {
       caption: caption ?? this.caption,
       mediaUrls: mediaUrls ?? this.mediaUrls,
       postTimestamp: postTimestamp ?? this.postTimestamp,
-      tags: tags ?? this.tags,
       hashtags: hashtags ?? this.hashtags,
       userTags: userTags ?? this.userTags,
     );

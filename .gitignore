@@ -17,3 +17,10 @@ coverage/
 
 # Firebase related files
 firebase_options.json
+
+#Android Studio related
+.idea/
+
+
+#Vscode related
+.vscode/
