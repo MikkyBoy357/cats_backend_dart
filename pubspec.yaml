@@ -14,8 +14,6 @@ dependencies:
   firebase_dart: ^1.1.4
   jaguar_jwt: ^3.0.0
   mongo_dart: ^0.10.3
-  shelf_multipart: ^1.0.0
-  shelf:
 
 dev_dependencies:
   mocktail: ^1.0.0

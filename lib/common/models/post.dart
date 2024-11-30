@@ -6,6 +6,8 @@ class Post {
   final String caption;
   final List<String> mediaUrls;
   final DateTime postTimestamp;
+  final List<String> hashtags;
+  final List<String> userTags;
 
   Post({
     required this.id,
@@ -13,6 +15,8 @@ class Post {
     required this.caption,
     this.mediaUrls = const [],
     required this.postTimestamp,
+    this.hashtags = const [],
+    this.userTags = const [],
   });
 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,12 @@ class Post {
       postTimestamp: json['postTimestamp'] != null
           ? DateTime.parse(json['postTimestamp'].toString())
           : DateTime.now(),
+      hashtags: (json['hashtags'] == null)
+          ? <String>[]
+          : (json['hashtags'] as List).map((e) => e as String).toList(),
+      userTags: (json['userTags'] == null)
+          ? <String>[]
+          : (json['userTags'] as List).map((e) => e as String).toList(),
     );
   }
 
@@ -36,6 +46,8 @@ class Post {
       'caption': caption,
       'mediaUrls': mediaUrls,
       'postTimestamp': postTimestamp.toString(),
+      'hashtags': hashtags,
+      'userTags': userTags,
     };
   }
 
@@ -45,6 +57,9 @@ class Post {
     String? caption,
     List<String>? mediaUrls,
     DateTime? postTimestamp,
+    List<String>? tags,
+    List<String>? hashtags,
+    List<String>? userTags,
   }) {
     return Post(
       id: id ?? this.id,
@@ -52,6 +67,8 @@ class Post {
       caption: caption ?? this.caption,
       mediaUrls: mediaUrls ?? this.mediaUrls,
       postTimestamp: postTimestamp ?? this.postTimestamp,
+      hashtags: hashtags ?? this.hashtags,
+      userTags: userTags ?? this.userTags,
     );
   }
 }

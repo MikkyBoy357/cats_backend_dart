@@ -1,4 +1,5 @@
 import 'package:cats_backend/common/common.dart';
+import 'package:cats_backend/helpers/extract_tags.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -11,9 +12,11 @@ abstract class PostRequestHandler {
     required User saint,
     required FormData formData,
   });
+
   Future<Response> handleGetPostById({
     required ObjectId postId,
   });
+
   Future<Response> handleGetPostsByUserId({
     required ObjectId userId,
   });
@@ -42,6 +45,10 @@ class PostRequestHandlerImpl implements PostRequestHandler {
         statusCode: 400,
       );
     }
+    final hashTags = extractHashtags(caption);
+    final userTags = extractUserTags(caption);
+    printGreen('===>HashTags: $hashTags');
+    printGreen('===>userTags: $userTags');
 
     /// Check if there is image in the form data
 
@@ -81,6 +88,8 @@ class PostRequestHandlerImpl implements PostRequestHandler {
       userId: saint.$_id,
       caption: caption,
       mediaUrls: mediaUrls,
+      hashTags: hashTags,
+      userTags: userTags,
     );
 
     return Response.json(
