@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
@@ -20,6 +21,45 @@ class FileUpload {
     return firstFile;
   }
 
+  static Future<List<UploadedFile>> getFilesFromFormData(
+    FormData formData,
+  ) async {
+    printYellow('Files found in the form data: ${formData.files}');
+    final keys = formData.files.keys.toList();
+    printYellow('Keys: $keys');
+    printYellow('Keys: ${formData.files['media']}');
+    final files = keys.map((key) => formData.files[key]!).toList();
+    return files;
+  }
+
+  static Future<List<UrlOrError>> uploadMultipleFilesAndReturnUrls({
+    required List<UploadedFile> uploadedFiles,
+    required String storageDir,
+    double maxSizeInMB = 1,
+    int maxFiles = 2,
+  }) async {
+    final urls = <UrlOrError>[];
+
+    if (uploadedFiles.length > maxFiles) {
+      return [
+        for (var i = 0; i < maxFiles; i++)
+          (url: null, error: 'Max files exceeded\nMax files: $maxFiles'),
+      ];
+    }
+
+    printGreen('Uploading ${uploadedFiles.length} files...');
+    for (final uploadedFile in uploadedFiles) {
+      final urlOrError = await uploadFileAndReturnUrl(
+        uploadedFile: uploadedFile,
+        storageDir: storageDir,
+        maxSizeInMB: maxSizeInMB,
+      );
+      urls.add(urlOrError);
+    }
+
+    return urls;
+  }
+
   static Future<UrlOrError> uploadFileAndReturnUrl({
     required UploadedFile uploadedFile,
     required String storageDir,
@@ -32,7 +72,9 @@ class FileUpload {
     final maxBytes = maxSizeInMB * 1024 * 1024;
     final fileSize = data.lengthInBytes;
     if (fileSize >= maxBytes) {
-      print('====> ⚠️ File ($fileSize B) exceeds max size ($maxBytes B) <====');
+      printRed(
+        '====> ⚠️ File ($fileSize B) exceeds max size ($maxBytes B) <====',
+      );
       return (
         url: null,
         error: 'File exceeds max size\n'
@@ -53,14 +95,14 @@ class FileUpload {
     // Wait for upload to complete
     // and return the download URL
     final snapshot = await uploadTask.whenComplete(() {
-      print('====> Upload complete (${ref.fullPath})');
+      printGreen('====> Upload complete (${ref.fullPath})');
     });
 
     try {
       final downloadUrl = await snapshot.ref.getDownloadURL();
       return (url: downloadUrl, error: null);
     } catch (e) {
-      print('====> Error getting download URL: $e <====');
+      printRed('====> Error getting download URL: $e <====');
     }
 
     return (url: null, error: 'Error getting download URL');
