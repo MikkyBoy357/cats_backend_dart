@@ -41,3 +41,50 @@ extension DbCollectionX on DbCollection {
     return result;
   }
 }
+
+class PopulateField {
+  final String fieldName; // The field in the document to be populated
+  final String
+      collectionName; // The name of the collection to fetch the data from
+
+  PopulateField({
+    required this.fieldName,
+    required this.collectionName,
+  });
+}
+
+class DbCollectionExt {
+  final DbCollection collection;
+  DbCollectionExt(this.collection);
+
+  /// Populate multiple fields from their respective collections using `PopulateField` class.
+  Future<List<Map<String, dynamic>>> findAndPopulate(
+    List<PopulateField> fieldsToPopulate, // List of fields to populate
+  ) async {
+    final docs = await collection.find().toList();
+
+    // For each document, populate the fields as specified in `fieldsToPopulate`
+    for (final doc in docs) {
+      for (final populateField in fieldsToPopulate) {
+        final foreignField = populateField.fieldName;
+        final collectionName = populateField.collectionName;
+
+        if (doc.containsKey(foreignField)) {
+          final foreignId = doc[foreignField] as ObjectId;
+
+          // Query the foreign collection
+          final foreignCollection = collection.db.collection(collectionName);
+          final foreignDoc =
+              await foreignCollection.findOne(where.id(foreignId));
+
+          if (foreignDoc != null) {
+            // Replace the foreignId with the populated document
+            doc[foreignField] = foreignDoc;
+          }
+        }
+      }
+    }
+
+    return docs;
+  }
+}
