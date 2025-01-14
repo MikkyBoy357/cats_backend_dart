@@ -5,17 +5,23 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 abstract class EventRequestHandler {
   Future<Response> handleGetAllEvents();
-  Future<Response> handleCreateEvent({required Event event});
+  Future<Response> handleCreateEvent({
+    required EventRequest eventRequest,
+    required User saint,
+  });
   Future<Response> handleGetEventById({required ObjectId eventId});
   Future<Response> handleDeleteEvent({required ObjectId eventId});
 }
 
 class EventRequestHandlerImpl implements EventRequestHandler {
   final EventRepository _eventRepository;
+  final TicketTypeRepository _ticketTypeRepository;
 
   const EventRequestHandlerImpl({
     required EventRepository eventRepository,
-  }) : _eventRepository = eventRepository;
+    required TicketTypeRepository ticketTypeRepository,
+  })  : _eventRepository = eventRepository,
+        _ticketTypeRepository = ticketTypeRepository;
 
   @override
   Future<Response> handleGetAllEvents() async {
@@ -29,13 +35,36 @@ class EventRequestHandlerImpl implements EventRequestHandler {
   }
 
   @override
-  Future<Response> handleCreateEvent({required Event event}) async {
+  Future<Response> handleCreateEvent({
+    required EventRequest eventRequest,
+    required User saint,
+  }) async {
     print('===> POST <==> Event:');
-    final createdEvent = await _eventRepository.createEvent(event: event);
+    final ticketType = await _ticketTypeRepository.getTicketTypeById(
+      ticketTypeId: eventRequest.ticketType,
+    );
+
+    if (ticketType == null) {
+      return Response.json(
+        body: 'Ticket Type with ID `${eventRequest.ticketType}` not found',
+        statusCode: 404,
+      );
+    }
+
+    final createdEvent = await _eventRepository.createEvent(
+      eventRequest: eventRequest,
+    );
+
+    if (createdEvent == null) {
+      return Response.json(
+        body: 'Failed to create event',
+        statusCode: 400,
+      );
+    }
 
     return Response.json(
       body: createdEvent,
-      statusCode: createdEvent != null ? 201 : 400,
+      statusCode: 201,
     );
   }
 

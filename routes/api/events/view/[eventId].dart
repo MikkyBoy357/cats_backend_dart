@@ -13,9 +13,15 @@ Future<Response> onRequest(RequestContext context, String id) async {
   }
 
   final eventRepository = EventRepository(database: mongoDbService.database);
+  final ticketTypeRepository = TicketTypeRepository(
+    database: mongoDbService.database,
+  );
   final request = context.request;
   final method = request.method;
-  final handler = EventRequestHandlerImpl(eventRepository: eventRepository);
+  final handler = EventRequestHandlerImpl(
+    eventRepository: eventRepository,
+    ticketTypeRepository: ticketTypeRepository,
+  );
 
   return switch (method) {
     HttpMethod.get => await handler.handleGetEventById(

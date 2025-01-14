@@ -22,9 +22,7 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
 
   @override
   Future<List<TicketType>> getTicketTypes() async {
-    final ticketTypesCollectionExt = DbCollectionExt(_ticketTypesCollection);
-
-    final res = await ticketTypesCollectionExt.findAndPopulate(
+    final res = await _ticketTypesCollection.findAndPopulateRikky(
       [
         // PopulateField(fieldName: 'eventId', collectionName: 'events'),
       ],
@@ -40,9 +38,7 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
   Future<List<TicketType>> getTicketTypesByEventId({
     required ObjectId eventId,
   }) async {
-    final ticketTypesCollectionExt = DbCollectionExt(_ticketTypesCollection);
-
-    final res = await ticketTypesCollectionExt.findAndPopulate(
+    final res = await _ticketTypesCollection.findAndPopulateRikky(
       [
         PopulateField(fieldName: 'eventId', collectionName: 'events'),
       ],

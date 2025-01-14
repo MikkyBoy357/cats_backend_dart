@@ -5,10 +5,15 @@ import 'package:dart_frog/dart_frog.dart';
 Future<Response> onRequest(RequestContext context) async {
   final request = context.request;
   final method = request.method;
-  final queryParams = request.uri.queryParameters;
 
   final eventRepository = EventRepository(database: mongoDbService.database);
-  final handler = EventRequestHandlerImpl(eventRepository: eventRepository);
+  final ticketTypeRepository = TicketTypeRepository(
+    database: mongoDbService.database,
+  );
+  final handler = EventRequestHandlerImpl(
+    eventRepository: eventRepository,
+    ticketTypeRepository: ticketTypeRepository,
+  );
 
   return switch (method) {
     HttpMethod.get => handler.handleGetAllEvents(),

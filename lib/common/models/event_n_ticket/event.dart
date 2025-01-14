@@ -10,6 +10,8 @@ class Event {
   DateTime date;
   List<String> categories;
   TicketType ticketType;
+  User createdBy;
+  DateTime createdAt;
 
   Event({
     required this.id,
@@ -20,6 +22,8 @@ class Event {
     required this.date,
     required this.categories,
     required this.ticketType,
+    required this.createdBy,
+    required this.createdAt,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -36,6 +40,12 @@ class Event {
       ticketType: TicketType.fromJson(
         json['ticketType'] as Map<String, dynamic>,
       ),
+      createdBy: User.fromJson(
+        json['createdBy'] as Map<String, dynamic>,
+      ),
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'].toString())
+          : DateTime.now(),
     );
   }
 
@@ -49,6 +59,82 @@ class Event {
       'date': date.toString(),
       'categories': categories.map((e) => e).toList(),
       'ticketType': ticketType.toJson(),
+      'createdBy': createdBy.toJson(),
+      'createdAt': createdAt.toString(),
+    };
+  }
+
+  EventRequest toEventRequest() {
+    return EventRequest(
+      name: name,
+      owner: owner,
+      description: description,
+      location: location,
+      date: date,
+      categories: categories,
+      ticketType: ticketType.id,
+      createdBy: createdBy.$_id,
+      createdAt: createdAt,
+    );
+  }
+}
+
+class EventRequest {
+  final String name;
+  final String owner;
+  final String description;
+  final String location;
+  final DateTime date;
+  final List<String> categories;
+  final ObjectId ticketType;
+  final ObjectId createdBy;
+  final DateTime createdAt;
+
+  EventRequest({
+    required this.name,
+    required this.owner,
+    required this.description,
+    required this.location,
+    required this.date,
+    required this.categories,
+    required this.ticketType,
+    required this.createdBy,
+    required this.createdAt,
+  });
+
+  factory EventRequest.fromJson(Map<String, dynamic> json) {
+    return EventRequest(
+      name: json['name'] as String,
+      owner: json['owner'] as String,
+      description: json['description'] as String,
+      location: json['location'] as String,
+      date: json['date'] != null
+          ? DateTime.parse(json['date'].toString())
+          : DateTime.now(),
+      categories: (json['categories'] as List).map((e) => e as String).toList(),
+      ticketType: ObjectId.fromHexString(
+        json['ticketType'] as String,
+      ),
+      createdBy: ObjectId.fromHexString(
+        json['createdBy'] as String,
+      ),
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'].toString())
+          : DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'owner': owner,
+      'description': description,
+      'location': location,
+      'date': date.toString(),
+      'categories': categories,
+      'ticketType': ticketType,
+      'createdBy': createdBy,
+      'createdAt': createdAt.toString(),
     };
   }
 }

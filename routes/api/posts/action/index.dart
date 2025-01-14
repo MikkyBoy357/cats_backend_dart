@@ -31,7 +31,7 @@ Future<Response> onRequest(RequestContext context) async {
 
         // content type: multipart/form-data
         printYellow('NEW POST: ${files.length} FILES');
-        printYellow('FILES lol: ${formData.toString()}');
+        printYellow('FILES lol: $formData');
 
         return handler.handleCreatePost(
           saint: saint,

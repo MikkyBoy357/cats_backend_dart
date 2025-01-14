@@ -17,9 +17,16 @@ Future<Response> onRequest(RequestContext context) async {
   final saint = authValidationResponse.user!;
 
   final eventRepository = EventRepository(database: mongoDbService.database);
+  final ticketTypeRepository = TicketTypeRepository(
+    database: mongoDbService.database,
+  );
+
   final request = context.request;
   final method = request.method;
-  final handler = EventRequestHandlerImpl(eventRepository: eventRepository);
+  final handler = EventRequestHandlerImpl(
+    eventRepository: eventRepository,
+    ticketTypeRepository: ticketTypeRepository,
+  );
 
   return switch (method) {
     HttpMethod.post => () async {
@@ -27,7 +34,18 @@ Future<Response> onRequest(RequestContext context) async {
         if (body == null) {
           return Response.json(body: 'Invalid JSON body');
         }
-        return Future.value(Response.json(body: body));
+
+        body['createdBy'] = saint.$_id.oid;
+
+        final eventRequest = EventRequest.fromJson(body);
+        printGreen('TicketType: ${eventRequest.ticketType}');
+
+        print('OMO: ${eventRequest.toJson()}');
+
+        return handler.handleCreateEvent(
+          eventRequest: eventRequest,
+          saint: saint,
+        );
       }(),
     _ => Future.value(Response.json(body: 'Invalid request method')),
   };

@@ -43,9 +43,10 @@ extension DbCollectionX on DbCollection {
 }
 
 class PopulateField {
-  final String fieldName; // The field in the document to be populated
-  final String
-      collectionName; // The name of the collection to fetch the data from
+  // The field in the document to be populated
+  final String fieldName;
+  // The name of the collection to fetch the data from
+  final String collectionName;
 
   PopulateField({
     required this.fieldName,
@@ -53,18 +54,14 @@ class PopulateField {
   });
 }
 
-class DbCollectionExt {
-  final DbCollection collection;
-  DbCollectionExt(this.collection);
+extension DbCollectionExtension on DbCollection {
+  Future<Map<String, dynamic>?> findOneAndPopulateRikky(
+    dynamic selector, {
+    List<PopulateField> fieldsToPopulate = const [],
+  }) async {
+    final doc = await findOne(selector);
 
-  /// Populate multiple fields from their respective collections using `PopulateField` class.
-  Future<List<Map<String, dynamic>>> findAndPopulate(
-    List<PopulateField> fieldsToPopulate, // List of fields to populate
-  ) async {
-    final docs = await collection.find().toList();
-
-    // For each document, populate the fields as specified in `fieldsToPopulate`
-    for (final doc in docs) {
+    if (doc != null) {
       for (final populateField in fieldsToPopulate) {
         final foreignField = populateField.fieldName;
         final collectionName = populateField.collectionName;
@@ -73,7 +70,7 @@ class DbCollectionExt {
           final foreignId = doc[foreignField] as ObjectId;
 
           // Query the foreign collection
-          final foreignCollection = collection.db.collection(collectionName);
+          final foreignCollection = db.collection(collectionName);
           final foreignDoc =
               await foreignCollection.findOne(where.id(foreignId));
 
@@ -85,6 +82,83 @@ class DbCollectionExt {
       }
     }
 
+    return doc;
+  }
+
+  /// Populate multiple fields from their respective
+  /// collections using `PopulateField` class.
+  Future<List<Map<String, dynamic>>> findAndPopulateRikky(
+    List<PopulateField> fieldsToPopulate, // List of fields to populate
+  ) async {
+    final docs = await find().toList();
+
+    // For each document, populate the fields as specified in `fieldsToPopulate`
+    for (final doc in docs) {
+      for (final populateField in fieldsToPopulate) {
+        final foreignField = populateField.fieldName;
+        final collectionName = populateField.collectionName;
+
+        if (doc.containsKey(foreignField)) {
+          final foreignId = doc[foreignField] as ObjectId;
+
+          // Query the foreign collection
+          final foreignCollection = db.collection(collectionName);
+          final foreignDoc =
+              await foreignCollection.findOne(where.id(foreignId));
+
+          if (foreignDoc != null) {
+            // Replace the foreignId with the populated document
+            doc[foreignField] = foreignDoc;
+          }
+        }
+      }
+    }
+
+    return docs;
+  }
+
+  /// This is another approach where you can pass in the
+  /// Query docs, then populate the fields as specified in `fieldsToPopulate`
+  /// Populate fields for documents retrieved from the collection.
+  /// It supports both multiple documents (find) and a single document (findOne)
+  Future<List<Map<String, dynamic>>> findAndPopulateLol(
+    List<PopulateField> fieldsToPopulate, // List of fields to populate
+    Future<dynamic>
+        queryDocs, // Query that returns either a single doc or a list of docs
+  ) async {
+    final result = await queryDocs;
+
+    // Normalize result to a list, even if it's a single document
+    final docs = result is List
+        ? result
+            .cast<Map<String, dynamic>>() // Cast to List<Map<String, dynamic>>
+        : <Map<String, dynamic>>[
+            result as Map<String, dynamic>,
+          ]; // Wrap single document in a list
+
+    // Populate the fields for each document
+    for (final doc in docs) {
+      for (final populateField in fieldsToPopulate) {
+        final foreignField = populateField.fieldName;
+        final collectionName = populateField.collectionName;
+
+        if (doc.containsKey(foreignField)) {
+          final foreignId = doc[foreignField] as ObjectId;
+
+          // Query the foreign collection
+          final foreignCollection = db.collection(collectionName);
+          final foreignDoc =
+              await foreignCollection.findOne(where.id(foreignId));
+
+          if (foreignDoc != null) {
+            // Replace the foreignId with the populated document
+            doc[foreignField] = foreignDoc;
+          }
+        }
+      }
+    }
+
+    // Always return a list of documents
     return docs;
   }
 }
