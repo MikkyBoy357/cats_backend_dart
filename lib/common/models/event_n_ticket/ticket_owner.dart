@@ -21,7 +21,7 @@ class TicketOwner {
     return {
       'name': name,
       'email': email,
-      'phone': phone,
+      if (phone != null) 'phone': phone,
     };
   }
 }

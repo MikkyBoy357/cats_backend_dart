@@ -5,12 +5,14 @@ class TicketType {
   double price;
   String name;
   String description;
+  String codePrefix;
 
   TicketType({
     required this.id,
     required this.price,
     required this.name,
     required this.description,
+    this.codePrefix = 'STR',
   });
 
   factory TicketType.fromJson(Map<String, dynamic> json) {
@@ -19,6 +21,8 @@ class TicketType {
       price: json['price'] as double,
       name: json['name'] as String,
       description: json['description'] as String,
+      codePrefix:
+          json['codePrefix'] == null ? 'STR' : json['codePrefix'] as String,
     );
   }
 
@@ -28,6 +32,7 @@ class TicketType {
       'price': price,
       'name': name,
       'description': description,
+      'codePrefix': codePrefix,
     };
   }
 
@@ -38,6 +43,7 @@ class TicketType {
       price: 100,
       name: 'VIP',
       description: 'VIP ticket',
+      codePrefix: 'VIP',
     );
   }
 }
@@ -48,11 +54,13 @@ class TicketTypeRequest {
   double price;
   String name;
   String description;
+  String codePrefix;
 
   TicketTypeRequest({
     required this.price,
     required this.name,
     required this.description,
+    this.codePrefix = 'STR',
   });
 
   factory TicketTypeRequest.fromJson(Map<String, dynamic> json) {
@@ -60,6 +68,7 @@ class TicketTypeRequest {
       price: json['price'] as double,
       name: json['name'] as String,
       description: json['description'] as String,
+      codePrefix: json['codePrefix'] as String,
     );
   }
 
@@ -68,6 +77,7 @@ class TicketTypeRequest {
       'price': price,
       'name': name,
       'description': description,
+      'codePrefix': codePrefix,
     };
   }
 
@@ -77,6 +87,7 @@ class TicketTypeRequest {
       price: price,
       name: name,
       description: description,
+      codePrefix: codePrefix,
     );
   }
 }

@@ -47,10 +47,13 @@ class PopulateField {
   final String fieldName;
   // The name of the collection to fetch the data from
   final String collectionName;
+  // Optional list of sub-fields to populate
+  final List<PopulateField> subPopulateFields;
 
   PopulateField({
     required this.fieldName,
     required this.collectionName,
+    this.subPopulateFields = const [],
   });
 }
 
@@ -75,6 +78,28 @@ extension DbCollectionExtension on DbCollection {
               await foreignCollection.findOne(where.id(foreignId));
 
           if (foreignDoc != null) {
+            // If there are sub-fields to populate, populate them recursively
+            if (populateField.subPopulateFields.isNotEmpty) {
+              for (final subPopulateField in populateField.subPopulateFields) {
+                final subForeignField = subPopulateField.fieldName;
+                final subCollectionName = subPopulateField.collectionName;
+
+                if (foreignDoc.containsKey(subForeignField)) {
+                  final subForeignId = foreignDoc[subForeignField] as ObjectId;
+
+                  // Query the sub-collection
+                  final subForeignCollection = db.collection(subCollectionName);
+                  final subForeignDoc = await subForeignCollection
+                      .findOne(where.id(subForeignId));
+
+                  if (subForeignDoc != null) {
+                    // Replace the subForeignId with the populated document
+                    foreignDoc[subForeignField] = subForeignDoc;
+                  }
+                }
+              }
+            }
+
             // Replace the foreignId with the populated document
             doc[foreignField] = foreignDoc;
           }
@@ -94,24 +119,7 @@ extension DbCollectionExtension on DbCollection {
 
     // For each document, populate the fields as specified in `fieldsToPopulate`
     for (final doc in docs) {
-      for (final populateField in fieldsToPopulate) {
-        final foreignField = populateField.fieldName;
-        final collectionName = populateField.collectionName;
-
-        if (doc.containsKey(foreignField)) {
-          final foreignId = doc[foreignField] as ObjectId;
-
-          // Query the foreign collection
-          final foreignCollection = db.collection(collectionName);
-          final foreignDoc =
-              await foreignCollection.findOne(where.id(foreignId));
-
-          if (foreignDoc != null) {
-            // Replace the foreignId with the populated document
-            doc[foreignField] = foreignDoc;
-          }
-        }
-      }
+      await _populateFieldsRecursively(doc, fieldsToPopulate);
     }
 
     return docs;
@@ -138,27 +146,40 @@ extension DbCollectionExtension on DbCollection {
 
     // Populate the fields for each document
     for (final doc in docs) {
-      for (final populateField in fieldsToPopulate) {
-        final foreignField = populateField.fieldName;
-        final collectionName = populateField.collectionName;
-
-        if (doc.containsKey(foreignField)) {
-          final foreignId = doc[foreignField] as ObjectId;
-
-          // Query the foreign collection
-          final foreignCollection = db.collection(collectionName);
-          final foreignDoc =
-              await foreignCollection.findOne(where.id(foreignId));
-
-          if (foreignDoc != null) {
-            // Replace the foreignId with the populated document
-            doc[foreignField] = foreignDoc;
-          }
-        }
-      }
+      await _populateFieldsRecursively(doc, fieldsToPopulate);
     }
 
     // Always return a list of documents
     return docs;
+  }
+
+  /// Helper function to recursively populate fields
+  Future<void> _populateFieldsRecursively(
+    Map<String, dynamic> doc,
+    List<PopulateField> fieldsToPopulate,
+  ) async {
+    for (final populateField in fieldsToPopulate) {
+      final foreignField = populateField.fieldName;
+      final collectionName = populateField.collectionName;
+
+      if (doc.containsKey(foreignField)) {
+        final foreignId = doc[foreignField] as ObjectId;
+
+        // Query the foreign collection
+        final foreignCollection = db.collection(collectionName);
+        final foreignDoc = await foreignCollection.findOne(where.id(foreignId));
+
+        if (foreignDoc != null) {
+          // If there are sub-fields to populate, populate them recursively
+          if (populateField.subPopulateFields.isNotEmpty) {
+            await _populateFieldsRecursively(
+                foreignDoc, populateField.subPopulateFields);
+          }
+
+          // Replace the foreignId with the populated document
+          doc[foreignField] = foreignDoc;
+        }
+      }
+    }
   }
 }

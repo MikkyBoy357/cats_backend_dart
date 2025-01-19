@@ -13,6 +13,7 @@ extension DbX on Db {
   DbCollection get postsCollection => collection('posts');
   DbCollection get eventsCollection => collection('events');
   DbCollection get ticketTypesCollection => collection('ticketTypes');
+  DbCollection get ticketsCollection => collection('tickets');
 }
 
 extension RequestX on Request {
