@@ -20,6 +20,13 @@ Future<Response> onRequest(RequestContext context) async {
     database: mongoDbService.database,
   );
 
+  final collectionRepository = SckalerCollectionRepository(
+    database: mongoDbService.database,
+  );
+  final sckalerRequestHandler = SckalerRequestHandlerImpl(
+    sckalerCollectionRepository: collectionRepository,
+  );
+
   final request = context.request;
   final method = request.method;
   final handler = TicketRequestHandlerImpl(
@@ -28,6 +35,7 @@ Future<Response> onRequest(RequestContext context) async {
     ticketTypeRepository: TicketTypeRepository(
       database: mongoDbService.database,
     ),
+    sckalerRequestHandler: sckalerRequestHandler,
   );
 
   return switch (method) {
@@ -44,10 +52,7 @@ Future<Response> onRequest(RequestContext context) async {
 
         print('OMO: ${ticketRequest.toJson()}');
 
-        return handler.handleCreateTicket(
-          ticketRequest: ticketRequest,
-          saint: saint,
-        );
+        return handler.handleCreateTicket(ticketRequest: ticketRequest);
       }(),
     _ => Future.value(Response.json(body: 'Invalid request method')),
   };

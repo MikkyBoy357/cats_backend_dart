@@ -99,4 +99,59 @@ class TicketRequest {
       ticketNumber: ticketNumber ?? this.ticketNumber,
     );
   }
+
+  factory TicketRequest.sampleData() {
+    return TicketRequest(
+      event: ObjectId(),
+      ticketType: ObjectId(),
+      issuedTo: TicketOwner.sampleData(),
+      issuedAt: DateTime.now(),
+      ticketNumber: 'STR-00000000',
+    );
+  }
+}
+
+class TicketBuyRequest {
+  TicketRequest ticketRequest;
+  PaymentTransaction paymentTransaction;
+
+  TicketBuyRequest({
+    required this.ticketRequest,
+    required this.paymentTransaction,
+  });
+
+  factory TicketBuyRequest.fromJson(Map<String, dynamic> json) {
+    return TicketBuyRequest(
+      ticketRequest: TicketRequest.fromJson(
+        json['ticketRequest'] as Map<String, dynamic>,
+      ),
+      paymentTransaction: PaymentTransaction.fromJson(
+        json['paymentRequest'] as Map<String, dynamic>,
+      ),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'ticketRequest': ticketRequest.toJson(),
+      'paymentRequest': paymentTransaction.toJson(),
+    };
+  }
+
+  TicketBuyRequest copyWith({
+    TicketRequest? ticketRequest,
+    PaymentTransaction? paymentTransaction,
+  }) {
+    return TicketBuyRequest(
+      ticketRequest: ticketRequest ?? this.ticketRequest,
+      paymentTransaction: paymentTransaction ?? this.paymentTransaction,
+    );
+  }
+
+  factory TicketBuyRequest.sampleData() {
+    return TicketBuyRequest(
+      ticketRequest: TicketRequest.sampleData(),
+      paymentTransaction: PaymentTransaction.sampleData(),
+    );
+  }
 }

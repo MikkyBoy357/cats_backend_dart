@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cats_backend/common/common.dart';
+import 'package:cats_backend/helpers/helpers.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
@@ -7,7 +9,10 @@ Future<void> init(InternetAddress ip, int port) async {
   // Any code initialized within this method will only run on server start,any
   // hot reloads afterwards will not trigger this method until a hot restart.
 
+  final ipAddress = await getPublicIpAddress();
+
   print('Init -> IP: $ip, Port: $port');
+  printGreen('URL: http://$ipAddress:$port');
 
   // Initialize the MongoDB service
   await mongoDbService.initializeMongo();

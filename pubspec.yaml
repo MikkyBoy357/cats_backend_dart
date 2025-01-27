@@ -11,11 +11,17 @@ dependencies:
   dart_frog: ^1.0.0
   dart_frog_auth: ^1.1.0
   dart_frog_web_socket: ^1.0.0
+  dio: ^5.7.0
   firebase_dart: ^1.1.4
+  image: ^4.5.2
   jaguar_jwt: ^3.0.0
   mongo_dart: ^0.10.3
+  qr: ^3.0.1
+  get_ip_address: ^0.0.7
 
 dev_dependencies:
   mocktail: ^1.0.0
   test: ^1.19.2
   very_good_analysis: ^5.1.0
+
+serve_static_files: true

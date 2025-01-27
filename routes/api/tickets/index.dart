@@ -10,12 +10,20 @@ Future<Response> onRequest(RequestContext context) async {
     database: mongoDbService.database,
   );
 
+  final collectionRepository = SckalerCollectionRepository(
+    database: mongoDbService.database,
+  );
+  final sckalerRequestHandler = SckalerRequestHandlerImpl(
+    sckalerCollectionRepository: collectionRepository,
+  );
+
   final handler = TicketRequestHandlerImpl(
     ticketRepository: ticketRepository,
     eventRepository: EventRepository(database: mongoDbService.database),
     ticketTypeRepository: TicketTypeRepository(
       database: mongoDbService.database,
     ),
+    sckalerRequestHandler: sckalerRequestHandler,
   );
 
   return switch (method) {

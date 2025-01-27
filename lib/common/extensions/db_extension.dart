@@ -14,6 +14,8 @@ extension DbX on Db {
   DbCollection get eventsCollection => collection('events');
   DbCollection get ticketTypesCollection => collection('ticketTypes');
   DbCollection get ticketsCollection => collection('tickets');
+  DbCollection get sckalerCollectionsCollection =>
+      collection('sckalerCollections');
 }
 
 extension RequestX on Request {

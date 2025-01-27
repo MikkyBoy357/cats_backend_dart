@@ -4,6 +4,7 @@ export 'chat.dart';
 export 'events.dart';
 export 'post.dart';
 export 'profile.dart';
+export 'sckaler.dart';
 export 'ticket.dart';
 export 'ticket_types.dart';
 export 'user.dart';
