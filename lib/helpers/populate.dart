@@ -173,7 +173,9 @@ extension DbCollectionExtension on DbCollection {
           // If there are sub-fields to populate, populate them recursively
           if (populateField.subPopulateFields.isNotEmpty) {
             await _populateFieldsRecursively(
-                foreignDoc, populateField.subPopulateFields);
+              foreignDoc,
+              populateField.subPopulateFields,
+            );
           }
 
           // Replace the foreignId with the populated document

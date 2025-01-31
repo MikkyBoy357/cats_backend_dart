@@ -15,9 +15,9 @@ dependencies:
   firebase_dart: ^1.1.4
   image: ^4.5.2
   jaguar_jwt: ^3.0.0
+  mailer: ^5.0.0
   mongo_dart: ^0.10.3
   qr: ^3.0.1
-  get_ip_address: ^0.0.7
 
 dev_dependencies:
   mocktail: ^1.0.0
