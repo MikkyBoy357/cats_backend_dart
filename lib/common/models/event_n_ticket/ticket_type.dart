@@ -2,7 +2,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 class TicketType {
   ObjectId id;
-  double price;
+  num price;
   String name;
   String description;
   String codePrefix;
@@ -18,7 +18,7 @@ class TicketType {
   factory TicketType.fromJson(Map<String, dynamic> json) {
     return TicketType(
       id: json['_id'] as ObjectId,
-      price: json['price'] as double,
+      price: json['price'] as num,
       name: json['name'] as String,
       description: json['description'] as String,
       codePrefix:
@@ -51,7 +51,7 @@ class TicketType {
 // Request
 
 class TicketTypeRequest {
-  double price;
+  num price;
   String name;
   String description;
   String codePrefix;
@@ -65,7 +65,7 @@ class TicketTypeRequest {
 
   factory TicketTypeRequest.fromJson(Map<String, dynamic> json) {
     return TicketTypeRequest(
-      price: json['price'] as double,
+      price: json['price'] as num,
       name: json['name'] as String,
       description: json['description'] as String,
       codePrefix: json['codePrefix'] as String,

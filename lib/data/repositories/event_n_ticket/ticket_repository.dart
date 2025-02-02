@@ -8,6 +8,7 @@ abstract class TicketRepositoryImpl {
   Future<List<Ticket>> getTicketsByTicketType({required ObjectId ticketTypeId});
   Future<String?> getNextTicketNumber({required TicketType ticketType});
   Future<Ticket?> getTicketById({required ObjectId ticketId});
+  Future<Ticket?> getTicketByTicketNumber({required String ticketNumber});
   Future<Ticket?> createTicket({required TicketRequest ticketRequest});
 }
 
@@ -104,6 +105,39 @@ class TicketRepository extends TicketRepositoryImpl {
     final result = await _ticketsCollection.findOneAndPopulateRikky(
       {
         '_id': ticketId,
+      },
+      fieldsToPopulate: [
+        PopulateField(fieldName: 'ticketType', collectionName: 'ticketTypes'),
+        PopulateField(
+          fieldName: 'event',
+          collectionName: 'events',
+          subPopulateFields: [
+            PopulateField(
+              fieldName: 'ticketType',
+              collectionName: 'ticketTypes',
+            ),
+            PopulateField(fieldName: 'createdBy', collectionName: 'users'),
+          ],
+        ),
+      ],
+    );
+
+    printGreen('Ticket: $result');
+
+    if (result == null) {
+      return null;
+    }
+
+    return Ticket.fromJson(result);
+  }
+
+  @override
+  Future<Ticket?> getTicketByTicketNumber({
+    required String ticketNumber,
+  }) async {
+    final result = await _ticketsCollection.findOneAndPopulateRikky(
+      {
+        'ticketNumber': ticketNumber,
       },
       fieldsToPopulate: [
         PopulateField(fieldName: 'ticketType', collectionName: 'ticketTypes'),

@@ -12,6 +12,7 @@ dependencies:
   dart_frog_auth: ^1.1.0
   dart_frog_web_socket: ^1.0.0
   dio: ^5.7.0
+  encrypt: ^5.0.3
   firebase_dart: ^1.1.4
   image: ^4.5.2
   jaguar_jwt: ^3.0.0

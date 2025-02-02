@@ -16,7 +16,7 @@ class QrResult {
 }
 
 Future<QrResult> generateQrCode(String data) async {
-  final qrCode = QrCode(4, QrErrorCorrectLevel.L)..addData(data);
+  final qrCode = QrCode(7, QrErrorCorrectLevel.L)..addData(data);
   final qrImage = QrImage(qrCode);
 
   final size = qrCode.moduleCount * 10;
