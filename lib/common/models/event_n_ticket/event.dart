@@ -13,6 +13,13 @@ class Event {
   User createdBy;
   DateTime createdAt;
 
+  // New fields for engagement tracking
+  int views;
+  int clicks;
+  int shares;
+  int bookmarks;
+  DateTime lastUpdated; // Track when the event was last interacted with
+
   Event({
     required this.id,
     required this.name,
@@ -24,6 +31,11 @@ class Event {
     required this.ticketType,
     required this.createdBy,
     required this.createdAt,
+    this.views = 0,
+    this.clicks = 0,
+    this.shares = 0,
+    this.bookmarks = 0,
+    required this.lastUpdated,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -46,6 +58,13 @@ class Event {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'].toString())
           : DateTime.now(),
+      views: int.tryParse(json['views'].toString()) ?? 0,
+      clicks: int.tryParse(json['clicks'].toString()) ?? 0,
+      shares: int.tryParse(json['shares'].toString()) ?? 0,
+      bookmarks: int.tryParse(json['bookmarks'].toString()) ?? 0,
+      lastUpdated: json['lastUpdated'] != null
+          ? DateTime.parse(json['lastUpdated'].toString())
+          : DateTime.now(),
     );
   }
 
@@ -61,7 +80,48 @@ class Event {
       'ticketType': ticketType.toJson(),
       'createdBy': createdBy.toJson(),
       'createdAt': createdAt.toString(),
+      'views': views,
+      'clicks': clicks,
+      'shares': shares,
+      'bookmarks': bookmarks,
+      'lastUpdated': lastUpdated.toString(),
     };
+  }
+
+  Event copyWith({
+    ObjectId? id,
+    String? name,
+    String? owner,
+    String? description,
+    String? location,
+    DateTime? date,
+    List<String>? categories,
+    TicketType? ticketType,
+    User? createdBy,
+    DateTime? createdAt,
+    int? views,
+    int? clicks,
+    int? shares,
+    int? bookmarks,
+    DateTime? lastUpdated,
+  }) {
+    return Event(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      owner: owner ?? this.owner,
+      description: description ?? this.description,
+      location: location ?? this.location,
+      date: date ?? this.date,
+      categories: categories ?? this.categories,
+      ticketType: ticketType ?? this.ticketType,
+      createdBy: createdBy ?? this.createdBy,
+      createdAt: createdAt ?? this.createdAt,
+      views: views ?? this.views,
+      clicks: clicks ?? this.clicks,
+      shares: shares ?? this.shares,
+      bookmarks: bookmarks ?? this.bookmarks,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
+    );
   }
 
   EventRequest toEventRequest() {
