@@ -14,7 +14,6 @@ Future<Response> onRequest(RequestContext context, String id) async {
 
   final request = context.request;
   final method = request.method;
-  final queryParams = request.uri.queryParameters;
 
   final ticketTypeRepository = TicketTypeRepository(
     database: mongoDbService.database,

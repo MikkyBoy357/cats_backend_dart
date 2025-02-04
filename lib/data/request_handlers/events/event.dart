@@ -35,7 +35,6 @@ class EventRequestHandlerImpl implements EventRequestHandler {
 
   @override
   Future<Response> handleGetAllEvents() async {
-    print('===> GET <==> Event:');
     final events = await _eventRepository.getEvents();
 
     return Response.json(
@@ -48,7 +47,6 @@ class EventRequestHandlerImpl implements EventRequestHandler {
     required EventRequest eventRequest,
     required User saint,
   }) async {
-    print('===> POST <==> Event:');
     final ticketType = await _ticketTypeRepository.getTicketTypeById(
       ticketTypeId: eventRequest.ticketType,
     );
@@ -79,8 +77,6 @@ class EventRequestHandlerImpl implements EventRequestHandler {
 
   @override
   Future<Response> handleGetEventById({required ObjectId eventId}) async {
-    print('===> GET <==> Event:');
-
     // Track event view
     await _eventRepository.incrementViews(eventId: eventId);
 
@@ -94,7 +90,6 @@ class EventRequestHandlerImpl implements EventRequestHandler {
 
   @override
   Future<Response> handleDeleteEvent({required ObjectId eventId}) async {
-    print('===> DELETE <==> Event:');
     final isDeleted = await _eventRepository.deleteEvent(eventId: eventId);
 
     return Response.json(
@@ -146,7 +141,6 @@ class EventRequestHandlerImpl implements EventRequestHandler {
 
   @override
   Future<Response> handleGetTrendingEvents() async {
-    print('===> GET <==> Event:');
     final events = await _eventRepository.getTrendingEvents();
 
     return Response.json(
@@ -156,7 +150,6 @@ class EventRequestHandlerImpl implements EventRequestHandler {
 
   @override
   Future<Response> handleGetNearbyEvents() async {
-    print('===> GET <==> Event:');
     final events = await _eventRepository.getTrendingEvents();
 
     return Response.json(

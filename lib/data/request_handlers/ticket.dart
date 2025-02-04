@@ -17,14 +17,14 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
   final EventRepository _eventRepository;
   final TicketTypeRepository _ticketTypeRepository;
   final SckalerRequestHandlerImpl _sckalerRequestHandler;
-  final MailRequestHandlerImpl _mailRequestHandler;
+  final MailRequestHandler _mailRequestHandler;
 
   const TicketRequestHandlerImpl({
     required TicketRepository ticketRepository,
     required EventRepository eventRepository,
     required TicketTypeRepository ticketTypeRepository,
     required SckalerRequestHandlerImpl sckalerRequestHandler,
-    required MailRequestHandlerImpl mailRequestHandler,
+    required MailRequestHandler mailRequestHandler,
   })  : _ticketRepository = ticketRepository,
         _eventRepository = eventRepository,
         _ticketTypeRepository = ticketTypeRepository,
@@ -33,7 +33,6 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
 
   @override
   Future<Response> handleGetAllTickets() async {
-    print('===> GET <==> Ticket:');
     final tickets = await _ticketRepository.getTickets();
 
     return Response.json(
@@ -43,7 +42,6 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
 
   @override
   Future<Response> handleGetTicketById({required ObjectId ticketId}) async {
-    print('===> GET <==> Ticket:');
     final ticket = await _ticketRepository.getTicketById(
       ticketId: ticketId,
     );
@@ -64,8 +62,6 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
   Future<Response> handleCreateTicket({
     required TicketRequest ticketRequest,
   }) async {
-    print('===> POST <==> Ticket:');
-
     final event = await _eventRepository.getEventById(
       eventId: ticketRequest.event,
     );
@@ -118,8 +114,6 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
   Future<Response> handleBuyTicket({
     required TicketBuyRequest ticketBuyRequest,
   }) async {
-    print('===> POST <==> Buy Ticket:');
-
     final ticketType = await _ticketTypeRepository.getTicketTypeById(
       ticketTypeId: ticketBuyRequest.ticketRequest.ticketType,
     );
@@ -127,8 +121,8 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
     if (ticketType == null) {
       return Response.json(
         body:
-            'Ticket Type with ID `${ticketBuyRequest.ticketRequest.ticketType}` '
-            'not found',
+            'Ticket Type with ID `${ticketBuyRequest.ticketRequest.ticketType}`'
+            ' not found',
         statusCode: 404,
       );
     }
@@ -220,7 +214,8 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
 
     if (ticketConfirmationEmailResponse.statusCode != 200) {
       printYellow(
-        'Failed to send Ticket Confirmation Email: $ticketConfirmationEmailResponse',
+        'Failed to send Ticket Confirmation Email:'
+        '\n$ticketConfirmationEmailResponse',
       );
       return ticketConfirmationEmailResponse;
     }

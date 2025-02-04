@@ -5,7 +5,6 @@ import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
-  print('======= avatar =======>');
   final authValidationResponse = context.read<AuthValidationResponse>();
 
   if (!authValidationResponse.isValid) {
@@ -22,7 +21,6 @@ Future<Response> onRequest(RequestContext context) async {
   );
   final request = context.request;
   final method = request.method;
-  final queryParams = request.uri.queryParameters;
   final handler = ProfileRequestHandlerImpl(
     profileRepository: profileRepository,
   );

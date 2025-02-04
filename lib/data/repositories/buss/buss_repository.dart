@@ -22,16 +22,13 @@ class BussRepository extends BussRepositoryImpl {
 
   @override
   Future<Wallet> getWalletById(ObjectId walletId) async {
-    print('WalletId: $walletId');
     final result = await transactionsCollection.find({
       'senderId': walletId,
       'receiverId': walletId,
     }).toList();
 
-    print('WalletResult: $result');
-
     final transactions = result.map((transaction) {
-      return Transaction.fromMap(transaction);
+      return Transaction.fromJson(transaction);
     }).toList();
 
     return Wallet(
@@ -56,8 +53,7 @@ class BussRepository extends BussRepositoryImpl {
       receiverId: receiverId,
     );
 
-    final result = await transactionsCollection.insertOne(transaction.toMap());
-    print('ResultId: ${result.id}');
+    await transactionsCollection.insertOne(transaction.toJson());
 
     return transaction;
   }

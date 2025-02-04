@@ -14,7 +14,7 @@ class Chat {
 
   factory Chat.fromJson(Map<String, dynamic> json) {
     return Chat(
-      $_id: json['_id'] as ObjectId,
+      $_id: toObjectId(json['_id']),
       participants: (json['participants'] as List).map((e) {
         return e as ObjectId;
       }).toList(),

@@ -20,7 +20,6 @@ Future<Response> onRequest(RequestContext context, String username) async {
   final userRepository = UserRepository(database: mongoDbService.database);
   final request = context.request;
   final method = request.method;
-  final queryParams = request.uri.queryParameters;
   final handler = UserRequestHandlerImpl(userRepository: userRepository);
 
   // get user by username

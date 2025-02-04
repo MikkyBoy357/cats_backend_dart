@@ -29,7 +29,6 @@ class CatRequestHandlerImpl implements CatRequestHandler {
     Map<String, String> queryParams,
   ) async {
     final id = queryParams['id'];
-    print('===> GET <==> Cats:');
 
     if (id != null) {
       final cat = await _catRepository.getCatById(id);
@@ -65,7 +64,6 @@ class CatRequestHandlerImpl implements CatRequestHandler {
     final bodyJson = jsonDecode(body) as Map<String, dynamic>;
 
     if (id != null) {
-      print(id);
       final updatedCat = await _catRepository.updateCat(
         id: id,
         name: bodyJson['name'].toString(),
@@ -77,7 +75,6 @@ class CatRequestHandlerImpl implements CatRequestHandler {
           statusCode: 404,
         );
       }
-      print('updatedCat: $updatedCat');
       return Response.json(body: updatedCat);
     }
 

@@ -53,7 +53,7 @@ void main() {
       ),
     );
 
-    print('saint Points: ${myWallet.saintPoints}');
+    printGreen('saint Points: ${myWallet.saintPoints}');
     expect(myWallet.balance, 50.0);
     expect(myWallet.saintPoints, 5);
   });
@@ -78,17 +78,19 @@ void main() {
     expect(myWallet.balance, 225.0);
     expect(myWallet.saintPoints, 12);
 
-    print('saint Points: ${myWallet.saintPoints}');
+    printGreen('saint Points: ${myWallet.saintPoints}');
 
     final friendWallet = Wallet(
       $_id: friendWalletId,
       transactions: myTransactions,
     );
 
-    print('====================');
-    print('friend saint Points: ${friendWallet.saintPoints}');
-    print('FriendTransactionsSent: ${friendWallet.transactionsSent.length}');
-    print(
+    printBlue('====================');
+    printMagenta('friend saint Points: ${friendWallet.saintPoints}');
+    printMagenta(
+      'FriendTransactionsSent: ${friendWallet.transactionsSent.length}',
+    );
+    printBlue(
       'FriendTransactionsReceived: ${friendWallet.transactionsReceived.length}',
     );
   });

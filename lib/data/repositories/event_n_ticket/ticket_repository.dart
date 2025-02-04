@@ -93,12 +93,12 @@ class TicketRepository extends TicketRepositoryImpl {
 
     // Extract the numeric suffix (after the dash)
     final suffix = lastTicketNumber.split('-').last;
-    print('Suffix: $suffix');
+    printMagenta('Suffix: $suffix');
 
     // Convert the suffix to an integer and increment it
     final nextSuffix =
         (int.parse(suffix) + 1).toString().padLeft(suffix.length, '0');
-    print('Next suffix: $nextSuffix');
+    printMagenta('Next suffix: $nextSuffix');
 
     final nextTicketNumber = '${ticketType.codePrefix}-$nextSuffix';
     return nextTicketNumber;
@@ -179,7 +179,6 @@ class TicketRepository extends TicketRepositoryImpl {
   @override
   Future<Ticket?> createTicket({required TicketRequest ticketRequest}) async {
     final result = await _ticketsCollection.insertOne(ticketRequest.toJson());
-    print('Create Ticket result: $result');
 
     if (result.writeError != null) {
       return null;

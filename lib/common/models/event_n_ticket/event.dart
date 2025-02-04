@@ -41,7 +41,7 @@ class Event {
   factory Event.fromJson(Map<String, dynamic> json) {
     printMagenta('Categories: ${json['categories']}');
     return Event(
-      id: json['_id'] as ObjectId,
+      id: toObjectId(json['_id']),
       name: json['name'] as String,
       owner: json['owner'] as String,
       description: json['description'] as String,

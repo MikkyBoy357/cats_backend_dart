@@ -35,9 +35,9 @@ class SckalerCollectionRepository implements SckalerCollectionRepositoryImpl {
   Future<PaymentTransactionResponse?> sckalerCollectionRequest({
     required PaymentTransaction paymentTransaction,
   }) async {
-    print('${Config.sckalerBaseUrl}/collection');
+    printGreen('${Config.sckalerBaseUrl}/collection');
     try {
-      final res = await _dio.post(
+      final res = await _dio.post<Map<String, dynamic>?>(
         '${Config.sckalerBaseUrl}/collection',
         data: paymentTransaction.toJson(),
         options: Options(
@@ -48,7 +48,7 @@ class SckalerCollectionRepository implements SckalerCollectionRepositoryImpl {
       );
 
       final sckalerCollectionResponse =
-          PaymentTransactionResponse.fromJson(res.data as Map<String, dynamic>);
+          PaymentTransactionResponse.fromJson(res.data!);
 
       return sckalerCollectionResponse;
     } catch (e) {
@@ -93,7 +93,7 @@ class SckalerCollectionRepository implements SckalerCollectionRepositoryImpl {
     final result = await _sckalerCollectionsCollection.insertOne(
       sckalerCollectionRequest.toJson(),
     );
-    print('Create Sckaler Collection result: $result');
+    printGreen('Create Sckaler Collection result: $result');
 
     if (result.writeError != null) {
       return null;
@@ -102,7 +102,8 @@ class SckalerCollectionRepository implements SckalerCollectionRepositoryImpl {
     if (result.id is ObjectId) {
       final sckalerCollectionId = result.id as ObjectId;
       final sckalerCollection = await getSckalerCollectionById(
-          sckalerCollectionId: sckalerCollectionId,);
+        sckalerCollectionId: sckalerCollectionId,
+      );
       return sckalerCollection;
     }
 

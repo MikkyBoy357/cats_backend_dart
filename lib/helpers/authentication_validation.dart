@@ -43,11 +43,11 @@ Future<AuthValidationResponse> getAuthResult({
       Config.jwtSecret,
     );
 
-    print('jwtClaim:');
-    print(jwtClaim);
+    printMagenta('jwtClaim:');
+    printMagenta(jwtClaim);
 
     final userId = jwtClaim.subject;
-    print('userId: $userId');
+    printBlue('userId: $userId');
     if (userId == null) {
       return AuthValidationResponse(
         isValid: false,
@@ -57,7 +57,7 @@ Future<AuthValidationResponse> getAuthResult({
 
     final userRepository = UserRepository(database: db);
     final user = await userRepository.getQuery(UserQuery.id, userId);
-    print('======> Logged in as: ${user?.toJson()}');
+    printBlue('======> Logged in as: ${user?.toJson()}');
 
     return AuthValidationResponse(isValid: true, user: user);
   } on JwtException catch (jwtException) {

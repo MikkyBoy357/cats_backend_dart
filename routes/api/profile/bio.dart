@@ -7,7 +7,6 @@ import 'package:cats_backend/services/mongo_service.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
-  print('======= avatar =======>');
   final authValidationResponse = context.read<AuthValidationResponse>();
 
   if (!authValidationResponse.isValid) {

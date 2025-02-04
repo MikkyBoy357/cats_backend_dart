@@ -3,34 +3,23 @@ import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/helpers/helpers.dart';
 import 'package:dart_frog/dart_frog.dart';
 
-abstract class MailRequestHandler {
-  Future<Response> handleSendTicketConfirmationEmail({
-    required String to,
-    required String subject,
-    required Ticket ticket,
-    required PaymentTransactionResponse paymentTransactionResponse,
-  });
-}
+class MailRequestHandler {
+  final MailRepository _mailRepository;
 
-class MailRequestHandlerImpl implements MailRequestHandler {
-  final MailRepositoryImpl _mailRepository;
-  final TicketRepository _ticketRepository;
+  MailRequestHandler({
+    required MailRepository mailRepository,
+  }) : _mailRepository = mailRepository;
 
-  MailRequestHandlerImpl({
-    required MailRepositoryImpl mailRepository,
-    required TicketRepository ticketRepository,
-  })  : _mailRepository = mailRepository,
-        _ticketRepository = ticketRepository;
-
-  @override
   Future<Response> handleSendTicketConfirmationEmail({
     required String to,
     required String subject,
     required Ticket ticket,
     required PaymentTransactionResponse paymentTransactionResponse,
   }) async {
+    printBlue('Ticket Rikky: ${ticket.id}');
+    printBlue('Ticket Rikky: ${ticket.toJson()}');
     final qrCodeUrl =
-        'http://${await getPublicIpAddress()}:8080/api/qr?keyWord=${ticket.id}';
+        'http://${await getPublicIpAddress()}:8080/api/qr?keyWord=${ticket.id.oid}';
 
     final htmlContent = ticketConfirmationHtmlContent(
       qrCodeUrl: qrCodeUrl,

@@ -13,6 +13,7 @@ enum PaymentProvider {
   const PaymentProvider(this.name, this.code);
 }
 
+// ignore: constant_identifier_names
 enum Country { BJ, CI, BF, CM, SN, ML }
 
 // send to the sckaler payment gateway /api/collection (to collect payment)
@@ -104,12 +105,14 @@ class PaymentTransactionResponse {
   final String status;
   final String transactionId;
   final PaymentTransaction? paymentTransactionBody;
+  final DateTime createdAt;
 
   PaymentTransactionResponse({
     required this.msg,
     required this.status,
     required this.transactionId,
     required this.paymentTransactionBody,
+    required this.createdAt,
   });
 
   factory PaymentTransactionResponse.fromJson(Map<String, dynamic> json) {
@@ -122,6 +125,9 @@ class PaymentTransactionResponse {
               json['paymentTransactionBody'] as Map<String, dynamic>,
             )
           : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'].toString())
+          : DateTime.now(),
     );
   }
 
@@ -132,6 +138,7 @@ class PaymentTransactionResponse {
       'transaction_id': transactionId,
       if (paymentTransactionBody != null)
         'paymentTransactionBody': paymentTransactionBody!.toJson(),
+      'createdAt': createdAt.toString(),
     };
   }
 
@@ -140,6 +147,7 @@ class PaymentTransactionResponse {
     String? status,
     String? transactionId,
     PaymentTransaction? paymentTransactionBody,
+    DateTime? createdAt,
   }) {
     return PaymentTransactionResponse(
       msg: msg ?? this.msg,
@@ -147,6 +155,7 @@ class PaymentTransactionResponse {
       transactionId: transactionId ?? this.transactionId,
       paymentTransactionBody:
           paymentTransactionBody ?? this.paymentTransactionBody,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 
@@ -157,6 +166,7 @@ class PaymentTransactionResponse {
       status: 'SUCCESS',
       transactionId: 'f4f15b3d-bc2c-4b0f-be75-8891dc5e47c8',
       paymentTransactionBody: PaymentTransaction.sampleData(),
+      createdAt: DateTime.now(),
     );
   }
 }

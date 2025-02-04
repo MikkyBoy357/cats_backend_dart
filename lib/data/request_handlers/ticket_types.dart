@@ -19,7 +19,6 @@ class TicketTypeRequestHandlerImpl implements TicketTypeRequestHandler {
 
   @override
   Future<Response> handleGetAllTicketTypes() async {
-    print('===> GET <==> TicketType:');
     final ticketTypes = await _ticketTypeRepository.getTicketTypes();
 
     return Response.json(
@@ -46,7 +45,6 @@ class TicketTypeRequestHandlerImpl implements TicketTypeRequestHandler {
   Future<Response> handleGetTicketTypeById({
     required ObjectId ticketTypeId,
   }) async {
-    print('===> GET <==> TicketType:');
     final ticketType = await _ticketTypeRepository.getTicketTypeById(
       ticketTypeId: ticketTypeId,
     );
@@ -61,7 +59,6 @@ class TicketTypeRequestHandlerImpl implements TicketTypeRequestHandler {
   Future<Response> handleDeleteTicketType({
     required ObjectId ticketTypeId,
   }) async {
-    print('===> DELETE <==> TicketType:');
     final isDeleted = await _ticketTypeRepository.deleteTicketType(
       ticketTypeId: ticketTypeId,
     );

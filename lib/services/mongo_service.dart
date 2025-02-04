@@ -1,3 +1,4 @@
+import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/config/config.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -23,12 +24,14 @@ class MongoService {
 
       await open();
     }
-    print('==================> Connected to MongoDB ✅ <==================');
+    printGreen(
+      '==================> Connected to MongoDB ✅ <==================',
+    );
   }
 
   Future<void> open() async {
     if (_database!.state == State.open) {
-      print('========> ⚠️ MongoDB is already OPEN <========');
+      printBlue('========> ⚠️ MongoDB is already OPEN <========');
       return;
     }
     await _database!.open();
@@ -36,10 +39,12 @@ class MongoService {
 
   Future<void> close() async {
     if (_database!.state == State.closed) {
-      print('========> ⚠️ MongoDB is already CLOSED <========');
+      printYellow('========> ⚠️ MongoDB is already CLOSED <========');
       return;
     }
     await _database!.close();
-    print('******************> Closed MongodB Connection <******************');
+    printRed(
+      '******************> Closed MongoDB Connection <******************',
+    );
   }
 }

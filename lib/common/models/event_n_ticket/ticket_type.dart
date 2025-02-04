@@ -1,3 +1,4 @@
+import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class TicketType {
@@ -17,7 +18,7 @@ class TicketType {
 
   factory TicketType.fromJson(Map<String, dynamic> json) {
     return TicketType(
-      id: json['_id'] as ObjectId,
+      id: toObjectId(json['_id']),
       price: json['price'] as num,
       name: json['name'] as String,
       description: json['description'] as String,

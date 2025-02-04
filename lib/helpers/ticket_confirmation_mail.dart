@@ -144,7 +144,7 @@ String ticketConfirmationHtmlContent({
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin-top: 20px;">
                     <tr>
                         <td style="padding: 20px; text-align: center; color: #666666; font-size: 12px;">
-                            <p style="margin: 0;">This ticket was sent to ${ticketOwner.name}</p>
+                            <p style="margin: 0;">This ticket was sent to ${ticketOwner.email}</p>
                             <p style="margin: 10px 0 0 0;">If you have any questions, please contact our support team.</p>
                         </td>
                     </tr>

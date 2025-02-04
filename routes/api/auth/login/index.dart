@@ -15,25 +15,25 @@ Future<Response> onRequest(RequestContext context) async {
   try {
     final request = context.request;
     final mongoDbService = await context.read<Future<MongoService>>();
-    print('passed mongoDbService initialization');
+    printGreen('passed mongoDbService initialization');
 
     if (request.method == HttpMethod.post) {
       await mongoDbService.open();
-      print('DB is initialized: ${mongoDbService.isInitialized}');
+      printGreen('DB is initialized: ${mongoDbService.isInitialized}');
 
-      print('passed mongoDbService open');
+      printBlue('passed mongoDbService open');
 
       final requestBody = await request.body();
-      print('requestBody: $requestBody');
+      printMagenta('requestBody: $requestBody');
       final requestData = jsonDecode(requestBody) as Map<String, dynamic>;
-      print('requestData: $requestBody');
+      printYellow('requestData: $requestBody');
 
-      print('finding user with email: ${requestData['email']}');
+      printBlue('finding user with email: ${requestData['email']}...');
       final foundUser = await userRepository.getQuery(
         UserQuery.email,
         requestData['email'] as String,
       );
-      print('foundUser: $foundUser');
+      printBlue('foundUser: $foundUser');
 
       if (foundUser == null) {
         return Response.json(

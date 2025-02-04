@@ -25,7 +25,6 @@ class EventCategoryRequestHandlerImpl implements EventCategoryRequestHandler {
 
   @override
   Future<Response> handleGetAllEventCategories() async {
-    print('===> GET <==> Event Category:');
     final eventCategories = await _eventCategoryRepository.getEventCategories();
 
     return Response.json(
@@ -53,7 +52,6 @@ class EventCategoryRequestHandlerImpl implements EventCategoryRequestHandler {
   Future<Response> handleGetEventCategoryById({
     required ObjectId eventCategoryId,
   }) async {
-    print('===> GET <==> Event Category:');
     final eventCategory = await _eventCategoryRepository.getEventCategoryById(
       eventCategoryId: eventCategoryId,
     );

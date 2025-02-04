@@ -49,7 +49,6 @@ class EventRepository extends EventRepositoryImpl {
   @override
   Future<Event?> createEvent({required EventRequest eventRequest}) async {
     final result = await _eventsCollection.insertOne(eventRequest.toJson());
-    print('Create Event result: $result');
 
     if (result.writeError != null) {
       return null;

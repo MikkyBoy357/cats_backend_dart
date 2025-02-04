@@ -1,3 +1,4 @@
+import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class Post {
@@ -21,7 +22,7 @@ class Post {
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
-      id: json['_id'] as ObjectId,
+      id: toObjectId(json['_id']),
       userId: json['userId'] as ObjectId,
       caption: json['caption'] as String,
       mediaUrls: (json['mediaUrls'] == null)

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cats_backend/common/common.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -25,7 +26,7 @@ extension RequestX on Request {
           final x = jsonDecode(await body()) as Map<String, dynamic>;
           return x;
         } catch (e) {
-          print('Error parsing JSON: $e');
+          printYellow('Error parsing JSON: $e');
           return null;
         }
       }();

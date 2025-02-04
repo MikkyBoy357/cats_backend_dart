@@ -14,8 +14,6 @@ Future<Response> onRequest(RequestContext context) async {
     );
   }
 
-  final saint = authValidationResponse.user!;
-
   final ticketTypeRepository = TicketTypeRepository(
     database: mongoDbService.database,
   );

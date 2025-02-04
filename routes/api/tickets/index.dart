@@ -16,9 +16,8 @@ Future<Response> onRequest(RequestContext context) async {
   final sckalerRequestHandler = SckalerRequestHandlerImpl(
     sckalerCollectionRepository: collectionRepository,
   );
-  final mailRequestHandler = MailRequestHandlerImpl(
-    mailRepository: MailRepositoryImpl(),
-    ticketRepository: ticketRepository,
+  final mailRequestHandler = MailRequestHandler(
+    mailRepository: MailRepository(),
   );
 
   final handler = TicketRequestHandlerImpl(

@@ -24,7 +24,8 @@ extension HashExtension on String {
     // Encrypt the string
     final encrypted = encrypter.encrypt(this, iv: iv);
 
-    // Combine the IV and encrypted data into a single string (e.g., IV:EncryptedData)
+    // Combine the IV and encrypted data
+    // into a single string (e.g., IV:EncryptedData)
     return '${iv.base64}:${encrypted.base64}';
   }
 

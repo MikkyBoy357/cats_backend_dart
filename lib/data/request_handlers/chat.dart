@@ -43,7 +43,6 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
     required ObjectId saintId,
     List<ObjectId> participants = const [],
   }) async {
-    print('===> GET <==> Chat:');
     final chats = await _chatRepository.getAllSaintChats(saintId: saintId);
 
     return Response.json(
@@ -56,7 +55,6 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
     required ObjectId saintId,
     required List<ObjectId> participants,
   }) async {
-    print('===> GET <==> Chat:');
     final chat = await _chatRepository.getSingleSaintChat(
       saintId: saintId,
       participants: participants,
@@ -81,7 +79,6 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
   Future<Response> handleGetChatById({
     required ObjectId chatId,
   }) async {
-    print('===> GET <==> Chat:');
     final chat = await _chatRepository.getChatByIdWithMessages(chatId: chatId);
 
     if (chat == null) {

@@ -23,7 +23,7 @@ class CatRepository extends CatRepositoryImpl {
     final cats = await catsCollection.find().map((e) {
       return Cat.fromJson(e);
     }).toList();
-    print('Cats: $cats');
+
     return cats;
   }
 
@@ -32,7 +32,6 @@ class CatRepository extends CatRepositoryImpl {
     final result = await catsCollection.findOne({
       '_id': ObjectId.fromHexString(id),
     });
-    print('Rikky -> $result');
 
     if (result == null) {
       return null;
@@ -44,7 +43,6 @@ class CatRepository extends CatRepositoryImpl {
   @override
   Future<Cat?> addCat({required String name}) async {
     final result = await catsCollection.insertOne({'name': name});
-    print('resultId: ${result.id}');
 
     if (result.writeError != null) {
       return null;
@@ -81,15 +79,12 @@ class CatRepository extends CatRepositoryImpl {
 
   @override
   Future<bool> deleteCat(String id) async {
-    print('=======> $id');
-    final result = await catsCollection.remove({
+    final result = await catsCollection.deleteOne({
       '_id': ObjectId.fromHexString(id),
     });
 
-    if (result['n'] == 0) {
-      return false;
-    }
+    final success = !result.isFailure;
 
-    return true;
+    return success;
   }
 }

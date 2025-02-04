@@ -3,25 +3,15 @@ import 'package:cats_backend/config/config.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 
-abstract class MailRepository {
-  Future<SendReport?> sendEmail({
-    required String from,
-    required String to,
-    required String subject,
-    required String htmlContent,
-  });
-}
-
-class MailRepositoryImpl implements MailRepository {
+class MailRepository {
   final String? username;
   final String? password;
 
-  MailRepositoryImpl({
+  MailRepository({
     this.username,
     this.password,
   });
 
-  @override
   Future<SendReport?> sendEmail({
     String from = 'Saint Inc',
     required String to,

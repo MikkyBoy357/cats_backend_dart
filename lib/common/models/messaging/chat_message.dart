@@ -1,5 +1,4 @@
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/common/models/messaging/read_receipt.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 enum MessageType { text, media, event }
@@ -27,7 +26,7 @@ class ChatMessage {
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
-      id: json['_id'] as ObjectId,
+      id: toObjectId(json['_id']),
       chatId: json['chatId'] as ObjectId,
       senderId: json['senderId'] as ObjectId,
       msgTimestamp: json['msgTimestamp'] != null

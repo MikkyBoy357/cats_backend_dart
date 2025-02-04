@@ -1,4 +1,4 @@
-import 'package:cats_backend/common/models/transaction.dart';
+import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class Streak {
@@ -78,11 +78,11 @@ class Wallet {
     var streakTransactions = <Transaction>[];
     final transactionsLengthIsGreaterThanFive = transactionsSent.length >= 5;
 
-    print(transactionsSent.length);
-    print(transactionsLengthIsGreaterThanFive);
+    printGreen(transactionsSent.length);
+    printMagenta(transactionsLengthIsGreaterThanFive);
 
     if (!transactionsLengthIsGreaterThanFive) {
-      print('Not enough transactionsSent to form a streak');
+      printYellow('Not enough transactionsSent to form a streak');
       return streaks;
     }
 
@@ -94,9 +94,9 @@ class Wallet {
         streakStep++;
         streakTransactions.add(prevTransaction);
 
-        print('streakStep: $streakStep');
-        print('streakTransactionsCount: ${streakTransactions.length}');
-        print('streakTransactions: $streakTransactions');
+        printGreen('streakStep: $streakStep');
+        printMagenta('streakTransactionsCount: ${streakTransactions.length}');
+        printMagenta('streakTransactions: $streakTransactions');
       } else {
         streakStep = 0;
         streakTransactions = [];
@@ -129,10 +129,12 @@ class Wallet {
       }
     }
 
-    print('Total transactionsSent: ${transactionsSent.length}');
-    print('Total streaks: ${streaks.length}');
-    print(
-      'Total sent transactionsSent: ${transactionsSent.where((e) => e.receiverId == $_id).length}',
+    printGreen('Total transactionsSent: ${transactionsSent.length}');
+    printMagenta('Total streaks: ${streaks.length}');
+    printBlue(
+      'Total sent transactionsSent: ${transactionsSent.where(
+            (e) => e.receiverId == $_id,
+          ).length}',
     );
 
     return streaks;
@@ -187,11 +189,11 @@ class Wallet {
     required this.transactions,
   });
 
-  factory Wallet.fromJson(Map<String, dynamic> map) {
+  factory Wallet.fromJson(Map<String, dynamic> json) {
     return Wallet(
-      $_id: map['_id'] as ObjectId,
-      transactions: (map['transactions'] as List<Map<String, dynamic>>)
-          .map((transaction) => Transaction.fromMap(transaction))
+      $_id: toObjectId(json['_id']),
+      transactions: (json['transactions'] as List<Map<String, dynamic>>)
+          .map((transaction) => Transaction.fromJson(transaction))
           .toList(),
     );
   }
@@ -200,7 +202,7 @@ class Wallet {
     return {
       '_id': $_id,
       'transactions': transactions.map((transaction) {
-        return transaction.toMap();
+        return transaction.toJson();
       }).toList(),
     };
   }

@@ -6,6 +6,9 @@ ObjectId toObjectId(dynamic id) {
   } else if (id is String) {
     return ObjectId.fromHexString(id);
   } else {
-    throw ArgumentError('Invalid id type: ${id.runtimeType}');
+    ObjectId.tryParse(id.toString());
+    throw ArgumentError(
+      'Invalid id type: ${id.runtimeType}, instead of ObjectId or String.',
+    );
   }
 }

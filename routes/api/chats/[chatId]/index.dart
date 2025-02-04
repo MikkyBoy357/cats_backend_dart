@@ -6,7 +6,6 @@ import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 Future<Response> onRequest(RequestContext context, String id) async {
-  print('======= chatId =======> $id');
   final authValidationResponse = context.read<AuthValidationResponse>();
 
   if (!authValidationResponse.isValid) {

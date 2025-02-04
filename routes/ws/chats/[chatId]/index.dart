@@ -11,7 +11,7 @@ final clients = <WebSocketChannel>[];
 enum ChatEvent { message, typing, receipt, connect, disconnect }
 
 Future<Response> onRequest(RequestContext context, String id) async {
-  print('======= chatId =======> $id');
+  printBlue('======= chatId =======> $id');
   final headers = context.request.headers;
   final queryParameters = context.request.uri.queryParameters;
   final token = headers['authorization'] ?? queryParameters['token'];
@@ -41,7 +41,7 @@ Future<Response> onRequest(RequestContext context, String id) async {
   }
 
   final handler = webSocketHandler((channel, protocol) {
-    print('WebSocket connection established. Protocol: $protocol');
+    printGreen('WebSocket connection established. Protocol: $protocol');
 
     profileRepository.changeOnlineStatus(
       user: saint,
@@ -49,10 +49,10 @@ Future<Response> onRequest(RequestContext context, String id) async {
     );
 
     final headers = context.request.headers;
-    print('Headers: $headers');
+    printBlue('Headers: $headers');
 
     clients.add(channel);
-    print('Concurrent clients: ${clients.length}');
+    printBlue('Concurrent clients: ${clients.length}');
     channel.sink.add('Server: You are logged in as: @${saint.username}');
     for (final client in clients) {
       if (client != channel) {
@@ -62,7 +62,7 @@ Future<Response> onRequest(RequestContext context, String id) async {
 
     channel.stream.listen(
       (message) {
-        print('Received message: $message');
+        printGreen('Received message: $message');
 
         final wsEventMessage = WsEventMessage.fromString(
           message.toString(),

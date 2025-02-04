@@ -1,3 +1,4 @@
+import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class EventCategory {
@@ -13,12 +14,12 @@ class EventCategory {
     required this.imageUrl,
   });
 
-  factory EventCategory.fromJson(Map<String, dynamic> map) {
+  factory EventCategory.fromJson(Map<String, dynamic> json) {
     return EventCategory(
-      id: map['_id'] as ObjectId,
-      name: map['name'] as String,
-      description: map['description'] as String,
-      imageUrl: map['imageUrl'] as String,
+      id: toObjectId(json['_id']),
+      name: json['name'] as String,
+      description: json['description'] as String,
+      imageUrl: json['imageUrl'] as String,
     );
   }
 

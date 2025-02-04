@@ -38,7 +38,7 @@ Future<Response> onRequest(RequestContext context) async {
 
         printMagenta('Key: ${Config.qrCodeKey}');
 
-        final aes256 = keyWord.toString().aes256Encrypt(Config.qrCodeKey);
+        final aes256 = keyWord.aes256Encrypt(Config.qrCodeKey);
         printMagenta('sha256: $aes256');
 
         final hello = aes256.aes256Decrypt(Config.qrCodeKey);

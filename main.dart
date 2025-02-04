@@ -11,7 +11,7 @@ Future<void> init(InternetAddress ip, int port) async {
 
   final ipAddress = await getPublicIpAddress();
 
-  print('Init -> IP: $ip, Port: $port');
+  printBlue('Init -> IP: $ip, Port: $port');
   printGreen('URL: http://$ipAddress:$port');
 
   // Initialize the MongoDB service
@@ -19,22 +19,8 @@ Future<void> init(InternetAddress ip, int port) async {
 
   // Initialize the firebase
   await FirebaseService.initializeFirebase();
-
-  // // Connect to the remote WebSocket endpoint.
-  // final uri = Uri.parse('ws://localhost:8080/ws');
-  // final channel = WebSocketChannel.connect(uri);
-  //
-  // // Listen to incoming messages from the server.
-  // channel.stream.listen(print);
-  //
-  // // Send messages to the server.
-  // channel.sink.add('ping');
 }
 
 Future<HttpServer> run(Handler handler, InternetAddress ip, int port) {
-  // 1. Execute any custom code prior to starting the server...
-
-  // 2. Use the provided `handler`, `ip`, and `port` to create a
-  // custom `HttpServer`. Or use the Dart Frog serve method to do that for you.
   return serve(handler, ip, port);
 }

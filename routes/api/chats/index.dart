@@ -19,7 +19,6 @@ Future<Response> onRequest(RequestContext context) async {
   final chatRepository = ChatRepository(database: mongoDbService.database);
   final request = context.request;
   final method = request.method;
-  final queryParams = request.uri.queryParameters;
   final handler = ChatRequestHandlerImpl(chatRepository: chatRepository);
 
   return switch (method) {
@@ -28,6 +27,4 @@ Future<Response> onRequest(RequestContext context) async {
         Response(body: 'Unsupported request method: $method', statusCode: 405),
       ),
   };
-
-  return Response.json(body: '/chats');
 }

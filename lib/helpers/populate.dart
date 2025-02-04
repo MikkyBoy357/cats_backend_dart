@@ -1,4 +1,4 @@
-import 'package:cats_backend/common/extensions/saint_lookup.dart';
+import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 extension DbCollectionX on DbCollection {
@@ -33,9 +33,9 @@ extension DbCollectionX on DbCollection {
       );
     }
 
-    print('====> AggregationPipelineBuilder <====');
-    print(pipeline.build());
-    print('====> AggregationPipelineBuilder <====');
+    printBlue('====> AggregationPipelineBuilder <====');
+    printMagenta(pipeline.build());
+    printBlue('====> AggregationPipelineBuilder <====');
 
     final result = await aggregateToStream(pipeline.build()).toList();
     return result;
@@ -115,11 +115,19 @@ extension DbCollectionExtension on DbCollection {
         final foreignValue = doc[foreignField];
 
         if (foreignValue is ObjectId) {
-          await _populateSingleField(doc, foreignField, collectionName,
-              populateField.subPopulateFields);
+          await _populateSingleField(
+            doc,
+            foreignField,
+            collectionName,
+            populateField.subPopulateFields,
+          );
         } else if (foreignValue is List) {
-          await _populateListField(doc, foreignField, collectionName,
-              populateField.subPopulateFields);
+          await _populateListField(
+            doc,
+            foreignField,
+            collectionName,
+            populateField.subPopulateFields,
+          );
         }
       }
     }

@@ -4,7 +4,7 @@ import 'package:cats_backend/helpers/helpers.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
-  final mailRepository = MailRepositoryImpl();
+  final mailRepository = MailRepository();
 
   final qrCodeUrl = 'http://${await getPublicIpAddress()}:8080/api';
   printYellow('qrCodeUrl: $qrCodeUrl');
