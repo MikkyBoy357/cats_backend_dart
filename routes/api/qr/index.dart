@@ -4,37 +4,38 @@ import 'package:cats_backend/helpers/helpers.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:image/image.dart' as img;
 
+extension StringCleanup on String {
+  String cleanWhitespace() {
+    return replaceAll(RegExp(r'\s{2,}'), ' ').trim();
+  }
+}
+
 Future<Response> onRequest(RequestContext context) async {
   // accept only POST requests
 
   final request = context.request;
   final method = request.method;
 
-  final body = await request.tryJson;
-  if (body == null) {
-    return Response.json(
-      body: {
-        'error': 'keyWord is required',
-      },
-      statusCode: 400,
-    );
-  }
-
-  final keyWord = body['keyWord'];
-  if (keyWord == null) {
-    return Response.json(
-      body: 'keyWord is required',
-      statusCode: 400,
-    );
-  }
-
-  printMagenta('keyWord: $keyWord');
+  final params = request.uri.queryParameters;
 
   return switch (method) {
     /// GET request
     /// Encrypt the QR code key with AES256
     /// And return the QR code of the encrypted input as a PNG image
     HttpMethod.get => () async {
+        final keyword = params['keyWord'];
+        if (keyword == null) {
+          return Response.json(
+            body: 'Query Param keyWord is required',
+            statusCode: 400,
+          );
+        }
+        final keyWord = params['keyWord'].toString().cleanWhitespace();
+        printBlue('cleanKeyWord: $keyWord');
+
+        printMagenta('keyWord: $keyWord');
+        printMagenta('keyWordTrim: ${keyWord.trim()}');
+
         printMagenta('Key: ${Config.qrCodeKey}');
 
         final aes256 = keyWord.toString().aes256Encrypt(Config.qrCodeKey);
@@ -58,6 +59,22 @@ Future<Response> onRequest(RequestContext context) async {
     /// POST request
     /// Decrypt the input using AES256 and return the decrypted value
     HttpMethod.post => () async {
+        final body = await request.tryJson;
+        if (body == null) {
+          return Response.json(
+            body: 'Invalid JSON body',
+            statusCode: 400,
+          );
+        }
+
+        final keyWord = body['keyWord'];
+        if (keyWord == null) {
+          return Response.json(
+            body: 'keyWord is required',
+            statusCode: 400,
+          );
+        }
+
         try {
           final decrypted = keyWord.toString().aes256Decrypt(Config.qrCodeKey);
           return Response.json(

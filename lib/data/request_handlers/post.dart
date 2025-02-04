@@ -116,7 +116,6 @@ class PostRequestHandlerImpl implements PostRequestHandler {
     final posts = await _postRepository.getPostsByUserId(userId: userId);
     return Response.json(
       body: posts,
-      statusCode: posts.isNotEmpty ? 200 : 404,
     );
   }
 }

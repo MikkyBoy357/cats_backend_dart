@@ -17,16 +17,19 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
   final EventRepository _eventRepository;
   final TicketTypeRepository _ticketTypeRepository;
   final SckalerRequestHandlerImpl _sckalerRequestHandler;
+  final MailRequestHandlerImpl _mailRequestHandler;
 
   const TicketRequestHandlerImpl({
     required TicketRepository ticketRepository,
     required EventRepository eventRepository,
     required TicketTypeRepository ticketTypeRepository,
     required SckalerRequestHandlerImpl sckalerRequestHandler,
+    required MailRequestHandlerImpl mailRequestHandler,
   })  : _ticketRepository = ticketRepository,
         _eventRepository = eventRepository,
         _ticketTypeRepository = ticketTypeRepository,
-        _sckalerRequestHandler = sckalerRequestHandler;
+        _sckalerRequestHandler = sckalerRequestHandler,
+        _mailRequestHandler = mailRequestHandler;
 
   @override
   Future<Response> handleGetAllTickets() async {
@@ -35,7 +38,6 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
 
     return Response.json(
       body: tickets,
-      statusCode: tickets.isNotEmpty ? 200 : 404,
     );
   }
 
@@ -145,8 +147,8 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
 
     // first we collect payment
     ticketBuyRequest.paymentTransaction.amount = ticketType.price;
-    ticketBuyRequest.paymentTransaction.description = 'Tické: '
-        'PRICE: ${ticketType.price} Ë: ${event.name}';
+    ticketBuyRequest.paymentTransaction.description = '*Achat de Tické* '
+        'Ë: ${event.name}';
     ticketBuyRequest.ticketRequest.issuedTo.phone =
         ticketBuyRequest.paymentTransaction.tel;
     // trim the description to 30 characters
@@ -162,6 +164,10 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
 
     final sckalerCollectionResponseJson =
         await sckalerCollectionResponse.json();
+    printBlue('sckalerCollectionResponseJson: $sckalerCollectionResponseJson');
+    final collectionTransaction = PaymentTransactionResponse.fromJson(
+      sckalerCollectionResponseJson as Map<String, dynamic>,
+    );
 
     printMagenta(
       'Sckaler Collection Response: ${await sckalerCollectionResponse.json()}',
@@ -192,17 +198,39 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
       ),
     );
     final createTicketResponseJson = await createTicketResponse.json();
+    printBlue('createTicketResponseJson: $createTicketResponseJson');
+    final createdTicket = Ticket.fromJson(
+      createTicketResponseJson as Map<String, dynamic>,
+    );
     if (createTicketResponse.statusCode != 201) {
       printYellow(
         'Failed to create Ticket: $createTicketResponseJson',
       );
       return createTicketResponse;
     }
+
+    // Then send ticket confirmation email
+    final ticketConfirmationEmailResponse =
+        await _mailRequestHandler.handleSendTicketConfirmationEmail(
+      to: ticketBuyRequest.ticketRequest.issuedTo.email,
+      subject: 'Your Event Ticket Confirmation',
+      ticket: createdTicket,
+      paymentTransactionResponse: collectionTransaction,
+    );
+
+    if (ticketConfirmationEmailResponse.statusCode != 200) {
+      printYellow(
+        'Failed to send Ticket Confirmation Email: $ticketConfirmationEmailResponse',
+      );
+      return ticketConfirmationEmailResponse;
+    }
+
     return Response.json(
       body: {
         'message': 'Ticket purchased successfully',
         'ticket': createTicketResponseJson,
         'paymentInfo': sckalerCollectionResponseJson,
+        'emailInfo': await ticketConfirmationEmailResponse.json(),
       },
       statusCode: 201,
     );

@@ -24,7 +24,6 @@ class TicketTypeRequestHandlerImpl implements TicketTypeRequestHandler {
 
     return Response.json(
       body: ticketTypes,
-      statusCode: ticketTypes.isNotEmpty ? 200 : 404,
     );
   }
 

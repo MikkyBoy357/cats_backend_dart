@@ -20,7 +20,7 @@ class Ticket {
 
   factory Ticket.fromJson(Map<String, dynamic> json) {
     return Ticket(
-      id: json['_id'] as ObjectId,
+      id: toObjectId(json['_id']),
       event: Event.fromJson(json['event'] as Map<String, dynamic>),
       ticketType: TicketType.fromJson(
         json['ticketType'] as Map<String, dynamic>,

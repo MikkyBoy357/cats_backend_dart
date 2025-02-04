@@ -22,6 +22,10 @@ Future<Response> onRequest(RequestContext context, String id) async {
   final sckalerRequestHandler = SckalerRequestHandlerImpl(
     sckalerCollectionRepository: collectionRepository,
   );
+  final mailRequestHandler = MailRequestHandlerImpl(
+    mailRepository: MailRepositoryImpl(),
+    ticketRepository: ticketRepository,
+  );
 
   final handler = TicketRequestHandlerImpl(
     ticketRepository: ticketRepository,
@@ -30,6 +34,7 @@ Future<Response> onRequest(RequestContext context, String id) async {
       database: mongoDbService.database,
     ),
     sckalerRequestHandler: sckalerRequestHandler,
+    mailRequestHandler: mailRequestHandler,
   );
 
   return switch (context.request.method) {

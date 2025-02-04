@@ -33,6 +33,10 @@ class EventRepository extends EventRepositoryImpl {
       [
         PopulateField(fieldName: 'ticketType', collectionName: 'ticketTypes'),
         PopulateField(fieldName: 'createdBy', collectionName: 'users'),
+        PopulateField(
+          fieldName: 'categories',
+          collectionName: 'eventCategories',
+        ),
       ],
     );
     printGreen('Events: $res');
@@ -69,6 +73,10 @@ class EventRepository extends EventRepositoryImpl {
       fieldsToPopulate: [
         PopulateField(fieldName: 'ticketType', collectionName: 'ticketTypes'),
         PopulateField(fieldName: 'createdBy', collectionName: 'users'),
+        PopulateField(
+          fieldName: 'categories',
+          collectionName: 'eventCategories',
+        ),
       ],
     );
 

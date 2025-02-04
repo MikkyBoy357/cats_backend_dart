@@ -43,11 +43,8 @@ extension DbCollectionX on DbCollection {
 }
 
 class PopulateField {
-  // The field in the document to be populated
   final String fieldName;
-  // The name of the collection to fetch the data from
   final String collectionName;
-  // Optional list of sub-fields to populate
   final List<PopulateField> subPopulateFields;
 
   PopulateField({
@@ -65,46 +62,7 @@ extension DbCollectionExtension on DbCollection {
     final doc = await findOne(selector);
 
     if (doc != null) {
-      for (final populateField in fieldsToPopulate) {
-        final foreignField = populateField.fieldName;
-        final collectionName = populateField.collectionName;
-
-        if (doc.containsKey(foreignField)) {
-          final foreignId = doc[foreignField] as ObjectId;
-
-          // Query the foreign collection
-          final foreignCollection = db.collection(collectionName);
-          final foreignDoc =
-              await foreignCollection.findOne(where.id(foreignId));
-
-          if (foreignDoc != null) {
-            // If there are sub-fields to populate, populate them recursively
-            if (populateField.subPopulateFields.isNotEmpty) {
-              for (final subPopulateField in populateField.subPopulateFields) {
-                final subForeignField = subPopulateField.fieldName;
-                final subCollectionName = subPopulateField.collectionName;
-
-                if (foreignDoc.containsKey(subForeignField)) {
-                  final subForeignId = foreignDoc[subForeignField] as ObjectId;
-
-                  // Query the sub-collection
-                  final subForeignCollection = db.collection(subCollectionName);
-                  final subForeignDoc = await subForeignCollection
-                      .findOne(where.id(subForeignId));
-
-                  if (subForeignDoc != null) {
-                    // Replace the subForeignId with the populated document
-                    foreignDoc[subForeignField] = subForeignDoc;
-                  }
-                }
-              }
-            }
-
-            // Replace the foreignId with the populated document
-            doc[foreignField] = foreignDoc;
-          }
-        }
-      }
+      await _populateFieldsRecursively(doc, fieldsToPopulate);
     }
 
     return doc;
@@ -113,11 +71,10 @@ extension DbCollectionExtension on DbCollection {
   /// Populate multiple fields from their respective
   /// collections using `PopulateField` class.
   Future<List<Map<String, dynamic>>> findAndPopulateRikky(
-    List<PopulateField> fieldsToPopulate, // List of fields to populate
+    List<PopulateField> fieldsToPopulate,
   ) async {
     final docs = await find().toList();
 
-    // For each document, populate the fields as specified in `fieldsToPopulate`
     for (final doc in docs) {
       await _populateFieldsRecursively(doc, fieldsToPopulate);
     }
@@ -130,30 +87,22 @@ extension DbCollectionExtension on DbCollection {
   /// Populate fields for documents retrieved from the collection.
   /// It supports both multiple documents (find) and a single document (findOne)
   Future<List<Map<String, dynamic>>> findAndPopulateLol(
-    List<PopulateField> fieldsToPopulate, // List of fields to populate
-    Future<dynamic>
-        queryDocs, // Query that returns either a single doc or a list of docs
+    List<PopulateField> fieldsToPopulate,
+    Future<dynamic> queryDocs,
   ) async {
     final result = await queryDocs;
 
-    // Normalize result to a list, even if it's a single document
     final docs = result is List
-        ? result
-            .cast<Map<String, dynamic>>() // Cast to List<Map<String, dynamic>>
-        : <Map<String, dynamic>>[
-            result as Map<String, dynamic>,
-          ]; // Wrap single document in a list
+        ? result.cast<Map<String, dynamic>>()
+        : <Map<String, dynamic>>[result as Map<String, dynamic>];
 
-    // Populate the fields for each document
     for (final doc in docs) {
       await _populateFieldsRecursively(doc, fieldsToPopulate);
     }
 
-    // Always return a list of documents
     return docs;
   }
 
-  /// Helper function to recursively populate fields
   Future<void> _populateFieldsRecursively(
     Map<String, dynamic> doc,
     List<PopulateField> fieldsToPopulate,
@@ -163,25 +112,59 @@ extension DbCollectionExtension on DbCollection {
       final collectionName = populateField.collectionName;
 
       if (doc.containsKey(foreignField)) {
-        final foreignId = doc[foreignField] as ObjectId;
+        final foreignValue = doc[foreignField];
 
-        // Query the foreign collection
-        final foreignCollection = db.collection(collectionName);
-        final foreignDoc = await foreignCollection.findOne(where.id(foreignId));
-
-        if (foreignDoc != null) {
-          // If there are sub-fields to populate, populate them recursively
-          if (populateField.subPopulateFields.isNotEmpty) {
-            await _populateFieldsRecursively(
-              foreignDoc,
-              populateField.subPopulateFields,
-            );
-          }
-
-          // Replace the foreignId with the populated document
-          doc[foreignField] = foreignDoc;
+        if (foreignValue is ObjectId) {
+          await _populateSingleField(doc, foreignField, collectionName,
+              populateField.subPopulateFields);
+        } else if (foreignValue is List) {
+          await _populateListField(doc, foreignField, collectionName,
+              populateField.subPopulateFields);
         }
       }
     }
+  }
+
+  Future<void> _populateSingleField(
+    Map<String, dynamic> doc,
+    String foreignField,
+    String collectionName,
+    List<PopulateField> subPopulateFields,
+  ) async {
+    final foreignId = doc[foreignField] as ObjectId;
+    final foreignCollection = db.collection(collectionName);
+    final foreignDoc = await foreignCollection.findOne(where.id(foreignId));
+
+    if (foreignDoc != null) {
+      if (subPopulateFields.isNotEmpty) {
+        await _populateFieldsRecursively(foreignDoc, subPopulateFields);
+      }
+      doc[foreignField] = foreignDoc;
+    }
+  }
+
+  Future<void> _populateListField(
+    Map<String, dynamic> doc,
+    String foreignField,
+    String collectionName,
+    List<PopulateField> subPopulateFields,
+  ) async {
+    final foreignIds = doc[foreignField] as List;
+    final foreignCollection = db.collection(collectionName);
+    final populatedList = <Map<String, dynamic>>[];
+
+    for (final foreignId in foreignIds) {
+      if (foreignId is ObjectId) {
+        final foreignDoc = await foreignCollection.findOne(where.id(foreignId));
+        if (foreignDoc != null) {
+          if (subPopulateFields.isNotEmpty) {
+            await _populateFieldsRecursively(foreignDoc, subPopulateFields);
+          }
+          populatedList.add(foreignDoc);
+        }
+      }
+    }
+
+    doc[foreignField] = populatedList;
   }
 }

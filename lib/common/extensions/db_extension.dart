@@ -12,6 +12,7 @@ extension DbX on Db {
   DbCollection get chatMessagesCollection => collection('chatMessages');
   DbCollection get postsCollection => collection('posts');
   DbCollection get eventsCollection => collection('events');
+  DbCollection get eventCategoriesCollection => collection('eventCategories');
   DbCollection get ticketTypesCollection => collection('ticketTypes');
   DbCollection get ticketsCollection => collection('tickets');
   DbCollection get sckalerCollectionsCollection =>

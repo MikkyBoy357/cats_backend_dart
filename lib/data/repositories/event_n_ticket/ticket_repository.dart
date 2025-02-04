@@ -32,6 +32,10 @@ class TicketRepository extends TicketRepositoryImpl {
               collectionName: 'ticketTypes',
             ),
             PopulateField(fieldName: 'createdBy', collectionName: 'users'),
+            PopulateField(
+              fieldName: 'categories',
+              collectionName: 'eventCategories',
+            ),
           ],
         ),
       ];
@@ -117,6 +121,10 @@ class TicketRepository extends TicketRepositoryImpl {
               collectionName: 'ticketTypes',
             ),
             PopulateField(fieldName: 'createdBy', collectionName: 'users'),
+            PopulateField(
+              fieldName: 'categories',
+              collectionName: 'eventCategories',
+            ),
           ],
         ),
       ],
@@ -150,6 +158,10 @@ class TicketRepository extends TicketRepositoryImpl {
               collectionName: 'ticketTypes',
             ),
             PopulateField(fieldName: 'createdBy', collectionName: 'users'),
+            PopulateField(
+              fieldName: 'categories',
+              collectionName: 'eventCategories',
+            ),
           ],
         ),
       ],

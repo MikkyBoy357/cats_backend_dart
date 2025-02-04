@@ -40,7 +40,6 @@ class EventRequestHandlerImpl implements EventRequestHandler {
 
     return Response.json(
       body: events,
-      statusCode: events.isNotEmpty ? 200 : 404,
     );
   }
 
@@ -152,7 +151,6 @@ class EventRequestHandlerImpl implements EventRequestHandler {
 
     return Response.json(
       body: events,
-      statusCode: events.isNotEmpty ? 200 : 404,
     );
   }
 
@@ -163,7 +161,6 @@ class EventRequestHandlerImpl implements EventRequestHandler {
 
     return Response.json(
       body: events,
-      statusCode: events.isNotEmpty ? 200 : 404,
     );
   }
 

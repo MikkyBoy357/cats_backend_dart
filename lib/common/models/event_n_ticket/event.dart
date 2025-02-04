@@ -8,7 +8,7 @@ class Event {
   String description;
   String location;
   DateTime date;
-  List<String> categories;
+  List<EventCategory> categories;
   TicketType ticketType;
   User createdBy;
   DateTime createdAt;
@@ -39,6 +39,7 @@ class Event {
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
+    printMagenta('Categories: ${json['categories']}');
     return Event(
       id: json['_id'] as ObjectId,
       name: json['name'] as String,
@@ -48,7 +49,9 @@ class Event {
       date: json['date'] != null
           ? DateTime.parse(json['date'].toString())
           : DateTime.now(),
-      categories: (json['categories'] as List).map((e) => e as String).toList(),
+      categories: (json['categories'] as List)
+          .map((e) => EventCategory.fromJson(e as Map<String, dynamic>))
+          .toList(),
       ticketType: TicketType.fromJson(
         json['ticketType'] as Map<String, dynamic>,
       ),
@@ -95,7 +98,7 @@ class Event {
     String? description,
     String? location,
     DateTime? date,
-    List<String>? categories,
+    List<EventCategory>? categories,
     TicketType? ticketType,
     User? createdBy,
     DateTime? createdAt,
@@ -145,7 +148,7 @@ class EventRequest {
   final String description;
   final String location;
   final DateTime date;
-  final List<String> categories;
+  final List<EventCategory> categories;
   final ObjectId ticketType;
   final ObjectId createdBy;
   final DateTime createdAt;
@@ -171,7 +174,9 @@ class EventRequest {
       date: json['date'] != null
           ? DateTime.parse(json['date'].toString())
           : DateTime.now(),
-      categories: (json['categories'] as List).map((e) => e as String).toList(),
+      categories: (json['categories'] as List)
+          .map((e) => EventCategory.fromJson(e as Map<String, dynamic>))
+          .toList(),
       ticketType: ObjectId.fromHexString(
         json['ticketType'] as String,
       ),

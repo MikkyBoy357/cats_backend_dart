@@ -48,7 +48,6 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
 
     return Response.json(
       body: chats,
-      statusCode: chats.isNotEmpty ? 200 : 404,
     );
   }
 
