@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/helpers/helpers.dart';
@@ -15,7 +16,6 @@ Future<Response> onRequest(RequestContext context) async {
   }
 
   final saint = authValidationResponse.user!;
-
   final eventRepository = EventRepository(database: mongoDbService.database);
   final ticketTypeRepository = TicketTypeRepository(
     database: mongoDbService.database,
@@ -30,21 +30,62 @@ Future<Response> onRequest(RequestContext context) async {
 
   return switch (method) {
     HttpMethod.post => () async {
-        final body = await request.tryJson;
-        if (body == null) {
-          return Response.json(body: 'Invalid JSON body');
+        final formData = await request.formData();
+        final files = formData.files;
+
+        final name = formData.fields['name'];
+        final owner = formData.fields['owner'];
+        final description = formData.fields['description'];
+        final location = formData.fields['location'];
+        final dateString = formData.fields['date'];
+        final categoriesString = formData.fields['categories'];
+        final ticketTypesString = formData.fields['ticketTypes'];
+
+        if ([
+          name,
+          owner,
+          description,
+          location,
+          dateString,
+          categoriesString,
+          ticketTypesString,
+        ].contains(null)) {
+          return Response.json(
+            body: {'message': 'Missing required fields'},
+            statusCode: 400,
+          );
         }
 
-        body['createdBy'] = saint.$_id.oid;
+       final date = DateTime.tryParse(dateString!) ?? DateTime.now();
+        
+        final categories = (jsonDecode(categoriesString!) as List)
+            .map((id) => id.toString())
+            .map(toObjectId)
+            .toList();
 
-        final eventRequest = EventRequest.fromJson(body);
-        printGreen('TicketType: ${eventRequest.ticketType}');
+        final ticketTypes = (jsonDecode(ticketTypesString!) as List)
+            .map((id) => id.toString())
+            .map(toObjectId)
+            .toList();
 
-        print('OMO: ${eventRequest.toJson()}');
+        final eventRequest = EventRequest(
+          name: name!,
+          owner: owner!,
+          description: description!,
+          location: location!,
+          date: date,
+          categories: categories,
+          ticketTypes: ticketTypes,
+          createdBy: saint.$_id,
+          createdAt: DateTime.now(),
+        );
+
+        printGreen('Event Request Parsed: ${eventRequest.toJson()}');
 
         return handler.handleCreateEvent(
           eventRequest: eventRequest,
           saint: saint,
+          files: files
         );
       }(),
     _ => Future.value(Response.json(body: 'Invalid request method')),

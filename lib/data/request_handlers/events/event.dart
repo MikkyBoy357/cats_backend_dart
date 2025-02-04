@@ -3,11 +3,15 @@ import 'package:cats_backend/data/repositories/repositories.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
+import '../../../common/constants/storage_directories.dart';
+import '../../repositories/file_upload/file_upload.dart';
+
 abstract class EventRequestHandler {
   Future<Response> handleGetAllEvents();
   Future<Response> handleCreateEvent({
     required EventRequest eventRequest,
     required User saint,
+    required Map<String, UploadedFile> files,
   });
   Future<Response> handleGetEventById({required ObjectId eventId});
   Future<Response> handleDeleteEvent({required ObjectId eventId});
@@ -46,32 +50,54 @@ class EventRequestHandlerImpl implements EventRequestHandler {
   Future<Response> handleCreateEvent({
     required EventRequest eventRequest,
     required User saint,
+    required Map<String, UploadedFile> files,
   }) async {
-    final ticketType = await _ticketTypeRepository.getTicketTypeById(
-      ticketTypeId: eventRequest.ticketType,
-    );
+    print('===> EVENT <==> Create Event:');
+    final errors = <String?>[];
+    final mediaUrls = <String>[];
 
-    if (ticketType == null) {
+    if (files.isNotEmpty) {
+      final keys = files.keys.toList();
+      final uploadedFiles = keys.map((key) => files[key]!).toList();
+      printYellow(
+          'Files received: ${uploadedFiles.map((e) => e.name).join(", ")}');
+
+      final uploadResults = await FileUpload.uploadMultipleFilesAndReturnUrls(
+        uploadedFiles: uploadedFiles,
+        storageDir: StorageDirectories.eventImage(userId: saint.$_id.oid),
+        maxFiles: 1,
+        maxSizeInMB: 5,
+      );
+
+      errors.addAll(
+        uploadResults.map((e) => e.error).where((e) => e != null),
+      );
+      mediaUrls.addAll(
+        uploadResults.where((e) => e.url != null).map((e) => e.url!).toList(),
+      );
+    } else {
+      printYellow('No files found for event.');
+    }
+
+    if (errors.isNotEmpty) {
       return Response.json(
-        body: 'Ticket Type with ID `${eventRequest.ticketType}` not found',
-        statusCode: 404,
+        body: {
+          'message': 'Failed to upload images',
+          'errors': errors,
+        },
+        statusCode: 500,
       );
     }
 
-    final createdEvent = await _eventRepository.createEvent(
+    /// **Create Event in Database**
+    final event = await _eventRepository.createEvent(
       eventRequest: eventRequest,
+      mediaUrls: mediaUrls,
     );
-
-    if (createdEvent == null) {
-      return Response.json(
-        body: 'Failed to create event',
-        statusCode: 400,
-      );
-    }
 
     return Response.json(
-      body: createdEvent,
-      statusCode: 201,
+      body: event,
+      statusCode: event != null ? 201 : 400,
     );
   }
 

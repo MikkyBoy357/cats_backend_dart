@@ -4,7 +4,10 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 abstract class EventRepositoryImpl {
   Future<List<Event>> getEvents();
-  Future<Event?> createEvent({required EventRequest eventRequest});
+  Future<Event?> createEvent({
+    required EventRequest eventRequest,
+    required List<String> mediaUrls,
+  });
   Future<Event?> getEventById({required ObjectId eventId});
   Future<bool> deleteEvent({required ObjectId eventId});
 
@@ -31,7 +34,7 @@ class EventRepository extends EventRepositoryImpl {
   Future<List<Event>> getEvents() async {
     final res = await _eventsCollection.findAndPopulateRikky(
       [
-        PopulateField(fieldName: 'ticketType', collectionName: 'ticketTypes'),
+        PopulateField(fieldName: 'ticketTypes', collectionName: 'ticketTypes'),
         PopulateField(fieldName: 'createdBy', collectionName: 'users'),
         PopulateField(
           fieldName: 'categories',
@@ -47,9 +50,14 @@ class EventRepository extends EventRepositoryImpl {
   }
 
   @override
-  Future<Event?> createEvent({required EventRequest eventRequest}) async {
-    final result = await _eventsCollection.insertOne(eventRequest.toJson());
+  Future<Event?> createEvent({
+    required EventRequest eventRequest,
+    required List<String> mediaUrls,
+  }) async {
+    final eventData = eventRequest.toJson();
+    eventData['mediaUrls'] = mediaUrls;
 
+    final result = await _eventsCollection.insertOne(eventData);
     if (result.writeError != null) {
       return null;
     }
@@ -70,7 +78,7 @@ class EventRepository extends EventRepositoryImpl {
         '_id': eventId,
       },
       fieldsToPopulate: [
-        PopulateField(fieldName: 'ticketType', collectionName: 'ticketTypes'),
+        PopulateField(fieldName: 'ticketTypes', collectionName: 'ticketTypes'),
         PopulateField(fieldName: 'createdBy', collectionName: 'users'),
         PopulateField(
           fieldName: 'categories',

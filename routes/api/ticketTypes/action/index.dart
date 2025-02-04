@@ -22,19 +22,54 @@ Future<Response> onRequest(RequestContext context) async {
   final handler = TicketTypeRequestHandlerImpl(
     ticketTypeRepository: ticketTypeRepository,
   );
+  final saint = authValidationResponse.user!;
 
   return switch (method) {
     HttpMethod.post => () async {
         final body = await request.tryJson;
         if (body == null) {
-          return Response.json(body: 'Invalid JSON body');
+          return Response.json(
+            body: {'error': 'Invalid JSON body'},
+            statusCode: 400,
+          );
+        }
+        printBlue('body ===> $body');
+
+        final requiredFields = ['price', 'name', 'description'];
+        final missingFields = requiredFields
+            .where((field) => body[field] == null)
+            .toList();
+
+        if (missingFields.isNotEmpty) {
+          return Response.json(
+            body: {'error': 'Missing required fields: $missingFields'},
+            statusCode: 400,
+          );
         }
 
-        final ticketTypeRequest = TicketTypeRequest.fromJson(body);
+        final price = body['price'] as num;
+        final name = body['name'] as String;
+        final description = body['description'] as String;
+        final codePrefix = body['codePrefix'] as String? ?? 'STR'; 
+
+        final ticketTypeRequest = TicketTypeRequest(
+          price: price,
+          name: name,
+          description: description,
+          codePrefix: codePrefix,
+          createdBy: saint.$_id,
+        );
+
         return handler.handleCreateTicketType(
           ticketType: ticketTypeRequest.toTicketType(),
+          saint: saint,
         );
       }(),
-    _ => Future.value(Response.json(body: 'Invalid request method')),
+    _ => Future.value(
+        Response.json(
+          body: {'error': 'Invalid request method'},
+          statusCode: 405,
+        ),
+      ),
   };
 }

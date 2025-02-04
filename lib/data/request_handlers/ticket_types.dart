@@ -5,7 +5,10 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 abstract class TicketTypeRequestHandler {
   Future<Response> handleGetAllTicketTypes();
-  Future<Response> handleCreateTicketType({required TicketType ticketType});
+  Future<Response> handleCreateTicketType({
+    required TicketType ticketType,
+    required User saint,
+  });
   Future<Response> handleGetTicketTypeById({required ObjectId ticketTypeId});
   Future<Response> handleDeleteTicketType({required ObjectId ticketTypeId});
 }
@@ -29,10 +32,12 @@ class TicketTypeRequestHandlerImpl implements TicketTypeRequestHandler {
   @override
   Future<Response> handleCreateTicketType({
     required TicketType ticketType,
+    required User saint,
   }) async {
     print('===> POST <==> TicketType:');
+    final finalTicketType = ticketType.copyWith(createdBy: saint.$_id);
     final createdTicketType = await _ticketTypeRepository.createTicketType(
-      ticketType: ticketType,
+      ticketType: finalTicketType,
     );
 
     return Response.json(
