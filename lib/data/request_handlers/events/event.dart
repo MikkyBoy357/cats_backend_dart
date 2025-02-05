@@ -7,7 +7,9 @@ import '../../../common/constants/storage_directories.dart';
 import '../../repositories/file_upload/file_upload.dart';
 
 abstract class EventRequestHandler {
-  Future<Response> handleGetAllEvents();
+  Future<Response> handleGetAllEvents({
+    List<ObjectId>? categoryIds,
+  });
   Future<Response> handleCreateEvent({
     required EventRequest eventRequest,
     required User saint,
@@ -38,8 +40,12 @@ class EventRequestHandlerImpl implements EventRequestHandler {
         _ticketTypeRepository = ticketTypeRepository;
 
   @override
-  Future<Response> handleGetAllEvents() async {
-    final events = await _eventRepository.getEvents();
+  Future<Response> handleGetAllEvents({
+    List<ObjectId>? categoryIds,
+  }) async {
+    final events = await _eventRepository.getEvents(
+      categoryIds: categoryIds,
+    );
 
     return Response.json(
       body: events,
