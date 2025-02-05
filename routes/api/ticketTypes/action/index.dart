@@ -36,9 +36,8 @@ Future<Response> onRequest(RequestContext context) async {
         printBlue('body ===> $body');
 
         final requiredFields = ['price', 'name', 'description'];
-        final missingFields = requiredFields
-            .where((field) => body[field] == null)
-            .toList();
+        final missingFields =
+            requiredFields.where((field) => body[field] == null).toList();
 
         if (missingFields.isNotEmpty) {
           return Response.json(
@@ -50,7 +49,7 @@ Future<Response> onRequest(RequestContext context) async {
         final price = body['price'] as num;
         final name = body['name'] as String;
         final description = body['description'] as String;
-        final codePrefix = body['codePrefix'] as String? ?? 'STR'; 
+        final codePrefix = body['codePrefix'] as String? ?? 'STR';
 
         final ticketTypeRequest = TicketTypeRequest(
           price: price,

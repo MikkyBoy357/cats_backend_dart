@@ -62,7 +62,9 @@ class TicketRepository extends TicketRepositoryImpl {
 
     // Use the findAndPopulateLol to populate the fields
     final populatedDocs = await _ticketsCollection.findAndPopulateLol(
-      _ticketPopulateFields,
+      [
+        // ..._ticketPopulateFields,
+      ],
       queryDocs,
     );
 
@@ -111,22 +113,7 @@ class TicketRepository extends TicketRepositoryImpl {
         '_id': ticketId,
       },
       fieldsToPopulate: [
-        PopulateField(fieldName: 'ticketTypes', collectionName: 'ticketTypes'),
-        PopulateField(
-          fieldName: 'event',
-          collectionName: 'events',
-          subPopulateFields: [
-            PopulateField(
-              fieldName: 'ticketType',
-              collectionName: 'ticketTypes',
-            ),
-            PopulateField(fieldName: 'createdBy', collectionName: 'users'),
-            PopulateField(
-              fieldName: 'categories',
-              collectionName: 'eventCategories',
-            ),
-          ],
-        ),
+        ..._ticketPopulateFields,
       ],
     );
 
@@ -148,22 +135,7 @@ class TicketRepository extends TicketRepositoryImpl {
         'ticketNumber': ticketNumber,
       },
       fieldsToPopulate: [
-        PopulateField(fieldName: 'ticketTypes', collectionName: 'ticketTypes'),
-        PopulateField(
-          fieldName: 'event',
-          collectionName: 'events',
-          subPopulateFields: [
-            PopulateField(
-              fieldName: 'ticketType',
-              collectionName: 'ticketTypes',
-            ),
-            PopulateField(fieldName: 'createdBy', collectionName: 'users'),
-            PopulateField(
-              fieldName: 'categories',
-              collectionName: 'eventCategories',
-            ),
-          ],
-        ),
+        ..._ticketPopulateFields,
       ],
     );
 

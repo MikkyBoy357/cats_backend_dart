@@ -5,11 +5,17 @@ String ticketConfirmationHtmlContent({
   required String qrCodeUrl,
   required Ticket ticket,
 }) {
-  final event = ticket.event;
+  final event = ticket.event.fold(
+    (l) => Event.sampleData(),
+    (r) => r,
+  );
   final ticketOwner = ticket.issuedTo;
-  final ticketType = ticket.ticketType;
+  final ticketType = ticket.ticketType.fold(
+    (l) => TicketType.sampleData(),
+    (r) => r,
+  );
 
-  final eventDate = ticket.event.date;
+  final eventDate = event.date;
   final friendlyDate = DateFormat('MMMM d, yyyy').format(eventDate);
   final friendlyTime = DateFormat('h:mm a').format(eventDate);
 
@@ -19,7 +25,7 @@ String ticketConfirmationHtmlContent({
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>${ticket.event.name} Confirmation</title>
+    <title>${event.name} Confirmation</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f4f4;">
     <!-- Main Container -->

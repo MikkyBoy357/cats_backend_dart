@@ -1,4 +1,5 @@
 import 'package:cats_backend/common/common.dart';
+import 'package:dartz/dartz.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class Event {
@@ -8,9 +9,9 @@ class Event {
   String description;
   String location;
   DateTime date;
-  List<EventCategory> categories;
-  List<TicketType> ticketTypes;
-  User createdBy;
+  List<Either<ObjectId, EventCategory>> categories;
+  List<Either<ObjectId, TicketType>> ticketTypes;
+  Either<ObjectId, User> createdBy;
   DateTime createdAt;
 
   // New fields for engagement tracking
@@ -41,7 +42,6 @@ class Event {
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
-    printMagenta('Categories: ${json['categories']}');
     return Event(
       id: toObjectId(json['_id']),
       name: json['name'] as String,
@@ -51,15 +51,11 @@ class Event {
       date: json['date'] != null
           ? DateTime.parse(json['date'].toString())
           : DateTime.now(),
-      categories: (json['categories'] as List)
-          .map((e) => EventCategory.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      ticketTypes: (json['ticketTypes'] as List)
-          .map((e) => TicketType.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      createdBy: User.fromJson(
-        json['createdBy'] as Map<String, dynamic>,
-      ),
+      categories: parseEitherList<EventCategory>(
+          json['categories'] as List, EventCategory.fromJson),
+      ticketTypes: parseEitherList<TicketType>(
+          json['ticketTypes'] as List, TicketType.fromJson),
+      createdBy: parseEither<User>(json['createdBy'], User.fromJson),
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'].toString())
           : DateTime.now(),
@@ -70,7 +66,8 @@ class Event {
       lastUpdated: json['lastUpdated'] != null
           ? DateTime.parse(json['lastUpdated'].toString())
           : DateTime.now(),
-      mediaUrls: (json['mediaUrls'] as List?)?.map((e) => e as String).toList() ?? [],
+      mediaUrls:
+          (json['mediaUrls'] as List?)?.map((e) => e as String).toList() ?? [],
     );
   }
 
@@ -82,9 +79,11 @@ class Event {
       'description': description,
       'location': location,
       'date': date.toString(),
-      'categories': categories.map((e) => e.toJson()).toList(),
-      'ticketTypes': ticketTypes.map((e) => e.toJson()).toList(),
-      'createdBy': createdBy.toJson(),
+      'categories':
+          categories.map((e) => e.fold((l) => l, (r) => r.toJson())).toList(),
+      'ticketTypes':
+          ticketTypes.map((e) => e.fold((l) => l, (r) => r.toJson())).toList(),
+      'createdBy': createdBy.fold((l) => l, (r) => r.toJson()),
       'createdAt': createdAt.toString(),
       'views': views,
       'clicks': clicks,
@@ -102,16 +101,16 @@ class Event {
     String? description,
     String? location,
     DateTime? date,
-    List<EventCategory>? categories,
-    List<TicketType>? ticketTypes,
-    User? createdBy,
+    List<Either<ObjectId, EventCategory>>? categories,
+    List<Either<ObjectId, TicketType>>? ticketTypes,
+    Either<ObjectId, User>? createdBy,
     DateTime? createdAt,
     int? views,
     int? clicks,
     int? shares,
     int? bookmarks,
     DateTime? lastUpdated,
-    List<String>? mediaUrls,  // Added this parameter
+    List<String>? mediaUrls,
   }) {
     return Event(
       id: id ?? this.id,
@@ -132,7 +131,33 @@ class Event {
       mediaUrls: mediaUrls ?? this.mediaUrls,
     );
   }
+
+  factory Event.sampleData() {
+    return Event(
+      id: ObjectId(),
+      name: 'Karaoke 🎙️',
+      owner: 'John Doe',
+      description: 'Sing your heart out!',
+      location: 'Karaoke Bar',
+      date: DateTime.now(),
+      categories: [
+        Right(EventCategory.sampleData().copyWith(id: ObjectId())),
+      ],
+      ticketTypes: [
+        Right(
+          TicketType.sampleData().copyWith(id: ObjectId()),
+        ),
+      ],
+      createdBy: Right(User.sampleData().copyWith($_id: ObjectId())),
+      createdAt: DateTime.now(),
+      lastUpdated: DateTime.now(),
+      mediaUrls: [
+        'https://picsum.photos/200',
+      ],
+    );
+  }
 }
+
 class EventRequest {
   final String name;
   final String owner;

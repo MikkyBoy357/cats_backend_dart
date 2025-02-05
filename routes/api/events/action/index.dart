@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/helpers/helpers.dart';
@@ -56,8 +57,8 @@ Future<Response> onRequest(RequestContext context) async {
           );
         }
 
-       final date = DateTime.tryParse(dateString!) ?? DateTime.now();
-        
+        final date = DateTime.tryParse(dateString!) ?? DateTime.now();
+
         final categories = (jsonDecode(categoriesString!) as List)
             .map((id) => id.toString())
             .map(toObjectId)
@@ -85,7 +86,7 @@ Future<Response> onRequest(RequestContext context) async {
         return handler.handleCreateEvent(
           eventRequest: eventRequest,
           saint: saint,
-          files: files
+          files: files,
         );
       }(),
     _ => Future.value(Response.json(body: 'Invalid request method')),

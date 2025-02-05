@@ -28,7 +28,7 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
   Future<List<TicketTypeResponse>> getTicketTypes() async {
     final res = await _ticketTypesCollection.findAndPopulateRikky(
       [
-        PopulateField(fieldName: 'createdBy', collectionName: 'users'),
+        // PopulateField(fieldName: 'createdBy', collectionName: 'users'),
       ],
     );
     printGreen('TicketTypes: $res');
@@ -44,8 +44,7 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
   }) async {
     final res = await _ticketTypesCollection.findAndPopulateRikky(
       [
-        PopulateField(fieldName: 'eventId', collectionName: 'events'),
-        PopulateField(fieldName: 'createdBy', collectionName: 'users'),
+        // PopulateField(fieldName: 'createdBy', collectionName: 'users'),
       ],
     );
     printGreen('TicketTypes: $res');

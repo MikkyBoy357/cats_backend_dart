@@ -30,16 +30,20 @@ class EventRepository extends EventRepositoryImpl {
 
   DbCollection get _eventsCollection => _database.eventsCollection;
 
+  final eventPopulateFields = [
+    PopulateField(fieldName: 'ticketTypes', collectionName: 'ticketTypes'),
+    PopulateField(fieldName: 'createdBy', collectionName: 'users'),
+    PopulateField(
+      fieldName: 'categories',
+      collectionName: 'eventCategories',
+    ),
+  ];
+
   @override
   Future<List<Event>> getEvents() async {
     final res = await _eventsCollection.findAndPopulateRikky(
       [
-        PopulateField(fieldName: 'ticketTypes', collectionName: 'ticketTypes'),
-        PopulateField(fieldName: 'createdBy', collectionName: 'users'),
-        PopulateField(
-          fieldName: 'categories',
-          collectionName: 'eventCategories',
-        ),
+        // ...eventPopulateFields,
       ],
     );
     printGreen('Events: $res');
@@ -78,12 +82,7 @@ class EventRepository extends EventRepositoryImpl {
         '_id': eventId,
       },
       fieldsToPopulate: [
-        PopulateField(fieldName: 'ticketTypes', collectionName: 'ticketTypes'),
-        PopulateField(fieldName: 'createdBy', collectionName: 'users'),
-        PopulateField(
-          fieldName: 'categories',
-          collectionName: 'eventCategories',
-        ),
+        ...eventPopulateFields,
       ],
     );
 
@@ -110,53 +109,45 @@ class EventRepository extends EventRepositoryImpl {
   @override
   Future<bool> incrementViews({required ObjectId eventId}) async {
     final result = await _eventsCollection.updateOne(
-      where.eq('_id', eventId),
+      where.id(eventId),
       modify.inc('views', 1).set('lastUpdated', DateTime.now()),
     );
 
-    if (result.writeError != null) {
-      return false;
-    }
-    return true;
+    final success = result.nModified > 0;
+    return success;
   }
 
   @override
   Future<bool> incrementClicks({required ObjectId eventId}) async {
     final result = await _eventsCollection.updateOne(
-      where.eq('_id', eventId),
+      where.id(eventId),
       modify.inc('clicks', 1).set('lastUpdated', DateTime.now()),
     );
 
-    if (result.writeError != null) {
-      return false;
-    }
-    return true;
+    final success = result.nModified > 0;
+    return success;
   }
 
   @override
   Future<bool> incrementShares({required ObjectId eventId}) async {
     final result = await _eventsCollection.updateOne(
-      where.eq('_id', eventId),
+      where.id(eventId),
       modify.inc('shares', 1).set('lastUpdated', DateTime.now()),
     );
 
-    if (result.writeError != null) {
-      return false;
-    }
-    return true;
+    final success = result.nModified > 0;
+    return success;
   }
 
   @override
   Future<bool> incrementBookmarks({required ObjectId eventId}) async {
     final result = await _eventsCollection.updateOne(
-      where.eq('_id', eventId),
+      where.id(eventId),
       modify.inc('bookmarks', 1).set('lastUpdated', DateTime.now()),
     );
 
-    if (result.writeError != null) {
-      return false;
-    }
-    return true;
+    final success = result.nModified > 0;
+    return success;
   }
 
   @override

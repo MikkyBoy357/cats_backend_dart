@@ -25,6 +25,7 @@ class PaymentTransaction {
   num amount;
   String description;
   String currency;
+  DateTime createdAt;
 
   PaymentTransaction({
     required this.gateway,
@@ -34,6 +35,7 @@ class PaymentTransaction {
     required this.amount,
     required this.description,
     required this.currency,
+    required this.createdAt,
   });
 
   factory PaymentTransaction.fromJson(Map<String, dynamic> json) {
@@ -51,6 +53,9 @@ class PaymentTransaction {
       amount: json['amount'] as num,
       description: json['description'] as String,
       currency: json['currency'] as String,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'].toString())
+          : DateTime.now(),
     );
   }
 
@@ -63,6 +68,7 @@ class PaymentTransaction {
       'amount': amount,
       'description': description,
       'currency': currency,
+      'createdAt': createdAt.toString(),
     };
   }
 
@@ -74,6 +80,7 @@ class PaymentTransaction {
     num? amount,
     String? description,
     String? currency,
+    DateTime? createdAt,
   }) {
     return PaymentTransaction(
       gateway: gateway ?? this.gateway,
@@ -83,6 +90,7 @@ class PaymentTransaction {
       amount: amount ?? this.amount,
       description: description ?? this.description,
       currency: currency ?? this.currency,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 
@@ -95,6 +103,7 @@ class PaymentTransaction {
       amount: 1000.0,
       description: 'Pool party ticket 1x',
       currency: 'XOF',
+      createdAt: DateTime.now(),
     );
   }
 }

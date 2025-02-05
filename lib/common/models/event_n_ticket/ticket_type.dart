@@ -1,4 +1,5 @@
 import 'package:cats_backend/common/common.dart';
+import 'package:dartz/dartz.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class TicketType {
@@ -20,13 +21,14 @@ class TicketType {
 
   factory TicketType.fromJson(Map<String, dynamic> json) {
     return TicketType(
-        id: toObjectId(json['_id']),
-        price: json['price'] as num,
-        name: json['name'] as String,
-        description: json['description'] as String,
-        codePrefix:
-            json['codePrefix'] == null ? 'STR' : json['codePrefix'] as String,
-        createdBy: toObjectId(json['createdBy']));
+      id: toObjectId(json['_id']),
+      price: json['price'] as num,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      codePrefix:
+          json['codePrefix'] == null ? 'STR' : json['codePrefix'] as String,
+      createdBy: toObjectId(json['createdBy']),
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -57,9 +59,18 @@ class TicketType {
       createdBy: createdBy ?? this.createdBy,
     );
   }
+
+  factory TicketType.sampleData() {
+    return TicketType(
+      id: ObjectId(),
+      price: 100,
+      name: 'General Admission',
+      description: 'General Admission Ticket',
+      createdBy: ObjectId(),
+    );
+  }
 }
 // Request
-
 
 class TicketTypeRequest {
   num price;
@@ -73,7 +84,7 @@ class TicketTypeRequest {
     required this.name,
     required this.description,
     this.codePrefix = 'STR',
-     this.createdBy,
+    this.createdBy,
   });
 
   factory TicketTypeRequest.fromJson(Map<String, dynamic> json) {
@@ -81,8 +92,8 @@ class TicketTypeRequest {
       price: json['price'] as num,
       name: json['name'] as String,
       description: json['description'] as String,
-      codePrefix: (json['codePrefix'] == null || 
-      json['codePrefix'].toString().trim().isEmpty)
+      codePrefix: (json['codePrefix'] == null ||
+              json['codePrefix'].toString().trim().isEmpty)
           ? 'STR'
           : json['codePrefix'] as String,
       createdBy: ObjectId.fromHexString(
@@ -101,8 +112,6 @@ class TicketTypeRequest {
     };
   }
 
-
-
   TicketType toTicketType() {
     return TicketType(
       id: ObjectId(),
@@ -113,6 +122,7 @@ class TicketTypeRequest {
       createdBy: createdBy!,
     );
   }
+
   TicketTypeRequest copyWith({
     num? price,
     String? name,
@@ -136,7 +146,7 @@ class TicketTypeResponse {
   String name;
   String description;
   String codePrefix;
-  User createdBy;
+  Either<ObjectId, User> createdBy;
 
   TicketTypeResponse({
     required this.id,
@@ -155,7 +165,7 @@ class TicketTypeResponse {
       description: json['description'] as String,
       codePrefix:
           json['codePrefix'] == null ? 'STR' : json['codePrefix'] as String,
-      createdBy: User.fromJson(json['createdBy'] as Map<String, dynamic>),
+      createdBy: parseEither<User>(json['createdBy'], User.fromJson),
     );
   }
 
@@ -166,7 +176,7 @@ class TicketTypeResponse {
       'name': name,
       'description': description,
       'codePrefix': codePrefix,
-      'createdBy': createdBy.toJson(),
+      'createdBy': createdBy.fold((l) => l, (r) => r),
     };
   }
 
@@ -176,7 +186,7 @@ class TicketTypeResponse {
     String? name,
     String? description,
     String? codePrefix,
-    User? createdBy,
+    Either<ObjectId, User>? createdBy,
   }) {
     return TicketTypeResponse(
       id: id ?? this.id,

@@ -96,6 +96,23 @@ class User {
     );
   }
 
+  factory User.sampleData() {
+    return User(
+      $_id: ObjectId(),
+      name: 'John Doe',
+      email: 'johndoe@gmail.com',
+      password: 'password',
+      age: 25,
+      username: 'johndoe',
+      avatarUrl: 'https://picsum.photos/200',
+      bio: 'I am a software engineer',
+      isOnline: true,
+      lastSeen: DateTime.now(),
+      followingsCount: 100,
+      followersCount: 200,
+    );
+  }
+
   void validate() {
     Validator.validateRequiredString(name, fieldName: 'Name');
     Validator.validateEmail(email);

@@ -1,10 +1,11 @@
 import 'package:cats_backend/common/common.dart';
+import 'package:dartz/dartz.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class Ticket {
   ObjectId id;
-  Event event;
-  TicketType ticketType;
+  Either<ObjectId, Event> event;
+  Either<ObjectId, TicketType> ticketType;
   TicketOwner issuedTo;
   DateTime issuedAt;
   String ticketNumber;
@@ -21,10 +22,9 @@ class Ticket {
   factory Ticket.fromJson(Map<String, dynamic> json) {
     return Ticket(
       id: toObjectId(json['_id']),
-      event: Event.fromJson(json['event'] as Map<String, dynamic>),
-      ticketType: TicketType.fromJson(
-        json['ticketType'] as Map<String, dynamic>,
-      ),
+      event: parseEither<Event>(json['event'], Event.fromJson),
+      ticketType:
+          parseEither<TicketType>(json['ticketType'], TicketType.fromJson),
       issuedTo: TicketOwner.fromJson(json['issuedTo'] as Map<String, dynamic>),
       issuedAt: json['issuedAt'] != null
           ? DateTime.parse(json['issuedAt'] as String)
@@ -36,8 +36,8 @@ class Ticket {
   Map<String, dynamic> toJson() {
     return {
       '_id': id,
-      'event': event.toJson(),
-      'ticketType': ticketType.toJson(),
+      'event': event.fold((l) => l, (r) => r),
+      'ticketType': ticketType.fold((l) => l, (r) => r),
       'issuedTo': issuedTo.toJson(),
       'issuedAt': issuedAt.toString(),
       'ticketNumber': ticketNumber,
