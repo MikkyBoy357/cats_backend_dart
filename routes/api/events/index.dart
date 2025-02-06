@@ -32,7 +32,7 @@ Future<Response> onRequest(RequestContext context) async {
 
         final categoryIds = categoryList?.map((e) => toObjectId(e)).toList();
 
-        if (categoryIds!.isNotEmpty) {
+        if (categoryIds != null && categoryIds.isNotEmpty) {
           printGreen('Category IDs: $categoryIds');
           return handler.handleGetAllEvents(categoryIds: categoryIds);
         }
