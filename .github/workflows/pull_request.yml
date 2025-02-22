@@ -5,18 +5,34 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+
+      - uses: dart-lang/setup-dart@v1
         with:
           channel: stable
           version: 3.5.3
+
       - run: dart --version
-      - name: Dart Apply Fixes (if this fails, run `dart fix --apply` locally)
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-pub-cache-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-cache-
+
+      - name: Dart Apply Fixes
         run: dart fix --apply; git diff --exit-code
-      - name: Dart Formatter (if this fails, run `dart format .` locally)
+
+      - name: Dart Formatter
         run: dart format .; git diff --exit-code
+
       - name: Restore packages
         run: dart pub get
+
       - name: Dart Analyze
         run: dart analyze
+
       - name: Run tests without coverage
         run: dart test
