@@ -1,6 +1,11 @@
 export 'buss.dart';
 export 'cats.dart';
 export 'chat.dart';
+export 'events/events.dart';
+export 'mail.dart';
 export 'post.dart';
 export 'profile.dart';
+export 'sckaler.dart';
+export 'ticket.dart';
+export 'ticket_types.dart';
 export 'user.dart';

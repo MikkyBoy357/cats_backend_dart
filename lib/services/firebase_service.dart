@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/config/config.dart';
 import 'package:firebase_dart/firebase_dart.dart';
 
@@ -14,27 +15,29 @@ class FirebaseService {
     try {
       // read firebase_options file as Map
       final file = File(Config.firebaseOptionsDir);
-      print('File Path: ${file.path}');
+      printBlue('File Path: ${file.path}');
       final content = file.readAsStringSync();
       final data = jsonDecode(content) as Map<String, dynamic>;
       firebaseOptions = FirebaseOptions.fromMap(data);
     } catch (e) {
-      print('====> Error reading Firebase Options: $e <====');
+      printRed('====> Error reading Firebase Options: $e <====');
     }
 
-    print('====> Initializing Firebase... <====');
+    printBlue('====> Initializing Firebase... <====');
     try {
       FirebaseDart.setup();
       app = await Firebase.initializeApp(
         options: firebaseOptions,
       );
 
-      print('====> Firebase App initialized Successfully <====');
+      printMagenta('====> Firebase App initialized Successfully <====');
 
       storage = FirebaseStorage.instanceFor(app: app);
-      print('==================> Connected to Firebase ✅ <==================');
+      printGreen(
+        '==================> Connected to Firebase ✅ <==================',
+      );
     } catch (e) {
-      print('====> Error initializing Firebase: $e <====');
+      printRed('====> Error initializing Firebase: $e <====');
     }
   }
 }

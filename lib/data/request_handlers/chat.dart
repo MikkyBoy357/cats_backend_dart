@@ -1,6 +1,5 @@
-import 'package:cats_backend/common/constants/storage_directories.dart';
+import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/data/data.dart';
-import 'package:cats_backend/data/repositories/file_upload/file_upload.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -43,12 +42,10 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
     required ObjectId saintId,
     List<ObjectId> participants = const [],
   }) async {
-    print('===> GET <==> Chat:');
     final chats = await _chatRepository.getAllSaintChats(saintId: saintId);
 
     return Response.json(
       body: chats,
-      statusCode: chats.isNotEmpty ? 200 : 404,
     );
   }
 
@@ -57,7 +54,6 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
     required ObjectId saintId,
     required List<ObjectId> participants,
   }) async {
-    print('===> GET <==> Chat:');
     final chat = await _chatRepository.getSingleSaintChat(
       saintId: saintId,
       participants: participants,
@@ -82,7 +78,6 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
   Future<Response> handleGetChatById({
     required ObjectId chatId,
   }) async {
-    print('===> GET <==> Chat:');
     final chat = await _chatRepository.getChatByIdWithMessages(chatId: chatId);
 
     if (chat == null) {
@@ -105,7 +100,6 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
     required ObjectId saintId,
     required List<ObjectId> participants,
   }) async {
-    print('===> POST <==> Chat:');
     if (participants.isEmpty) {
       return Response.json(
         body: {
@@ -150,7 +144,6 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
   }) async {
     String? downloadUrl;
     String? uploadError;
-    print('===> POST <==> Chat:');
 
     /// Validate form data
     final message = formData?.fields['message'];

@@ -37,8 +37,6 @@ class ProfileRepository extends ProfileRepositoryImpl {
       modify.set('avatarUrl', imageUrl),
     );
 
-    print('📍 Write result: $result');
-
     if (result.writeError != null) {
       return null;
     }
@@ -57,8 +55,6 @@ class ProfileRepository extends ProfileRepositoryImpl {
       where.id(user.$_id),
       modify.set('bio', bio),
     );
-
-    print('📍 Write result: $result');
 
     if (result.writeError != null) {
       return null;
@@ -79,8 +75,6 @@ class ProfileRepository extends ProfileRepositoryImpl {
       where.id(user.$_id),
       modify.set('isOnline', isOnline).set('lastSeen', lastSeen),
     );
-
-    print('📍 Write result: $result');
 
     if (result.writeError != null) {
       return null;

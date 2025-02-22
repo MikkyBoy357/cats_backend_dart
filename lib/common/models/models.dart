@@ -1,4 +1,5 @@
 export 'cat.dart';
+export 'event_n_ticket/event_n_ticket.dart';
 export 'followed_follower.dart';
 export 'followers_followings_counts.dart';
 export 'messaging/messaging.dart';

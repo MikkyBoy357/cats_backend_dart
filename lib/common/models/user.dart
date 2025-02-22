@@ -1,4 +1,4 @@
-import 'package:cats_backend/common/validator.dart';
+import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class User {
@@ -30,21 +30,24 @@ class User {
     required this.followersCount,
   });
 
-  User.fromJson(Map<String, dynamic> map)
-      : $_id = map['_id'] as ObjectId,
-        name = map['name'] as String? ?? '',
-        email = map['email'] as String,
-        password = map['password'] as String?,
-        age = map['age'] as int? ?? 0,
-        username = map['username'] as String? ?? '',
-        avatarUrl = map['avatarUrl'] as String?,
-        bio = map['bio'] as String?,
-        isOnline = map['isOnline'] as bool? ?? false,
-        lastSeen = map['lastSeen'] != null
-            ? DateTime.parse(map['lastSeen'].toString())
-            : DateTime.now(),
-        followingsCount = map['followingsCount'] as int?,
-        followersCount = map['followersCount'] as int?;
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      $_id: toObjectId(json['_id']),
+      name: json['name'] as String? ?? '',
+      email: json['email'] as String,
+      password: json['password'] as String?,
+      age: json['age'] as int? ?? 0,
+      username: json['username'] as String? ?? '',
+      avatarUrl: json['avatarUrl'] as String?,
+      bio: json['bio'] as String?,
+      isOnline: json['isOnline'] as bool? ?? false,
+      lastSeen: json['lastSeen'] != null
+          ? DateTime.parse(json['lastSeen'].toString())
+          : DateTime.now(),
+      followingsCount: json['followingsCount'] as int?,
+      followersCount: json['followersCount'] as int?,
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -90,6 +93,23 @@ class User {
       lastSeen: lastSeen ?? this.lastSeen,
       followingsCount: followingsCount ?? this.followingsCount,
       followersCount: followersCount ?? this.followersCount,
+    );
+  }
+
+  factory User.sampleData() {
+    return User(
+      $_id: ObjectId(),
+      name: 'John Doe',
+      email: 'johndoe@gmail.com',
+      password: 'password',
+      age: 25,
+      username: 'johndoe',
+      avatarUrl: 'https://picsum.photos/200',
+      bio: 'I am a software engineer',
+      isOnline: true,
+      lastSeen: DateTime.now(),
+      followingsCount: 100,
+      followersCount: 200,
     );
   }
 

@@ -1,5 +1,5 @@
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/helpers/populate.dart';
+import 'package:cats_backend/helpers/helpers.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 enum UserQuery {
@@ -63,7 +63,6 @@ class UserRepository implements UserRepositoryImpl {
     final foundUser = await usersCollection.findOne({
       query.value: parsedKeyword,
     });
-    print('====> foundUser: $foundUser');
     return foundUser != null ? User.fromJson(foundUser) : null;
   }
 
@@ -86,7 +85,7 @@ class UserRepository implements UserRepositoryImpl {
       return null;
     }
 
-    print('====> test: $followedFollowers');
+    printMagenta('====> test: $followedFollowers');
 
     return followedFollowers;
   }
@@ -128,10 +127,6 @@ class UserRepository implements UserRepositoryImpl {
   Future<FollowersFollowingsCounts> getFollowersFollowingsCounts(
     String userId,
   ) async {
-    final parsedKeyword = ObjectId.fromHexString(userId);
-    print('meh -> $parsedKeyword');
-    print('meh2 -> ${FollowedFollowerQuery.followedId}');
-
     final fallback = FollowersFollowingsCounts.zero();
 
     final followers = await getFollowedFollowerQuery(

@@ -1,3 +1,4 @@
+import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class Transaction {
@@ -20,15 +21,18 @@ class Transaction {
   bool idIsSender(ObjectId id) => senderId == id;
   bool idIsReceiver(ObjectId id) => receiverId == id;
 
-  Transaction.fromMap(Map<String, dynamic> map)
-      : $_id = map['_id'] as ObjectId,
-        amount = map['amount'] as double,
-        date = DateTime.parse(map['date'].toString()),
-        description = map['description'] as String,
-        senderId = map['senderId'] as ObjectId,
-        receiverId = map['receiverId'] as ObjectId;
+  factory Transaction.fromJson(Map<String, dynamic> json) {
+    return Transaction(
+      $_id: toObjectId(json['_id']),
+      amount: json['amount'] as double,
+      date: DateTime.parse(json['date'].toString()),
+      description: json['description'] as String,
+      senderId: json['senderId'] as ObjectId,
+      receiverId: json['receiverId'] as ObjectId,
+    );
+  }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       '_id': $_id,
       'amount': amount,

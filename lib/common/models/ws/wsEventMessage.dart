@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:cats_backend/common/common.dart';
+
 enum WsEventType { message, typing, receipt, connect }
 
 class WsEventMessage {
@@ -54,7 +56,7 @@ class WsEventMessage {
       final json = jsonDecode(message) as Map<String, dynamic>;
       return WsEventMessage.fromJson(json);
     } catch (e) {
-      print('Error: $e');
+      printYellow('Error: $e');
       return null;
     }
   }

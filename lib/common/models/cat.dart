@@ -1,3 +1,4 @@
+import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class Cat {
@@ -28,7 +29,7 @@ class Cat {
 
   factory Cat.fromJson(Map<String, dynamic> json) {
     return Cat(
-      $_id: json['_id'] as ObjectId,
+      $_id: toObjectId(json['_id']),
       name: json['name'] as String,
     );
   }

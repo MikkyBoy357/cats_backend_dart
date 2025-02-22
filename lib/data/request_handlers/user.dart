@@ -74,7 +74,7 @@ class UserRequestHandlerImpl implements UserRequestHandler {
       final followersFollowingsCounts =
           await _userRepository.getFollowersFollowingsCounts(user.$_id.oid);
 
-      print('====> followersFollowingsCounts: $followersFollowingsCounts');
+      printGreen('====> followersFollowingsCounts: $followersFollowingsCounts');
 
       user
         ..followersCount = followersFollowingsCounts.followersCount
@@ -124,7 +124,7 @@ class UserRequestHandlerImpl implements UserRequestHandler {
 
   @override
   Future<Response> postUserFollowers(FollowedFollower followedFollower) async {
-    print('====> followedFollower: ${followedFollower.toJson()}');
+    printGreen('====> followedFollower: ${followedFollower.toJson()}');
     // check if the follower and followed are the same
     if (followedFollower.followerId == followedFollower.followedId) {
       return Response.json(
@@ -143,7 +143,7 @@ class UserRequestHandlerImpl implements UserRequestHandler {
       followedFollower.followerId.oid,
     );
 
-    print('====> existingFollowedFollower: $existingFollowedFollower');
+    printGreen('====> existingFollowedFollower: $existingFollowedFollower');
 
     // if the follower is already following the followed, unfollow
     if (existingFollowedFollower!.isNotEmpty) {

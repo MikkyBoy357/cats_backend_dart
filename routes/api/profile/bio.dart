@@ -1,13 +1,11 @@
 import 'dart:convert';
 
-import 'package:cats_backend/data/repositories/repositories.dart';
-import 'package:cats_backend/data/request_handlers/profile.dart';
-import 'package:cats_backend/helpers/authentication_validation.dart';
-import 'package:cats_backend/services/mongo_service.dart';
+import 'package:cats_backend/data/data.dart';
+import 'package:cats_backend/helpers/helpers.dart';
+import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
-  print('======= avatar =======>');
   final authValidationResponse = context.read<AuthValidationResponse>();
 
   if (!authValidationResponse.isValid) {

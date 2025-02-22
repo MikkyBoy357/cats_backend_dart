@@ -17,6 +17,15 @@ Think of it as a template for building a REST backend in Dart.
 ##### ✅ Chat (*Send, Receive, Send Image*)
 ##### ✅ ChatMessage Read Receipt (*Delivered, Read*)
 
+## How to run
+1. Clone the repository `git clone https://github.com/MikkyBoy357/cats_backend_dart.git`
+2. Change directory `cd cats_backend_dart`
+3. Install dart_frog_cli globally `pub global activate dart_frog_cli`
+4. Configure the credentials in `lib/config/congig.dart`
+5. Add the `firebase_options.json` file in the root directory
+6. Compile landing page dart2js `dart2js -o public/main.dart.js public/main.dart`
+7. Run the server `dart_frog dev`
+
 ## Docs
 
 - [Pull Request Template](/docs/pull_request_template.md)
