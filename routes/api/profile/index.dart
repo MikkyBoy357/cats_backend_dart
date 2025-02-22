@@ -1,4 +1,4 @@
-import 'package:cats_backend/helpers/authentication_validation.dart';
+import 'package:cats_backend/helpers/helpers.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {

@@ -1,5 +1,5 @@
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/data/repositories/repositories.dart';
+import 'package:cats_backend/data/data.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -34,7 +34,6 @@ class TicketTypeRequestHandlerImpl implements TicketTypeRequestHandler {
     required TicketType ticketType,
     required User saint,
   }) async {
-    print('===> POST <==> TicketType:');
     final finalTicketType = ticketType.copyWith(createdBy: saint.$_id);
     final createdTicketType = await _ticketTypeRepository.createTicketType(
       ticketType: finalTicketType,

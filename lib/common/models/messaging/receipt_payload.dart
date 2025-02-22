@@ -1,4 +1,4 @@
-import 'package:cats_backend/common/models/models.dart';
+import 'package:cats_backend/common/common.dart';
 
 /// This is what a payload clients emit to the socket
 /// to indicate that they have read a message

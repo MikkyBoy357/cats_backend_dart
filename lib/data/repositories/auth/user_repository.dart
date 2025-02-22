@@ -1,5 +1,5 @@
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/helpers/populate.dart';
+import 'package:cats_backend/helpers/helpers.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 enum UserQuery {

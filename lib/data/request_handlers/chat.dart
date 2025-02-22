@@ -1,6 +1,5 @@
-import 'package:cats_backend/common/constants/storage_directories.dart';
+import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/data/data.dart';
-import 'package:cats_backend/data/repositories/file_upload/file_upload.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -101,7 +100,6 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
     required ObjectId saintId,
     required List<ObjectId> participants,
   }) async {
-    print('===> POST <==> Chat:');
     if (participants.isEmpty) {
       return Response.json(
         body: {
@@ -146,7 +144,6 @@ class ChatRequestHandlerImpl implements ChatRequestHandler {
   }) async {
     String? downloadUrl;
     String? uploadError;
-    print('===> POST <==> Chat:');
 
     /// Validate form data
     final message = formData?.fields['message'];

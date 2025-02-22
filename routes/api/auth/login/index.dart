@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/data/data.dart';
-import 'package:cats_backend/data/repositories/auth/user_repository.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:cats_backend/util/issue_token.dart';
 import 'package:dart_frog/dart_frog.dart';

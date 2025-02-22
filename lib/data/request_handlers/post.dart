@@ -1,8 +1,6 @@
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/common/constants/storage_directories.dart';
-import 'package:cats_backend/data/repositories/file_upload/file_upload.dart';
-import 'package:cats_backend/data/repositories/post/post_repository.dart';
-import 'package:cats_backend/helpers/extract_tags.dart';
+import 'package:cats_backend/data/data.dart';
+import 'package:cats_backend/helpers/helpers.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -33,7 +31,6 @@ class PostRequestHandlerImpl implements PostRequestHandler {
     required User saint,
     required FormData formData,
   }) async {
-    print('===> POST <==> Post:');
     final errors = <String?>[];
     final mediaUrls = <String>[];
 

@@ -1,6 +1,5 @@
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/data/repositories/repositories.dart';
-import 'package:cats_backend/data/request_handlers/request_handlers.dart';
+import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 

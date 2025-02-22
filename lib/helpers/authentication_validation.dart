@@ -1,6 +1,6 @@
 import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/config/config.dart';
-import 'package:cats_backend/data/repositories/auth/user_repository.dart';
+import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:dart_frog_auth/dart_frog_auth.dart';
@@ -29,7 +29,7 @@ Future<AuthValidationResponse> getAuthResult({
   required String? token,
 }) async {
   if (token == null) {
-    print('Token is required');
+    printMagenta('Token is required');
     return AuthValidationResponse(
       isValid: false,
       errorMessage: 'Token is required',
@@ -61,7 +61,7 @@ Future<AuthValidationResponse> getAuthResult({
 
     return AuthValidationResponse(isValid: true, user: user);
   } on JwtException catch (jwtException) {
-    print('JwtException: ${jwtException.message}.');
+    printBlue('JwtException: ${jwtException.message}.');
     return AuthValidationResponse(
       isValid: false,
       errorMessage: jwtException.message,

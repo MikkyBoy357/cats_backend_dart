@@ -1,8 +1,5 @@
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/common/constants/storage_directories.dart';
 import 'package:cats_backend/data/data.dart';
-import 'package:cats_backend/data/repositories/file_upload/file_upload.dart';
-import 'package:cats_backend/data/repositories/repositories.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 abstract class ProfileRequestHandler {

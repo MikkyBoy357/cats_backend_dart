@@ -1,5 +1,5 @@
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/data/repositories/repositories.dart';
+import 'package:cats_backend/data/data.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -22,8 +22,6 @@ class SckalerRequestHandlerImpl implements SckalerRequestHandler {
 
   @override
   Future<Response> handleGetSckalerCollections() async {
-    print('===> GET <==> Sckaler Collections:');
-
     final sckalerCollections =
         await _sckalerCollectionRepository.getSckalerCollections();
 
@@ -37,7 +35,7 @@ class SckalerRequestHandlerImpl implements SckalerRequestHandler {
   Future<Response> handleGetSckalerCollectionById({
     required ObjectId sckalerCollectionId,
   }) async {
-    print('===> GET <==> Sckaler Collection by ID: $sckalerCollectionId');
+    printGreen('===> GET <==> Sckaler Collection by ID: $sckalerCollectionId');
 
     final sckalerCollection = await _sckalerCollectionRepository
         .getSckalerCollectionById(sckalerCollectionId: sckalerCollectionId);
@@ -58,7 +56,7 @@ class SckalerRequestHandlerImpl implements SckalerRequestHandler {
   Future<Response> handleSckalerCollection({
     required PaymentTransaction paymentTransaction,
   }) async {
-    print('===> POST <==> Sckaler Collection:');
+    printGreen('===> POST <==> Sckaler Collection:');
 
     // External API call
     final sckalerCollectionResponse =

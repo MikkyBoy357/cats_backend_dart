@@ -1,5 +1,5 @@
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/data/repositories/repositories.dart';
+import 'package:cats_backend/data/data.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -36,7 +36,6 @@ class EventCategoryRequestHandlerImpl implements EventCategoryRequestHandler {
   Future<Response> handleCreateEventCategory({
     required EventCategory eventCategory,
   }) async {
-    print('===> POST <==> Event Category:');
     final createdEventCategory =
         await _eventCategoryRepository.createEventCategory(
       eventCategoryRequest: eventCategory,
@@ -66,7 +65,6 @@ class EventCategoryRequestHandlerImpl implements EventCategoryRequestHandler {
   Future<Response> handleDeleteEventCategory({
     required ObjectId eventCategoryId,
   }) async {
-    print('===> DELETE <==> Event Category:');
     final deletedEventCategory =
         await _eventCategoryRepository.deleteEventCategory(
       eventCategoryId: eventCategoryId,

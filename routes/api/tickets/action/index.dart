@@ -54,7 +54,7 @@ Future<Response> onRequest(RequestContext context) async {
         final ticketRequest = TicketRequest.fromJson(body);
         printGreen('TicketType: ${ticketRequest.ticketType}');
 
-        print('OMO: ${ticketRequest.toJson()}');
+        printMagenta('OMO: ${ticketRequest.toJson()}');
 
         return handler.handleCreateTicket(ticketRequest: ticketRequest);
       }(),
