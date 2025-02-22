@@ -2,7 +2,7 @@ name: 🛠️ Pull Request CI
 on: [push, workflow_dispatch]
 jobs:
   drive:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
