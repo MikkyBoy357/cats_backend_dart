@@ -11,8 +11,9 @@ class Validator {
 
   // Validate email format
   static void validateEmail(String email) {
-    if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-        .hasMatch(email)) {
+    if (!RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    ).hasMatch(email)) {
       throw Exception('Please enter a valid email address');
     }
   }
@@ -23,7 +24,9 @@ class Validator {
     if (password.length < 8) {
       throw Exception('Password must be at least 8 characters long');
     }
-    if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$').hasMatch(password)) {
+    if (!RegExp(
+      r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$',
+    ).hasMatch(password)) {
       throw Exception(
         'Password must contain at least one letter and one number',
       );
