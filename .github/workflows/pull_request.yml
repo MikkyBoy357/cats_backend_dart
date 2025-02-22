@@ -16,7 +16,7 @@ jobs:
         run: dart format .; git diff --exit-code
       - name: Restore packages
         run: dart pub get
-#      - name: Dart Analyze
-#        run: dart analyze
+      - name: Dart Analyze
+        run: dart analyze
       - name: Run tests without coverage
         run: dart test
