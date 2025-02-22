@@ -22,7 +22,7 @@ class TicketRepository extends TicketRepositoryImpl {
   DbCollection get _ticketsCollection => _database.ticketsCollection;
 
   List<PopulateField> get _ticketPopulateFields => [
-        PopulateField(fieldName: 'ticketTypes', collectionName: 'ticketTypes'),
+        PopulateField(fieldName: 'ticketType', collectionName: 'ticketTypes'),
         PopulateField(
           fieldName: 'event',
           collectionName: 'events',

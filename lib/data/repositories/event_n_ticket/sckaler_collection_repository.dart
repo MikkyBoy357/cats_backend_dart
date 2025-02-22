@@ -47,6 +47,7 @@ class SckalerCollectionRepository implements SckalerCollectionRepositoryImpl {
         ),
       );
 
+      printYellow('sckalerCollectionResponse: $res');
       final sckalerCollectionResponse =
           PaymentTransactionResponse.fromJson(res.data!);
 

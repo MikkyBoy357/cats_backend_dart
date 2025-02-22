@@ -12,7 +12,8 @@ class StorageDirectories {
   static String postsByUserId({required String userId}) {
     return 'posts/$userId';
   }
-    static String eventImage({required String userId}) {
+
+  static String eventImage({required String userId}) {
     return 'events/$userId';
   }
 }

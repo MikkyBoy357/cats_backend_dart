@@ -57,7 +57,6 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
   @override
   Future<TicketType?> createTicketType({required TicketType ticketType}) async {
     final result = await _ticketTypesCollection.insertOne(ticketType.toJson());
-    print('Create TicketType result: $result');
 
     if (result.writeError != null) {
       return null;
@@ -87,7 +86,7 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
     required List<ObjectId> ticketTypeIds,
   }) async {
     final result = await _ticketTypesCollection.find({
-      '_id': {'\$in': ticketTypeIds}
+      '_id': {r'$in': ticketTypeIds},
     }).toList();
 
     // Convert fetched documents to TicketType objects

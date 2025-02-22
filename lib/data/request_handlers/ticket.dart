@@ -1,5 +1,6 @@
 import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/data/data.dart';
+import 'package:cats_backend/helpers/helpers.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -220,12 +221,16 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
       return ticketConfirmationEmailResponse;
     }
 
+    final qrCodeUrl =
+        'http://${await getPublicIpAddress()}:8080/api/qr?keyWord=${createTicketResponseJson['_id']}';
+
     return Response.json(
       body: {
         'message': 'Ticket purchased successfully',
         'ticket': createTicketResponseJson,
         'paymentInfo': sckalerCollectionResponseJson,
         'emailInfo': await ticketConfirmationEmailResponse.json(),
+        'qrCodeUrl': qrCodeUrl,
       },
       statusCode: 201,
     );

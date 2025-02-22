@@ -1,10 +1,9 @@
+// ignore_for_file: unused_field
+
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/data/repositories/repositories.dart';
+import 'package:cats_backend/data/data.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
-
-import '../../../common/constants/storage_directories.dart';
-import '../../repositories/file_upload/file_upload.dart';
 
 abstract class EventRequestHandler {
   Future<Response> handleGetAllEvents({
@@ -58,7 +57,6 @@ class EventRequestHandlerImpl implements EventRequestHandler {
     required User saint,
     required Map<String, UploadedFile> files,
   }) async {
-    print('===> EVENT <==> Create Event:');
     final errors = <String?>[];
     final mediaUrls = <String>[];
 
@@ -66,7 +64,8 @@ class EventRequestHandlerImpl implements EventRequestHandler {
       final keys = files.keys.toList();
       final uploadedFiles = keys.map((key) => files[key]!).toList();
       printYellow(
-          'Files received: ${uploadedFiles.map((e) => e.name).join(", ")}');
+        'Files received: ${uploadedFiles.map((e) => e.name).join(", ")}',
+      );
 
       final uploadResults = await FileUpload.uploadMultipleFilesAndReturnUrls(
         uploadedFiles: uploadedFiles,

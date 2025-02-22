@@ -52,9 +52,9 @@ class Event {
           ? DateTime.parse(json['date'].toString())
           : DateTime.now(),
       categories: parseEitherList<EventCategory>(
-          json['categories'] as List, EventCategory.fromJson),
+          json['categories'] as List, EventCategory.fromJson,),
       ticketTypes: parseEitherList<TicketType>(
-          json['ticketTypes'] as List, TicketType.fromJson),
+          json['ticketTypes'] as List, TicketType.fromJson,),
       createdBy: parseEither<User>(json['createdBy'], User.fromJson),
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'].toString())
