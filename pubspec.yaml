@@ -20,10 +20,11 @@ dependencies:
   jaguar_jwt: ^3.0.0
   mailer: ^6.4.1
   mongo_dart: ^0.10.3
-  qr: ^3.0.2
+  qr:
   shelf_cors_headers: ^0.1.5
 
 dev_dependencies:
+  dart_frog_cli: ^0.0.1-dev
   mocktail: ^1.0.0
   test: ^1.19.2
   very_good_analysis: ^5.1.0
