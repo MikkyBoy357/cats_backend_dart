@@ -20,7 +20,7 @@ dependencies:
   jaguar_jwt: ^3.0.0
   mailer: ^6.4.1
   mongo_dart: ^0.10.3
-  qr:
+  qr: ^2.0.0
   shelf_cors_headers: ^0.1.5
 
 dev_dependencies:
