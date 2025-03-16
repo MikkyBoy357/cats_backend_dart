@@ -3,7 +3,11 @@ import 'package:cats_backend/helpers/helpers.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 abstract class EventRepositoryImpl {
-  Future<List<Event>> getEvents({List<ObjectId>? categoryIds});
+  Future<List<Event>> getEvents({
+    List<ObjectId>? categoryIds,
+    int page = 1,
+    int limit = 20,
+  });
   Future<Event?> createEvent({
     required EventRequest eventRequest,
     required List<String> mediaUrls,
@@ -40,11 +44,19 @@ class EventRepository extends EventRepositoryImpl {
   ];
 
   @override
-  Future<List<Event>> getEvents({List<ObjectId>? categoryIds}) async {
+  Future<List<Event>> getEvents({
+    List<ObjectId>? categoryIds,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final skip = (page - 1) * limit;
+
     if (categoryIds != null && categoryIds.isNotEmpty) {
       // where at least one category matches
       final queryDocs = _eventsCollection
-          .find(where.oneFrom('categories', categoryIds))
+          .find(
+            where.oneFrom('categories', categoryIds).skip(skip).limit(limit),
+          )
           .toList();
 
       final docs = await _eventsCollection.findAndPopulateLol(
@@ -61,6 +73,8 @@ class EventRepository extends EventRepositoryImpl {
       [
         // ...eventPopulateFields,
       ],
+      limit: limit,
+      page: page,
     );
 
     final events = res.map((e) => Event.fromJson(e)).toList();

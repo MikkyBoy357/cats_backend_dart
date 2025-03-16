@@ -1,11 +1,18 @@
 import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
+enum UserType {
+  admin,
+  contributor,
+  user,
+}
+
 class User {
   ObjectId $_id;
   String name;
   String email;
   String? password;
+  UserType userType;
   int age;
   String username;
   String? avatarUrl;
@@ -20,6 +27,7 @@ class User {
     required this.name,
     required this.email,
     required this.password,
+    required this.userType,
     required this.age,
     required this.username,
     this.avatarUrl,
@@ -36,6 +44,10 @@ class User {
       name: json['name'] as String? ?? '',
       email: json['email'] as String,
       password: json['password'] as String?,
+      userType: UserType.values.firstWhere(
+        (e) => e.toString() == json['userType'],
+        orElse: () => UserType.user,
+      ),
       age: json['age'] as int? ?? 0,
       username: json['username'] as String? ?? '',
       avatarUrl: json['avatarUrl'] as String?,
@@ -55,6 +67,7 @@ class User {
       'name': name,
       'email': email,
       'password': password,
+      'userType': userType.name,
       'age': age,
       'username': username,
       'avatarUrl': avatarUrl,
@@ -71,6 +84,7 @@ class User {
     String? name,
     String? email,
     String? password,
+    UserType? userType,
     int? age,
     String? username,
     String? avatarUrl,
@@ -85,6 +99,7 @@ class User {
       name: name ?? this.name,
       email: email ?? this.email,
       password: password ?? this.password,
+      userType: userType ?? this.userType,
       age: age ?? this.age,
       username: username ?? this.username,
       avatarUrl: avatarUrl ?? this.avatarUrl,
@@ -102,6 +117,7 @@ class User {
       name: 'John Doe',
       email: 'johndoe@gmail.com',
       password: 'password',
+      userType: UserType.user,
       age: 25,
       username: 'johndoe',
       avatarUrl: 'https://picsum.photos/200',

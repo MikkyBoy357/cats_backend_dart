@@ -38,6 +38,10 @@ Future<Response> onRequest(RequestContext context) async {
         final owner = formData.fields['owner'];
         final description = formData.fields['description'];
         final location = formData.fields['location'];
+        final visibility = Visibility.values.firstWhere(
+          (e) => e.name == formData.fields['visibility'],
+          orElse: () => Visibility.public,
+        );
         final dateString = formData.fields['date'];
         final categoriesString = formData.fields['categories'];
         final ticketTypesString = formData.fields['ticketTypes'];
@@ -47,6 +51,7 @@ Future<Response> onRequest(RequestContext context) async {
           owner,
           description,
           location,
+          visibility,
           dateString,
           categoriesString,
           ticketTypesString,
@@ -74,6 +79,7 @@ Future<Response> onRequest(RequestContext context) async {
           owner: owner!,
           description: description!,
           location: location!,
+          visibility: visibility,
           date: date,
           categories: categories,
           ticketTypes: ticketTypes,

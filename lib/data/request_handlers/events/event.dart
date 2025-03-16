@@ -41,9 +41,13 @@ class EventRequestHandlerImpl implements EventRequestHandler {
   @override
   Future<Response> handleGetAllEvents({
     List<ObjectId>? categoryIds,
+    int page = 1,
+    int limit = 20,
   }) async {
     final events = await _eventRepository.getEvents(
       categoryIds: categoryIds,
+      page: page,
+      limit: limit,
     );
 
     return Response.json(

@@ -68,6 +68,7 @@ Future<Response> onRequest(RequestContext context) async {
           'status': 200,
           'message': 'User logged in successfully',
           'token': token,
+          'user': foundUser,
         },
       );
     } else {

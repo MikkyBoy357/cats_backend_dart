@@ -4,6 +4,12 @@ import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
+  // Should make Auth not required for this endpoint
+  //
+  // final authValidationResponse = context.read<AuthValidationResponse>();
+  //
+  // final saint = authValidationResponse.user;
+
   final request = context.request;
   final method = request.method;
 
@@ -20,6 +26,8 @@ Future<Response> onRequest(RequestContext context) async {
     HttpMethod.get => () {
         final queryParams = request.uri.queryParameters;
         final categories = queryParams['categories'];
+        final page = int.tryParse(queryParams['page'] ?? '1') ?? 1;
+        final limit = int.tryParse(queryParams['limit'] ?? '10') ?? 10;
 
         final categoryList = categories
             ?.replaceAll('[', '')
@@ -34,10 +42,17 @@ Future<Response> onRequest(RequestContext context) async {
 
         if (categoryIds != null && categoryIds.isNotEmpty) {
           printGreen('Category IDs: $categoryIds');
-          return handler.handleGetAllEvents(categoryIds: categoryIds);
+          return handler.handleGetAllEvents(
+            categoryIds: categoryIds,
+            page: page,
+            limit: limit,
+          );
         }
 
-        return handler.handleGetAllEvents();
+        return handler.handleGetAllEvents(
+          page: page,
+          limit: limit,
+        );
       }(),
     _ => Future.value(
         Response(body: 'Unsupported request method: $method', statusCode: 405),

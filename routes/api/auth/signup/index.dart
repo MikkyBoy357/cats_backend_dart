@@ -1,11 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cats_backend/common/common.dart';
+import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/helpers/helpers.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
+  final userRepository = UserRepository(
+    database: mongoDbService.database,
+  );
+
+  // final userRequestHandlerImpl = UserRequestHandlerImpl(
+  //   userRepository: userRepository,
+  // );
+
   try {
     final request = context.request;
 
@@ -17,6 +27,12 @@ Future<Response> onRequest(RequestContext context) async {
 
       final email = requestData['email'] as String;
       final password = requestData['password'] as String;
+      final name = requestData['name'] as String;
+      final type = requestData['userType'] as String;
+      final userType = UserType.values.firstWhere(
+        (e) => e.toString() == type,
+        orElse: () => UserType.user,
+      );
       final hashedPassword = hashPassword(
         requestData['password'] as String,
       );
@@ -49,20 +65,41 @@ Future<Response> onRequest(RequestContext context) async {
         );
       }
 
-      await userCollection.insertOne({
+      // validate name (min 3 characters)
+      if (name.length < 3) {
+        return Response.json(
+          statusCode: 400,
+          body: {
+            'status': 400,
+            'message': 'Name must contain at least 3 characters',
+            'error': 'invalid_name',
+          },
+        );
+      }
+
+      final x = await userCollection.insertOne({
         'email': requestData['email'],
         'password': hashedPassword,
         'name': requestData['name'],
+        'userType': userType.name,
         'age': requestData['age'],
         'username': requestData['username'],
         'followingsCount': 0,
         'followersCount': 0,
       });
 
+      print('writeResult: ${x.id}');
+
+      final createdUser = await userRepository.getQuery(
+        UserQuery.id,
+        toObjectId(x.id).oid,
+      );
+
       return Response.json(
         body: {
           'status': 200,
           'message': 'User registered successfully',
+          'user': createdUser,
         },
       );
     } else {
