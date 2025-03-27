@@ -29,10 +29,7 @@ Future<Response> onRequest(RequestContext context) async {
       final password = requestData['password'] as String;
       final name = requestData['name'] as String;
       final type = requestData['userType'] as String;
-      final userType = UserType.values.firstWhere(
-        (e) => e.toString() == type,
-        orElse: () => UserType.user,
-      );
+      final userType = _getUserTypeFromString(type);
       final hashedPassword = hashPassword(
         requestData['password'] as String,
       );
@@ -120,4 +117,11 @@ Future<Response> onRequest(RequestContext context) async {
       },
     );
   }
+}
+UserType _getUserTypeFromString(String typeString) {
+  final normalizedString = typeString.toLowerCase();
+  return UserType.values.firstWhere(
+    (type) => type.name.toLowerCase() == normalizedString,
+    orElse: () => UserType.user,
+  );
 }

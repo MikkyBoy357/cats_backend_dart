@@ -1,12 +1,23 @@
 import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/config/config.dart';
 import 'package:cats_backend/data/data.dart';
+import 'package:cats_backend/helpers/helpers.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   // accept only POST requests
+  final authValidationResponse = context.read<AuthValidationResponse>();
 
+  if (!authValidationResponse.isValid) {
+    return Response.json(
+      statusCode: 401,
+      body: 'Auth Error: ${authValidationResponse.errorMessage}',
+    );
+  }
+
+  final saint = authValidationResponse.user!;
+  printBlue('message--->${saint.$_id}');
   final request = context.request;
   final method = request.method;
 
@@ -43,22 +54,51 @@ Future<Response> onRequest(RequestContext context) async {
             statusCode: 400,
           );
         }
+        final eventId = toObjectId(body['eventId']);
+        // Check if we're scanning by ticket number or by ID (QR code)
+        if (body.containsKey('ticketNumber')) {
+          final ticketNumber = body['ticketNumber'] as String?;
+          if (ticketNumber == null || ticketNumber.isEmpty) {
+            return Response.json(
+              body: 'Valid ticketNumber is required',
+              statusCode: 400,
+            );
+          }
 
-        final keyWord = body['keyWord'];
-        if (keyWord == null) {
-          return Response.json(
-            body: 'KeyWord is required',
-            statusCode: 400,
+          // Get ticket by ticket number and then scan it
+          return handler.handleScanTicketByNumber(
+            ticketNumber: ticketNumber,
+            userId: saint.$_id,
+            eventId: eventId
           );
-        }
+        } else if (body.containsKey('keyWord')) {
+          final keyWord = body['keyWord'];
+          if (keyWord == null) {
+            return Response.json(
+              body: 'KeyWord is required',
+              statusCode: 400,
+            );
+          }
 
-        final decryptedKey = keyWord.toString().aes256Decrypt(Config.qrCodeKey);
-        try {
-          final ticketId = toObjectId(decryptedKey);
-          return handler.handleGetTicketById(ticketId: ticketId);
-        } catch (e) {
+          final decryptedKey =
+              keyWord.toString().aes256Decrypt(Config.qrCodeKey);
+          try {
+            final ticketId = toObjectId(decryptedKey);
+
+            return handler.handleScanTicket(
+              ticketId: ticketId,
+              userId: saint.$_id,
+              eventId: eventId,
+            );
+          } catch (e) {
+            return Response.json(
+              body: 'Invalid ticket ID',
+              statusCode: 400,
+            );
+          }
+        } else {
           return Response.json(
-            body: 'Invalid ticket ID',
+            body: 'Either ticketNumber or keyWord is required',
             statusCode: 400,
           );
         }

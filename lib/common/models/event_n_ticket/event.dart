@@ -82,6 +82,9 @@ class Event {
           : DateTime.now(),
       mediaUrls:
           (json['mediaUrls'] as List?)?.map((e) => e as String).toList() ?? [],
+      sales: json['sales'] != null
+          ? EventSales.fromJson(json['sales'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -106,6 +109,7 @@ class Event {
       'bookmarks': bookmarks,
       'lastUpdated': lastUpdated.toString(),
       'mediaUrls': mediaUrls,
+      'sales': sales?.toJson(),
     };
   }
 

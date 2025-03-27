@@ -1,5 +1,6 @@
 import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/data/data.dart';
+import 'package:cats_backend/helpers/helpers.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -13,6 +14,17 @@ Future<Response> onRequest(RequestContext context, String eventId) async {
     return Response(
       body: 'Invalid event id: $eventId',
       statusCode: 400,
+    );
+  }
+
+  final authValidationResponse = context.read<AuthValidationResponse>();
+  final saint = authValidationResponse.user!;
+
+  if (saint.userType != UserType.admin) {
+    printGreen('user type===>${saint.userType}');
+    return Response(
+      body: 'Unauthorized: Admin access required',
+      statusCode: 403,
     );
   }
 
@@ -31,6 +43,7 @@ Future<Response> onRequest(RequestContext context, String eventId) async {
     HttpMethod.get => () async {
         return handler.handleGetEventById(
           eventId: id,
+          currentUser: saint,
         );
       }(),
     _ => Future.value(

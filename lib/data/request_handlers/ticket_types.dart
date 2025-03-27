@@ -11,6 +11,7 @@ abstract class TicketTypeRequestHandler {
   });
   Future<Response> handleGetTicketTypeById({required ObjectId ticketTypeId});
   Future<Response> handleDeleteTicketType({required ObjectId ticketTypeId});
+  Future<Response> handleGetTicketTypesForUser({required ObjectId userId});
 }
 
 class TicketTypeRequestHandlerImpl implements TicketTypeRequestHandler {
@@ -42,6 +43,20 @@ class TicketTypeRequestHandlerImpl implements TicketTypeRequestHandler {
     return Response.json(
       body: createdTicketType,
       statusCode: createdTicketType != null ? 201 : 400,
+    );
+  }
+
+  @override
+  Future<Response> handleGetTicketTypesForUser({
+    required ObjectId userId,
+  }) async {
+    final ticketTypes = await _ticketTypeRepository.getTicketTypesForUser(
+      userId: userId,
+    );
+
+    return Response.json(
+      body: ticketTypes,
+      statusCode: ticketTypes.isNotEmpty ? 200 : 404,
     );
   }
 

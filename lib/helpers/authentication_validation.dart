@@ -28,6 +28,7 @@ class AuthValidationResponse {
 Future<AuthValidationResponse> getAuthResult({
   required String? token,
 }) async {
+
   if (token == null) {
     printMagenta('Token is required');
     return AuthValidationResponse(
@@ -79,5 +80,6 @@ Middleware authenticationValidator({
     authenticator: (context, token) async {
       return getAuthResult(token: token);
     },
+    
   );
 }

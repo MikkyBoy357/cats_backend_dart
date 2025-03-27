@@ -13,6 +13,7 @@ class TicketType {
   Visibility visibility;
   String codePrefix;
   ObjectId createdBy;
+  bool soldOut;
 
   TicketType({
     required this.id,
@@ -23,6 +24,7 @@ class TicketType {
     this.visibility = Visibility.public,
     this.codePrefix = 'STR',
     required this.createdBy,
+    this.soldOut = false,
   });
 
   factory TicketType.fromJson(Map<String, dynamic> json) {
@@ -39,6 +41,7 @@ class TicketType {
       codePrefix:
           json['codePrefix'] == null ? 'STR' : json['codePrefix'] as String,
       createdBy: toObjectId(json['createdBy']),
+      soldOut: json['soldOut'] as bool? ?? false,
     );
   }
 
@@ -52,6 +55,7 @@ class TicketType {
       'visibility': visibility.name,
       'codePrefix': codePrefix,
       'createdBy': createdBy,
+      'soldOut': soldOut,
     };
   }
 
@@ -64,6 +68,7 @@ class TicketType {
     Visibility? visibility,
     String? codePrefix,
     ObjectId? createdBy,
+    bool? soldOut,
   }) {
     return TicketType(
       id: id ?? this.id,
@@ -74,6 +79,7 @@ class TicketType {
       visibility: visibility ?? this.visibility,
       codePrefix: codePrefix ?? this.codePrefix,
       createdBy: createdBy ?? this.createdBy,
+      soldOut: soldOut ?? this.soldOut,
     );
   }
 
@@ -85,9 +91,11 @@ class TicketType {
       description: 'General Admission Ticket',
       totalSupply: 100,
       createdBy: ObjectId(),
+      soldOut: false,
     );
   }
 }
+
 // Request
 
 class TicketTypeRequest {

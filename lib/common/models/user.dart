@@ -37,17 +37,19 @@ class User {
     required this.followingsCount,
     required this.followersCount,
   });
-
   factory User.fromJson(Map<String, dynamic> json) {
+    final userTypeString = json['userType'] as String?;
     return User(
       $_id: toObjectId(json['_id']),
       name: json['name'] as String? ?? '',
       email: json['email'] as String,
       password: json['password'] as String?,
-      userType: UserType.values.firstWhere(
-        (e) => e.toString() == json['userType'],
-        orElse: () => UserType.user,
-      ),
+      userType: userTypeString != null
+          ? UserType.values.firstWhere(
+              (type) => type.name.toLowerCase() == userTypeString.toLowerCase(),
+              orElse: () => UserType.user,
+            )
+          : UserType.user,
       age: json['age'] as int? ?? 0,
       username: json['username'] as String? ?? '',
       avatarUrl: json['avatarUrl'] as String?,

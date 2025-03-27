@@ -9,6 +9,9 @@ class Ticket {
   TicketOwner issuedTo;
   DateTime issuedAt;
   String ticketNumber;
+  bool isScanned;
+  DateTime? scannedAt;
+  Either<ObjectId, User>? scannedBy;
 
   Ticket({
     required this.id,
@@ -17,6 +20,9 @@ class Ticket {
     required this.issuedTo,
     required this.issuedAt,
     required this.ticketNumber,
+    this.isScanned = false,
+    this.scannedAt,
+    this.scannedBy,
   });
 
   factory Ticket.fromJson(Map<String, dynamic> json) {
@@ -30,6 +36,13 @@ class Ticket {
           ? DateTime.parse(json['issuedAt'] as String)
           : DateTime.now(),
       ticketNumber: json['ticketNumber'] as String,
+      isScanned: json['isScanned'] as bool? ?? false,
+      scannedAt: json['scannedAt'] != null
+          ? DateTime.parse(json['scannedAt'] as String)
+          : null,
+      scannedBy: json['scannedBy'] != null
+          ? parseEither<User>(json['scannedBy'], User.fromJson)
+          : null,
     );
   }
 
@@ -41,7 +54,34 @@ class Ticket {
       'issuedTo': issuedTo.toJson(),
       'issuedAt': issuedAt.toString(),
       'ticketNumber': ticketNumber,
+      'isScanned': isScanned,
+      'scannedAt': scannedAt?.toString(),
+      'scannedBy': scannedBy?.fold((l) => l, (r) => r.toJson()) ?? null,
     };
+  }
+
+  Ticket copyWith({
+    ObjectId? id,
+    Either<ObjectId, Event>? event,
+    Either<ObjectId, TicketType>? ticketType,
+    TicketOwner? issuedTo,
+    DateTime? issuedAt,
+    String? ticketNumber,
+    bool? isScanned,
+    DateTime? scannedAt,
+    Either<ObjectId, User>? scannedBy,
+  }) {
+    return Ticket(
+      id: id ?? this.id,
+      event: event ?? this.event,
+      ticketType: ticketType ?? this.ticketType,
+      issuedTo: issuedTo ?? this.issuedTo,
+      issuedAt: issuedAt ?? this.issuedAt,
+      ticketNumber: ticketNumber ?? this.ticketNumber,
+      isScanned: isScanned ?? this.isScanned,
+      scannedAt: scannedAt ?? this.scannedAt,
+      scannedBy: scannedBy ?? this.scannedBy,
+    );
   }
 }
 

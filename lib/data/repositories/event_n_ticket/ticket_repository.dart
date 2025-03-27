@@ -10,6 +10,11 @@ abstract class TicketRepositoryImpl {
   Future<Ticket?> getTicketById({required ObjectId ticketId});
   Future<Ticket?> getTicketByTicketNumber({required String ticketNumber});
   Future<Ticket?> createTicket({required TicketRequest ticketRequest});
+  Future<List<Ticket>> getTicketsByEventId({required ObjectId eventId});
+  Future<Ticket?> scanTicket({
+    required ObjectId ticketId,
+    required ObjectId scannedBy,
+  });
 }
 
 class TicketRepository extends TicketRepositoryImpl {
@@ -23,12 +28,13 @@ class TicketRepository extends TicketRepositoryImpl {
 
   List<PopulateField> get _ticketPopulateFields => [
         PopulateField(fieldName: 'ticketType', collectionName: 'ticketTypes'),
+        PopulateField(fieldName: 'scannedBy', collectionName: 'users'),
         PopulateField(
           fieldName: 'event',
           collectionName: 'events',
           subPopulateFields: [
             PopulateField(
-              fieldName: 'ticketType',
+              fieldName: 'ticketTypes',
               collectionName: 'ticketTypes',
             ),
             PopulateField(fieldName: 'createdBy', collectionName: 'users'),
@@ -48,6 +54,23 @@ class TicketRepository extends TicketRepositoryImpl {
     printGreen('Tickets: $res');
 
     final tickets = res.map((e) => Ticket.fromJson(e)).toList();
+
+    return tickets;
+  }
+
+  @override
+  Future<List<Ticket>> getTicketsByEventId({
+    required ObjectId eventId,
+  }) async {
+    final queryDocs =
+        _ticketsCollection.find(where.eq('event', eventId)).toList();
+
+    final populatedDocs = await _ticketsCollection.findAndPopulateLol(
+      _ticketPopulateFields,
+      queryDocs,
+    );
+
+    final tickets = populatedDocs.map((doc) => Ticket.fromJson(doc)).toList();
 
     return tickets;
   }
@@ -124,6 +147,30 @@ class TicketRepository extends TicketRepositoryImpl {
     }
 
     return Ticket.fromJson(result);
+  }
+
+  @override
+  Future<Ticket?> scanTicket({
+    required ObjectId ticketId,
+    required ObjectId scannedBy,
+  }) async {
+    final now = DateTime.now();
+    final updateResult = await _ticketsCollection.updateOne(
+      where.eq('_id', ticketId),
+      {
+        '\$set': {
+          'isScanned': true,
+          'scannedAt': now.toString(),
+          'scannedBy': scannedBy,
+        },
+      },
+    );
+
+    if (updateResult.isSuccess) {
+      return getTicketById(ticketId: ticketId);
+    }
+
+    return null;
   }
 
   @override
