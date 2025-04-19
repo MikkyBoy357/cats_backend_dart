@@ -275,7 +275,6 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
     required ObjectId userId,
     required ObjectId eventId,
   }) async {
-    printBlue('MEDD--->${eventId}');
 
     final ticket = await _ticketRepository.getTicketById(ticketId: ticketId);
 

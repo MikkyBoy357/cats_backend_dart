@@ -30,7 +30,6 @@ Future<Response> onRequest(RequestContext context) async {
       // Allow login with either email or username
       final identifier = requestData['identifier'] as String;
       final password = requestData['password'] as String;
-      printBlue('codeeee-->$identifier');
       // Determine if identifier is email or username
       final isEmail = identifier.contains('@');
 
