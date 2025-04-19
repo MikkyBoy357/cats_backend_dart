@@ -10,7 +10,7 @@ enum UserType {
 class User {
   ObjectId $_id;
   String name;
-  String email;
+  String? email;
   String? password;
   UserType userType;
   int age;
@@ -21,11 +21,12 @@ class User {
   DateTime lastSeen;
   int? followingsCount;
   int? followersCount;
+  ObjectId? createdBy; // Add this field
 
   User({
     required this.$_id,
     required this.name,
-    required this.email,
+    this.email,
     required this.password,
     required this.userType,
     required this.age,
@@ -36,13 +37,15 @@ class User {
     required this.lastSeen,
     required this.followingsCount,
     required this.followersCount,
+    this.createdBy, // Add this parameter
   });
+
   factory User.fromJson(Map<String, dynamic> json) {
     final userTypeString = json['userType'] as String?;
     return User(
       $_id: toObjectId(json['_id']),
       name: json['name'] as String? ?? '',
-      email: json['email'] as String,
+      email: json['email'] as String?,
       password: json['password'] as String?,
       userType: userTypeString != null
           ? UserType.values.firstWhere(
@@ -60,6 +63,9 @@ class User {
           : DateTime.now(),
       followingsCount: json['followingsCount'] as int?,
       followersCount: json['followersCount'] as int?,
+      createdBy: json['createdBy'] != null
+          ? toObjectId(json['createdBy'])
+          : null, 
     );
   }
 
@@ -78,6 +84,7 @@ class User {
       'lastSeen': lastSeen.toString(),
       'followingsCount': followingsCount,
       'followersCount': followersCount,
+      'createdBy': createdBy, 
     };
   }
 
@@ -95,6 +102,7 @@ class User {
     DateTime? lastSeen,
     int? followingsCount,
     int? followersCount,
+    ObjectId? createdBy, 
   }) {
     return User(
       $_id: $_id ?? this.$_id,
@@ -110,6 +118,7 @@ class User {
       lastSeen: lastSeen ?? this.lastSeen,
       followingsCount: followingsCount ?? this.followingsCount,
       followersCount: followersCount ?? this.followersCount,
+      createdBy: createdBy ?? this.createdBy, 
     );
   }
 
@@ -133,7 +142,7 @@ class User {
 
   void validate() {
     Validator.validateRequiredString(name, fieldName: 'Name');
-    Validator.validateEmail(email);
+    Validator.validateEmail(email!);
     Validator.validatePassword(password!);
     Validator.validateRequiredString(username, fieldName: 'Username');
   }

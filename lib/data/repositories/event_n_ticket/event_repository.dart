@@ -33,7 +33,7 @@ abstract class EventRepositoryImpl {
   Future<EventSales> calculateEventSales({required ObjectId eventId});
 
   Future<List<Event>> getTrendingEvents();
-    Future<List<Event>> getUserEventsToday({
+  Future<List<Event>> getUserEventsToday({
     required ObjectId userId,
     String? searchTerm,
     List<ObjectId>? categoryIds,
@@ -135,56 +135,60 @@ class EventRepository extends EventRepositoryImpl {
 
     return eventsWithSales;
   }
-@override
-Future<List<Event>> getUserEventsToday({
-  required ObjectId userId,
-  String? searchTerm,
-  List<ObjectId>? categoryIds,
-  int page = 1,
-  int limit = 20,
-}) async {
-  final skip = (page - 1) * limit;
-  
-  // Get today's date at beginning and end of day in UTC
-  // This matches the format stored in your database: 2025-03-21T16:11:00.000Z
-  final now = DateTime.now().toUtc();
-  final todayStart = DateTime.utc(now.year, now.month, now.day);
-  final todayEnd = DateTime.utc(now.year, now.month, now.day, 23, 59, 59, 999);
-  
-  printYellow('Finding events between ${todayStart.toIso8601String()} and ${todayEnd.toIso8601String()}');
-  
-  // Build the query
-  // Note: Since date is stored as a string in ISO format, we need to compare using string format
-  var query = where
-      .eq('createdBy', userId)
-      .gte('date', todayStart.toIso8601String())
-      .lte('date', todayEnd.toIso8601String());
 
-  if (searchTerm != null && searchTerm.isNotEmpty) {
-    query = query.match('name', searchTerm, caseInsensitive: true);
+  @override
+  Future<List<Event>> getUserEventsToday({
+    required ObjectId userId,
+    String? searchTerm,
+    List<ObjectId>? categoryIds,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final skip = (page - 1) * limit;
+
+    // Get today's date at beginning and end of day in UTC
+    // This matches the format stored in your database: 2025-03-21T16:11:00.000Z
+    final now = DateTime.now().toUtc();
+    final todayStart = DateTime.utc(now.year, now.month, now.day);
+    final todayEnd =
+        DateTime.utc(now.year, now.month, now.day, 23, 59, 59, 999);
+
+    printYellow(
+        'Finding events between ${todayStart.toIso8601String()} and ${todayEnd.toIso8601String()}');
+
+    // Build the query
+    // Note: Since date is stored as a string in ISO format, we need to compare using string format
+    var query = where
+        .eq('createdBy', userId)
+        .gte('date', todayStart.toIso8601String())
+        .lte('date', todayEnd.toIso8601String());
+
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      query = query.match('name', searchTerm, caseInsensitive: true);
+    }
+
+    if (categoryIds != null && categoryIds.isNotEmpty) {
+      query = query.oneFrom('categories', categoryIds);
+    }
+
+    query = query.skip(skip).limit(limit);
+
+    final docs = await _eventsCollection.find(query).toList();
+    final events = docs.map((e) => Event.fromJson(e)).toList();
+
+    printYellow(
+        'Found ${events.length} events happening today for user ${userId.toHexString()}');
+
+    final eventsWithSales = await Future.wait(
+      events.map((event) async {
+        final sales = await calculateEventSales(eventId: event.id);
+        return event.copyWith(sales: sales);
+      }),
+    );
+
+    return eventsWithSales;
   }
 
-  if (categoryIds != null && categoryIds.isNotEmpty) {
-    query = query.oneFrom('categories', categoryIds);
-  }
-
-  query = query.skip(skip).limit(limit);
-
-  final docs = await _eventsCollection.find(query).toList();
-  final events = docs.map((e) => Event.fromJson(e)).toList();
-
-  printYellow('Found ${events.length} events happening today for user ${userId.toHexString()}');
-
-  final eventsWithSales = await Future.wait(
-    events.map((event) async {
-      final sales = await calculateEventSales(eventId: event.id);
-      return event.copyWith(sales: sales);
-    }),
-  );
-
-  return eventsWithSales;
-}
- 
   @override
   Future<EventSales> calculateEventSales({required ObjectId eventId}) async {
     final eventDoc = await _eventsCollection.findOneAndPopulateRikky(

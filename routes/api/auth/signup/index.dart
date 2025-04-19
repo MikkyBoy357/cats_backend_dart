@@ -118,6 +118,7 @@ Future<Response> onRequest(RequestContext context) async {
     );
   }
 }
+
 UserType _getUserTypeFromString(String typeString) {
   final normalizedString = typeString.toLowerCase();
   return UserType.values.firstWhere(

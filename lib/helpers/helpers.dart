@@ -6,3 +6,4 @@ export 'mongoInitialization.dart';
 export 'populate.dart';
 export 'qr_helper.dart';
 export 'ticket_confirmation_mail.dart';
+export 'create_contributor_helper.dart';

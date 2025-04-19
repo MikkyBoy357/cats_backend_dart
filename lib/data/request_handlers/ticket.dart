@@ -109,20 +109,23 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
     required ObjectId userId,
     required ObjectId eventId,
   }) async {
-
     final ticket = await _ticketRepository.getTicketByTicketNumber(
       ticketNumber: ticketNumber,
     );
 
     if (ticket == null) {
       return Response.json(
-        body: 'Ticket with number `$ticketNumber` not found',
+        body: {
+          'message': 'Ticket with number `$ticketNumber` not found',
+        },
         statusCode: 404,
       );
     }
- if (ticket.event.fold((id) => id, (event) => event.id) != eventId) {
+    if (ticket.event.fold((id) => id, (event) => event.id) != eventId) {
       return Response.json(
-        body: 'Ticket does not belong to this event',
+        body: {
+          'message': 'Ticket does not belong to this event',
+        },
         statusCode: 404,
       );
     }
@@ -143,7 +146,9 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
 
     if (updatedTicket == null) {
       return Response.json(
-        body: 'Failed to scan ticket',
+        body: {
+          'message': 'Failed to Scan Ticket',
+        },
         statusCode: 500,
       );
     }
@@ -270,7 +275,7 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
     required ObjectId userId,
     required ObjectId eventId,
   }) async {
-          printBlue('MEDD--->${eventId}');
+    printBlue('MEDD--->${eventId}');
 
     final ticket = await _ticketRepository.getTicketById(ticketId: ticketId);
 
