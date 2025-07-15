@@ -1,6 +1,5 @@
 import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/data/data.dart';
-import 'package:cats_backend/helpers/helpers.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
@@ -8,8 +7,8 @@ Future<Response> onRequest(RequestContext context, String userId) async {
   final request = context.request;
   final method = request.method;
 
-  final authValidationResponse = context.read<AuthValidationResponse>();
-  final saint = authValidationResponse.user!;
+  // final authValidationResponse = context.read<AuthValidationResponse>();
+  // final saint = authValidationResponse.user!;
   final eventRepository =
       EventRepository(database: await mongoDbPoolService.acquire());
   final ticketTypeRepository = TicketTypeRepository(
@@ -22,7 +21,9 @@ Future<Response> onRequest(RequestContext context, String userId) async {
 
   if (method != HttpMethod.get) {
     return Response(
-        body: 'Unsupported request method: $method', statusCode: 405);
+      body: 'Unsupported request method: $method',
+      statusCode: 405,
+    );
   }
 
   final queryParams = request.uri.queryParameters;

@@ -83,7 +83,7 @@ Future<Response> onRequest(RequestContext context) async {
 
           final decryptedKey =
               keyWord.toString().aes256Decrypt(Config.qrCodeKey);
-          printBlue('omo -> ${decryptedKey}');
+          printBlue('omo -> $decryptedKey');
 
           try {
             final ticketId = toObjectId(decryptedKey);

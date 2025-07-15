@@ -3,16 +3,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/helpers/helpers.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 Future<Response> onRequest(RequestContext context) async {
-  final userRepository = UserRepository(
-    database: await mongoDbPoolService.acquire(),
-  );
+  // final userRepository = UserRepository(
+  //   database: await mongoDbPoolService.acquire(),
+  // );
 
   try {
     final request = context.request;
@@ -97,9 +96,9 @@ Future<Response> onRequest(RequestContext context) async {
     await userCollection.updateOne(
       where.eq('_id', contributor['_id']),
       {
-        '\$set': {
+        r'$set': {
           'password': hashedPassword,
-        }
+        },
       },
     );
 

@@ -1,8 +1,11 @@
-import 'dart:html';
+import 'package:web/web.dart';
 
 void main() {
-  final button = querySelector('#hello-btn') as ButtonElement?;
-  button?.onClick.listen((_) {
-    window.alert('Hello from Dart!');
-  });
+  final button = document.querySelector('#hello-btn') as HTMLButtonElement?;
+
+  if (button != null) {
+    button.onClick.listen((event) {
+      window.alert('Hello, World!');
+    });
+  }
 }

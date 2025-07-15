@@ -33,7 +33,8 @@ Future<Response> onRequest(RequestContext context) async {
       final isEmail = identifier.contains('@');
 
       printBlue(
-          'Finding user with ${isEmail ? 'email' : 'username'}: $identifier...');
+        'Find user ${isEmail ? 'email' : 'username'}: $identifier...',
+      );
 
       final foundUser = await userRepository.getQuery(
         isEmail ? UserQuery.email : UserQuery.username,

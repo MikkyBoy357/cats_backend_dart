@@ -34,7 +34,7 @@ Future<Response> onRequest(RequestContext context) async {
 
     try {
       printMagenta('Processing Paystack Webhook...');
-      print('Headers: ${await context.request.body()}');
+      printBlue('Headers: ${await context.request.body()}');
       final requestJson = await context.request.json() as Map<String, dynamic>;
 
       final paystackWebhookBody = PaystackWebhookBody.fromJson(requestJson);
@@ -43,8 +43,8 @@ Future<Response> onRequest(RequestContext context) async {
 
       // It's crucial to verify the signature (see step 3)
       // For now, let's just log the event
-      print('Received Paystack Webhook Event: $event');
-      print('Webhook Body: $requestJson');
+      printGreen('Received Paystack Webhook Event: $event');
+      printMagenta('Webhook Body: $requestJson');
 
       if (event == 'charge.success') {
         // Payment was successful!
@@ -54,11 +54,11 @@ Future<Response> onRequest(RequestContext context) async {
         final customer = data['customers'] as Map<String, dynamic>;
         final customerEmail = customer['email'] as String;
 
-        print('Payment successful for reference: $transactionReference');
-        print('Amount: NGN$amountPaid');
-        print('Customer Email: $customerEmail');
+        printBlue('Payment successful for reference: $transactionReference');
+        printGreen('Amount: NGN$amountPaid');
+        printGreen('Customer Email: $customerEmail');
 
-        // TODO:
+        // TODO(MikkyBoy357): Securely handle the payment success:
         // 1. Verify the transactions reference against your database to ensure
         // it's a valid, pending transactions.
         // 2. Issue the ticket to the user (update your database,
@@ -70,19 +70,21 @@ Future<Response> onRequest(RequestContext context) async {
         );
       } else if (event == 'charge.failed') {
         // Payment failed
-        print('Payment failed for reference: ${data['reference']}');
-        // TODO: Handle failed payment (e.g., update transactions status in your DB, notify user)
+        printRed('Payment failed for reference: ${data['reference']}');
+        // TODO(MikkyBoy357): Handle failed payment
+        //  (e.g., update transactions status in your DB, notify user)
         return Response.json(
           body: {'message': 'Webhook received successfully'},
         );
       }
-      // Handle other events as needed (e.g., 'transfer.success', 'refund.successful')
+      // TODO(MikkyBoy357): Handle other events as needed
+      //  (e.g., 'transfer.success', 'refund.successful')
 
       return Response.json(
         body: {'message': 'Event not handled'},
       );
     } catch (e) {
-      print('Error processing webhook: $e');
+      printRed('Error processing webhook: $e');
       return Response.json(
         statusCode: HttpStatus.badRequest,
         body: {'message': 'Error processing webhook'},

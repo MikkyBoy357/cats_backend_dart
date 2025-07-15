@@ -44,8 +44,10 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
 
     return ticketTypes;
   }
+
   @override
-  Future<List<TicketType>> getTicketTypesForUser({required ObjectId userId}) async {
+  Future<List<TicketType>> getTicketTypesForUser(
+      {required ObjectId userId,}) async {
     final res = await _ticketTypesCollection.find({
       'createdBy': userId,
     }).toList();
@@ -56,6 +58,7 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
 
     return ticketTypes;
   }
+
   @override
   Future<List<TicketType>> getTicketTypesByEventId({
     required ObjectId eventId,
@@ -106,7 +109,7 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
     final res = await _ticketTypesCollection.updateOne(
       where.eq('_id', ticketTypeId),
       {
-        '\$set': {
+        r'$set': {
           'soldOut': soldOut,
         },
       },

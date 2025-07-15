@@ -44,7 +44,7 @@ Future<Response> onRequest(RequestContext context) async {
         .map((doc) => {
               'id': toObjectId(doc['_id']).oid,
               'name': doc['name'] as String,
-            })
+            },)
         .toList();
 
     return Response.json(

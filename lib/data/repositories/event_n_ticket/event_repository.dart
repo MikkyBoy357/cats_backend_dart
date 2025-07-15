@@ -152,10 +152,13 @@ class EventRepository extends EventRepositoryImpl {
         DateTime.utc(now.year, now.month, now.day, 23, 59, 59, 999);
 
     printYellow(
-        'Finding events between ${todayStart.toIso8601String()} and ${todayEnd.toIso8601String()}');
+      'Finding events between ${todayStart.toIso8601String()} '
+      'and ${todayEnd.toIso8601String()}',
+    );
 
     // Build the query
-    // Note: Since date is stored as a string in ISO format, we need to compare using string format
+    // Note: Since date is stored as a string in ISO format, we need
+    // to compare using string format
     var query = where
         .eq('createdBy', userId)
         .gte('date', todayStart.toIso8601String())
@@ -175,7 +178,8 @@ class EventRepository extends EventRepositoryImpl {
     final events = docs.map((e) => Event.fromJson(e)).toList();
 
     printYellow(
-        'Found ${events.length} events happening today for user ${userId.toHexString()}');
+      'Found ${events.length} events happening today for user ${userId.oid}',
+    );
 
     final eventsWithSales = await Future.wait(
       events.map((event) async {
@@ -217,29 +221,31 @@ class EventRepository extends EventRepositoryImpl {
           'totalSold': {r'$sum': 1},
           'scanned': {
             r'$sum': {
-              r'$cond': [r'$isScanned', 1, 0]
-            }
+              r'$cond': [r'$isScanned', 1, 0],
+            },
           },
-        }
+        },
       }
     ]).toList();
 
     final ticketTypes = event.ticketTypes
-        .map((ticketTypeEither) => ticketTypeEither.fold(
-              (id) => null,
-              (type) => type,
-            ))
+        .map(
+          (ticketTypeEither) => ticketTypeEither.fold(
+            (id) => null,
+            (type) => type,
+          ),
+        )
         .where((type) => type != null)
         .toList();
 
     final ticketTypeSalesMap = <String, TicketTypeSales>{};
-    int totalTicketSupply = 0;
-    int totalTicketsSold = 0;
-    int totalTicketsScanned = 0;
+    var totalTicketSupply = 0;
+    var totalTicketsSold = 0;
+    var totalTicketsScanned = 0;
 
     final ticketTypeMap = {
       for (final type in ticketTypes.where((t) => t != null))
-        type!.id.toString(): type
+        type!.id.toString(): type,
     };
 
     for (final result in ticketAggregation) {
@@ -249,8 +255,8 @@ class EventRepository extends EventRepositoryImpl {
 
       if (ticketType == null) continue;
 
-      final int sold = (result['totalSold'] as num).toInt();
-      final int scanned = (result['scanned'] as num).toInt();
+      final sold = (result['totalSold'] as num).toInt();
+      final scanned = (result['scanned'] as num).toInt();
 
       totalTicketsSold += sold;
       totalTicketsScanned += scanned;

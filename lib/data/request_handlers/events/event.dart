@@ -33,7 +33,7 @@ abstract class EventRequestHandler {
   Future<Response> handleIncrementClicks({required ObjectId eventId});
   Future<Response> handleIncrementShares({required ObjectId eventId});
   Future<Response> handleIncrementBookmarks({required ObjectId eventId});
-    Future<Response> handleGetUserEventsToday({
+  Future<Response> handleGetUserEventsToday({
     required ObjectId userId,
     String? searchTerm,
     List<ObjectId>? categoryIds,
@@ -173,26 +173,28 @@ class EventRequestHandlerImpl implements EventRequestHandler {
       statusCode: isDeleted ? 200 : 404,
     );
   }
-@override
-Future<Response> handleGetUserEventsToday({
-  required ObjectId userId,
-  String? searchTerm,
-  List<ObjectId>? categoryIds,
-  int page = 1,
-  int limit = 20,
-}) async {
-  final events = await _eventRepository.getUserEventsToday(
-    userId: userId,
-    searchTerm: searchTerm,
-    categoryIds: categoryIds,
-    page: page,
-    limit: limit,
-  );
 
-  return Response.json(
-    body: events,
-  );
-}
+  @override
+  Future<Response> handleGetUserEventsToday({
+    required ObjectId userId,
+    String? searchTerm,
+    List<ObjectId>? categoryIds,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final events = await _eventRepository.getUserEventsToday(
+      userId: userId,
+      searchTerm: searchTerm,
+      categoryIds: categoryIds,
+      page: page,
+      limit: limit,
+    );
+
+    return Response.json(
+      body: events,
+    );
+  }
+
   @override
   Future<Response> handleGetFeed() async {
     // Step 1: Get trending events (top 10)

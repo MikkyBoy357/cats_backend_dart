@@ -86,7 +86,7 @@ Future<Response> onRequest(RequestContext context) async {
         'followersCount': 0,
       });
 
-      print('writeResult: ${x.id}');
+      printGreen('writeResult: ${x.id}');
 
       final createdUser = await userRepository.getQuery(
         UserQuery.id,

@@ -14,12 +14,6 @@ void setupLocator() {
           leakDetectionThreshold: 100000,
           uriString: Config.mongoDBUrl,
           poolSize: 5,
-          secure: false,
-          tlsAllowInvalidCertificates: false,
-          tlsCAFile: null,
-          tlsCertificateKeyFile: null,
-          tlsCertificateKeyFilePassword: null,
-          writeConcern: WriteConcern.acknowledged,
         ),
       ),
     )

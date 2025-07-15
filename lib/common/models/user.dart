@@ -63,9 +63,8 @@ class User {
           : DateTime.now(),
       followingsCount: json['followingsCount'] as int?,
       followersCount: json['followersCount'] as int?,
-      createdBy: json['createdBy'] != null
-          ? toObjectId(json['createdBy'])
-          : null, 
+      createdBy:
+          json['createdBy'] != null ? toObjectId(json['createdBy']) : null,
     );
   }
 
@@ -84,7 +83,7 @@ class User {
       'lastSeen': lastSeen.toString(),
       'followingsCount': followingsCount,
       'followersCount': followersCount,
-      'createdBy': createdBy, 
+      'createdBy': createdBy,
     };
   }
 
@@ -102,7 +101,7 @@ class User {
     DateTime? lastSeen,
     int? followingsCount,
     int? followersCount,
-    ObjectId? createdBy, 
+    ObjectId? createdBy,
   }) {
     return User(
       $_id: $_id ?? this.$_id,
@@ -118,7 +117,7 @@ class User {
       lastSeen: lastSeen ?? this.lastSeen,
       followingsCount: followingsCount ?? this.followingsCount,
       followersCount: followersCount ?? this.followersCount,
-      createdBy: createdBy ?? this.createdBy, 
+      createdBy: createdBy ?? this.createdBy,
     );
   }
 

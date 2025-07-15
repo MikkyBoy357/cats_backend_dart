@@ -91,7 +91,6 @@ class TicketType {
       description: 'General Admission Ticket',
       totalSupply: 100,
       createdBy: ObjectId(),
-      soldOut: false,
     );
   }
 }

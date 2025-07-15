@@ -28,7 +28,9 @@ class EventSales {
       totalTicketSupply: json['totalTicketSupply'] as int,
       ticketTypeSales: (json['ticketTypeSales'] as Map<String, dynamic>?)?.map(
             (key, value) => MapEntry(
-                key, TicketTypeSales.fromJson(value as Map<String, dynamic>)),
+              key,
+              TicketTypeSales.fromJson(value as Map<String, dynamic>),
+            ),
           ) ??
           {},
     );
@@ -51,7 +53,7 @@ class TicketTypeSales {
   });
 
   Map<String, dynamic> toJson() => {
-        'ticketTypeId': ticketTypeId.toHexString(),
+        'ticketTypeId': ticketTypeId.oid,
         'name': name,
         'sold': sold,
         'scanned': scanned,

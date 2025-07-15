@@ -158,7 +158,7 @@ class TicketRepository extends TicketRepositoryImpl {
     final updateResult = await _ticketsCollection.updateOne(
       where.eq('_id', ticketId),
       {
-        '\$set': {
+        r'$set': {
           'isScanned': true,
           'scannedAt': now.toString(),
           'scannedBy': scannedBy,

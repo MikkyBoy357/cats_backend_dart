@@ -56,7 +56,7 @@ class Ticket {
       'ticketNumber': ticketNumber,
       'isScanned': isScanned,
       'scannedAt': scannedAt?.toString(),
-      'scannedBy': scannedBy?.fold((l) => l, (r) => r.toJson()) ?? null,
+      'scannedBy': scannedBy?.fold((l) => l, (r) => r.toJson()),
     };
   }
 
