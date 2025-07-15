@@ -57,8 +57,9 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
   }
 
   @override
-  Future<Response> handleGetTicketsByEventId(
-      {required ObjectId eventId,}) async {
+  Future<Response> handleGetTicketsByEventId({
+    required ObjectId eventId,
+  }) async {
     final event = await _eventRepository.getEventById(
       eventId: eventId,
     );

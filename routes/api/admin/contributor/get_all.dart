@@ -41,10 +41,12 @@ Future<Response> onRequest(RequestContext context) async {
         (await mongoDbPoolService.acquire()).collection('users');
     final contributors = await userCollection
         .find({'userType': UserType.contributor.name})
-        .map((doc) => {
-              'id': toObjectId(doc['_id']).oid,
-              'name': doc['name'] as String,
-            },)
+        .map(
+          (doc) => {
+            'id': toObjectId(doc['_id']).oid,
+            'name': doc['name'] as String,
+          },
+        )
         .toList();
 
     return Response.json(

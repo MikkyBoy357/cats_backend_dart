@@ -46,8 +46,9 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
   }
 
   @override
-  Future<List<TicketType>> getTicketTypesForUser(
-      {required ObjectId userId,}) async {
+  Future<List<TicketType>> getTicketTypesForUser({
+    required ObjectId userId,
+  }) async {
     final res = await _ticketTypesCollection.find({
       'createdBy': userId,
     }).toList();
