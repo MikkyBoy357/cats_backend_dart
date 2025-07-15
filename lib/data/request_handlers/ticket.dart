@@ -296,7 +296,7 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
           'message': 'Ticket has already been scanned',
           'ticket': ticket,
         },
-        statusCode: 400,
+        statusCode: 403,
       );
     }
 

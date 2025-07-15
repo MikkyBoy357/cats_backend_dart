@@ -17,7 +17,8 @@ Future<Response> onRequest(RequestContext context, String username) async {
 
   final saint = authValidationResponse.user!;
 
-  final userRepository = UserRepository(database: mongoDbService.database);
+  final userRepository =
+      UserRepository(database: await mongoDbPoolService.acquire());
   final request = context.request;
   final method = request.method;
 
@@ -33,7 +34,8 @@ Future<Response> onRequest(RequestContext context, String username) async {
     );
   }
 
-  final bussRepository = BussRepository(database: mongoDbService.database);
+  final bussRepository =
+      BussRepository(database: await mongoDbPoolService.acquire());
   final bussHandler = BussRequestHandlerImpl(bussRepository: bussRepository);
 
   return switch (method) {

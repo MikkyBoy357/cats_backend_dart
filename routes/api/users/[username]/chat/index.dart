@@ -15,7 +15,8 @@ Future<Response> onRequest(RequestContext context, String username) async {
 
   final saint = authValidationResponse.user!;
 
-  final userRepository = UserRepository(database: mongoDbService.database);
+  final userRepository =
+      UserRepository(database: await mongoDbPoolService.acquire());
 
   final passedUser = await userRepository.getQuery(
     UserQuery.username,
@@ -29,7 +30,8 @@ Future<Response> onRequest(RequestContext context, String username) async {
     );
   }
 
-  final chatRepository = ChatRepository(database: mongoDbService.database);
+  final chatRepository =
+      ChatRepository(database: await mongoDbPoolService.acquire());
   final request = context.request;
   final method = request.method;
   final handler = ChatRequestHandlerImpl(chatRepository: chatRepository);

@@ -8,7 +8,7 @@ import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   final userRepository = UserRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
 
   try {
@@ -17,7 +17,7 @@ Future<Response> onRequest(RequestContext context) async {
 
     if (request.method == HttpMethod.post) {
       // await mongoDbService.open();
-      printGreen('DB is initialized: ${mongoDbService.isInitialized}');
+      // printGreen('DB is initialized: ${mongoDbService.isInitialized}');
 
       printBlue('passed mongoDbService open');
 

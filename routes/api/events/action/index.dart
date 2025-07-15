@@ -17,9 +17,10 @@ Future<Response> onRequest(RequestContext context) async {
   }
 
   final saint = authValidationResponse.user!;
-  final eventRepository = EventRepository(database: mongoDbService.database);
+  final eventRepository =
+      EventRepository(database: await mongoDbPoolService.acquire());
   final ticketTypeRepository = TicketTypeRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
 
   final request = context.request;

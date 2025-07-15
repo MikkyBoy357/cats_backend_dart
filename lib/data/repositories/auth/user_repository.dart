@@ -63,6 +63,8 @@ class UserRepository implements UserRepositoryImpl {
     final foundUser = await usersCollection.findOne({
       query.value: parsedKeyword,
     });
+
+    // mongoDbPoolService.release(_database);
     return foundUser != null ? User.fromJson(foundUser) : null;
   }
 

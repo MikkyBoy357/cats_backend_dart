@@ -13,11 +13,11 @@ Future<Response> onRequest(RequestContext context, String id) async {
   }
 
   final ticketRepository = TicketRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
 
   final collectionRepository = SckalerCollectionRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
   final sckalerRequestHandler = SckalerRequestHandlerImpl(
     sckalerCollectionRepository: collectionRepository,
@@ -28,9 +28,10 @@ Future<Response> onRequest(RequestContext context, String id) async {
 
   final handler = TicketRequestHandlerImpl(
     ticketRepository: ticketRepository,
-    eventRepository: EventRepository(database: mongoDbService.database),
+    eventRepository:
+        EventRepository(database: await mongoDbPoolService.acquire()),
     ticketTypeRepository: TicketTypeRepository(
-      database: mongoDbService.database,
+      database: await mongoDbPoolService.acquire(),
     ),
     sckalerRequestHandler: sckalerRequestHandler,
     mailRequestHandler: mailRequestHandler,

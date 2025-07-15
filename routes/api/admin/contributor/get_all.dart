@@ -37,7 +37,8 @@ Future<Response> onRequest(RequestContext context) async {
     }
 
     // Get all contributors from the database
-    final userCollection = mongoDbService.database.collection('users');
+    final userCollection =
+        (await mongoDbPoolService.acquire()).collection('users');
     final contributors = await userCollection
         .find({'userType': UserType.contributor.name})
         .map((doc) => {

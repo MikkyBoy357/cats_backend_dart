@@ -1,7 +1,5 @@
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/data/data.dart';
 import 'package:cats_backend/helpers/helpers.dart';
-import 'package:cats_backend/services/services.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 abstract class EventRepositoryImpl {
@@ -50,9 +48,9 @@ class EventRepository extends EventRepositoryImpl {
   }) : _database = database;
 
   DbCollection get _eventsCollection => _database.eventsCollection;
-  final ticketRepository = TicketRepository(
-    database: mongoDbService.database,
-  );
+  // final ticketRepository = TicketRepository(
+  //   database:  mongoDbService.database,
+  // );
 
   final eventPopulateFields = [
     PopulateField(fieldName: 'ticketTypes', collectionName: 'ticketTypes'),

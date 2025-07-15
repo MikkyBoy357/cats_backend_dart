@@ -21,7 +21,8 @@ Future<Response> onRequest(RequestContext context, String id) async {
     return Response.json(body: 'Error: Cannot Parse Invalid Chat ID.');
   }
 
-  final chatRepository = ChatRepository(database: mongoDbService.database);
+  final chatRepository =
+      ChatRepository(database: await mongoDbPoolService.acquire());
   final request = context.request;
   final method = request.method;
   final handler = ChatRequestHandlerImpl(chatRepository: chatRepository);

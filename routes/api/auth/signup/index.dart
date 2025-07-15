@@ -9,7 +9,7 @@ import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   final userRepository = UserRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
 
   // final userRequestHandlerImpl = UserRequestHandlerImpl(
@@ -34,7 +34,8 @@ Future<Response> onRequest(RequestContext context) async {
         requestData['password'] as String,
       );
 
-      final userCollection = mongoDbService.database.collection('users');
+      final userCollection =
+          (await mongoDbPoolService.acquire()).collection('users');
       final foundUser = await userCollection.findOne({
         'email': email,
       });

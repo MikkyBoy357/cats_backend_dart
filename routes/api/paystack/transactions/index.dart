@@ -1,5 +1,5 @@
-import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
+import 'package:paystack/paystack.dart' hide HttpMethod, Response;
 
 Future<Response> onRequest(RequestContext context) async {
   final request = context.request;
@@ -7,7 +7,8 @@ Future<Response> onRequest(RequestContext context) async {
 
   return switch (method) {
     HttpMethod.get => () async {
-        final transactions = await paystackClient.transactions.all();
+        final transactions =
+            await context.read<PaystackClient>().transactions.all();
         return Response.json(
           body: {
             'status': transactions.statusCode,

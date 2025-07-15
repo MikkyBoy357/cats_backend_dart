@@ -28,9 +28,10 @@ Future<Response> onRequest(RequestContext context, String eventId) async {
     );
   }
 
-  final eventRepository = EventRepository(database: mongoDbService.database);
+  final eventRepository =
+      EventRepository(database: await mongoDbPoolService.acquire());
   final ticketTypeRepository = TicketTypeRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
   final request = context.request;
   final method = request.method;

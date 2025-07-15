@@ -28,7 +28,6 @@ class AuthValidationResponse {
 Future<AuthValidationResponse> getAuthResult({
   required String? token,
 }) async {
-
   if (token == null) {
     printMagenta('Token is required');
     return AuthValidationResponse(
@@ -38,7 +37,7 @@ Future<AuthValidationResponse> getAuthResult({
   }
 
   try {
-    final db = mongoDbService.database;
+    final db = await mongoDbPoolService.acquire();
     final jwtClaim = verifyJwtHS256Signature(
       token,
       Config.jwtSecret,
@@ -80,6 +79,5 @@ Middleware authenticationValidator({
     authenticator: (context, token) async {
       return getAuthResult(token: token);
     },
-    
   );
 }

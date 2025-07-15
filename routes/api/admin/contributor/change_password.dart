@@ -11,7 +11,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   final userRepository = UserRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
 
   try {
@@ -52,7 +52,8 @@ Future<Response> onRequest(RequestContext context) async {
     final customPassword = requestData['password'] as String?;
 
     // Find the contributor
-    final userCollection = mongoDbService.database.collection('users');
+    final userCollection =
+        (await mongoDbPoolService.acquire()).collection('users');
     final contributor = await userCollection.findOne({
       'name': contributorUsername,
       'userType': UserType.contributor.name,

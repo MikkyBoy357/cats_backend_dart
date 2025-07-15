@@ -19,11 +19,11 @@ Future<Response> onRequest(RequestContext context, String id) async {
   final authValidationResponse = await getAuthResult(token: token);
 
   final profileRepository = ProfileRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
 
   final chatRepository = ChatRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
 
   if (!authValidationResponse.isValid) {

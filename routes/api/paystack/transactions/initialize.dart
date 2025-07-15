@@ -1,6 +1,6 @@
 import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
+import 'package:paystack/paystack.dart' hide HttpMethod, Response;
 
 Future<Response> onRequest(RequestContext context) async {
   final request = context.request;
@@ -12,10 +12,11 @@ Future<Response> onRequest(RequestContext context) async {
 
         final transactionBody = PaystackTransactionBody.fromJson(body);
 
-        final initializeResponse = await paystackClient.transactions.initialize(
-          transactionBody.amount, // Amount in kobo
-          transactionBody.email,
-        );
+        final initializeResponse =
+            await context.read<PaystackClient>().transactions.initialize(
+                  transactionBody.amount, // Amount in kobo
+                  transactionBody.email,
+                );
 
         return Response.json(
           body: {

@@ -16,7 +16,7 @@ Future<Response> onRequest(RequestContext context, String id) async {
   final method = request.method;
 
   final ticketTypeRepository = TicketTypeRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
   final handler = TicketTypeRequestHandlerImpl(
     ticketTypeRepository: ticketTypeRepository,

@@ -9,7 +9,7 @@ import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   final userRepository = UserRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
 
   try {
@@ -53,12 +53,13 @@ Future<Response> onRequest(RequestContext context) async {
       final username = generateUsername(name);
 
       // Check if username exists
-      final userCollection = mongoDbService.database.collection('users');
+      final userCollection =
+          (await mongoDbPoolService.acquire()).collection('users');
       final existingUsername = await userCollection.findOne({
         'username': username,
       });
 
-      String finalUsername = username;
+      var finalUsername = username;
       if (existingUsername != null) {
         // If username exists, generate a new one with a random suffix
         final modifiedUsername = '$username${Random().nextInt(999)}';
@@ -134,7 +135,8 @@ Future<Response> onRequest(RequestContext context) async {
       }
 
       // Get contributors created by this admin
-      final userCollection = mongoDbService.database.collection('users');
+      final userCollection =
+          (await mongoDbPoolService.acquire()).collection('users');
       final contributors = await userCollection.find({
         'userType': UserType.contributor.name,
         'createdBy': saint.$_id,
