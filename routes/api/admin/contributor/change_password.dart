@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/data/data.dart';
-import 'package:cats_backend/helpers/create_contributor_helper.dart';
 import 'package:cats_backend/helpers/helpers.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
@@ -19,7 +18,7 @@ Future<Response> onRequest(RequestContext context) async {
     final request = context.request;
     final authValidationResponse = context.read<AuthValidationResponse>();
     final admin = authValidationResponse.user!;
-    
+
     if (request.method != HttpMethod.post) {
       return Response.json(
         statusCode: 404,
@@ -29,8 +28,8 @@ Future<Response> onRequest(RequestContext context) async {
         },
       );
     }
-    
-    await mongoDbService.open();
+
+    // await mongoDbService.open();
 
     // Only admins can access this endpoint
     if (admin.userType != UserType.admin) {
@@ -74,7 +73,8 @@ Future<Response> onRequest(RequestContext context) async {
     final String newPassword;
     if (customPassword != null && customPassword.isNotEmpty) {
       // Validate custom password
-      if (!RegExp(r'^[a-zA-Z0-9!@#$%^&*)(+=._-]{6,}$').hasMatch(customPassword)) {
+      if (!RegExp(r'^[a-zA-Z0-9!@#$%^&*)(+=._-]{6,}$')
+          .hasMatch(customPassword)) {
         return Response.json(
           statusCode: 400,
           body: {

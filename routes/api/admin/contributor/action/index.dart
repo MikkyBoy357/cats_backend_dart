@@ -17,7 +17,7 @@ Future<Response> onRequest(RequestContext context) async {
     final authValidationResponse = context.read<AuthValidationResponse>();
     final saint = authValidationResponse.user!;
     if (request.method == HttpMethod.post) {
-      await mongoDbService.open();
+      // await mongoDbService.open();
 
       if (saint.userType != UserType.admin) {
         return Response.json(
@@ -119,7 +119,7 @@ Future<Response> onRequest(RequestContext context) async {
         },
       );
     } else if (request.method == HttpMethod.get) {
-      await mongoDbService.open();
+      // await mongoDbService.open();
 
       // Check if user is admin
       if (saint.userType != UserType.admin) {

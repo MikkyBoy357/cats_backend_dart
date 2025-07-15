@@ -69,7 +69,7 @@ Future<Response> onRequest(RequestContext context) async {
           return handler.handleScanTicketByNumber(
             ticketNumber: ticketNumber,
             userId: saint.$_id,
-            eventId: eventId
+            eventId: eventId,
           );
         } else if (body.containsKey('keyWord')) {
           final keyWord = body['keyWord'];

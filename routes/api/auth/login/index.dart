@@ -13,11 +13,10 @@ Future<Response> onRequest(RequestContext context) async {
 
   try {
     final request = context.request;
-    final mongoDbService = await context.read<Future<MongoService>>();
     printGreen('passed mongoDbService initialization');
 
     if (request.method == HttpMethod.post) {
-      await mongoDbService.open();
+      // await mongoDbService.open();
       printGreen('DB is initialized: ${mongoDbService.isInitialized}');
 
       printBlue('passed mongoDbService open');
@@ -89,6 +88,7 @@ Future<Response> onRequest(RequestContext context) async {
       );
     }
   } catch (e) {
+    printRed('Error: $e');
     return Response.json(
       statusCode: 500,
       body: {

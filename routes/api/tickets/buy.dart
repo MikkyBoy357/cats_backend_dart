@@ -4,6 +4,7 @@ import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
+  print('omo');
   final request = context.request;
   final method = request.method;
 

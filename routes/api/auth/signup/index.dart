@@ -20,7 +20,7 @@ Future<Response> onRequest(RequestContext context) async {
     final request = context.request;
 
     if (request.method == HttpMethod.post) {
-      await mongoDbService.open();
+      // await mongoDbService.open();
 
       final requestBody = await request.body();
       final requestData = jsonDecode(requestBody) as Map<String, dynamic>;

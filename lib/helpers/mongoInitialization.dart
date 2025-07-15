@@ -2,9 +2,18 @@ import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
+int requestCount = 0;
+DateTime startTime = DateTime.now();
+DateTime lastRequestTime = DateTime.now();
+
 Middleware mongoinitialization() {
-  return provider<Future<MongoService>>(
-    (_) async {
+  requestCount++;
+  printGreen('Request count: $requestCount');
+  printMagenta('isConnected: ${mongoDbService.database.isConnected}');
+  printMagenta('initialized: ${mongoDbService.isInitialized}');
+
+  return (Handler handler) {
+    return (context) async {
       if (!mongoDbService.isInitialized) {
         final stopwatch1 = Stopwatch()..start();
         await mongoDbService.initializeMongo();
@@ -19,9 +28,14 @@ Middleware mongoinitialization() {
         printGreen(
           'mongoDbService.open() executed in ====> ${stopwatch.elapsed}',
         );
+      } else {
+        await mongoDbService.refreshDbConnection();
       }
 
-      return mongoDbService;
-    },
-  );
+      lastRequestTime = DateTime.now();
+
+      final response = await handler(context);
+      return response;
+    };
+  };
 }

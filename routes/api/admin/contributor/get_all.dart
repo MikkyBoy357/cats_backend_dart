@@ -22,7 +22,7 @@ Future<Response> onRequest(RequestContext context) async {
       );
     }
 
-    await mongoDbService.open();
+    // await mongoDbService.open();
 
     // Only admins can access this endpoint
     if (saint.userType != UserType.admin) {

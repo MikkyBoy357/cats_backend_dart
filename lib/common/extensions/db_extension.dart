@@ -18,6 +18,10 @@ extension DbX on Db {
   DbCollection get ticketsCollection => collection('tickets');
   DbCollection get sckalerCollectionsCollection =>
       collection('sckalerCollections');
+  DbCollection get paystackTransactionsCollection =>
+      collection('paystackTransactions');
+  DbCollection get paystackCustomersCollection =>
+      collection('paystackCustomers');
 }
 
 extension RequestX on Request {
@@ -29,5 +33,13 @@ extension RequestX on Request {
           printYellow('Error parsing JSON: $e');
           return null;
         }
+      }();
+
+  Future<Map<String, dynamic>> get parseJson async => () async {
+        final json = await tryJson;
+        if (json == null) {
+          throw Exception('Invalid JSON body');
+        }
+        return json;
       }();
 }

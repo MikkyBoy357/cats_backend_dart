@@ -275,7 +275,6 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
     required ObjectId userId,
     required ObjectId eventId,
   }) async {
-
     final ticket = await _ticketRepository.getTicketById(ticketId: ticketId);
 
     if (ticket == null) {
@@ -369,7 +368,7 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
 
     // first we collect payment
     ticketBuyRequest.paymentTransaction.amount = ticketType.price;
-    ticketBuyRequest.paymentTransaction.description = '*Achat de Tické* '
+    ticketBuyRequest.paymentTransaction.description = '*Achat Tické* '
         'Ë: ${event.name}';
     ticketBuyRequest.ticketRequest.issuedTo.phone =
         ticketBuyRequest.paymentTransaction.tel;
