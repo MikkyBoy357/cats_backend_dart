@@ -1,11 +1,18 @@
 import 'package:cats_backend/common/common.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
+enum UserType {
+  admin,
+  contributor,
+  user,
+}
+
 class User {
   ObjectId $_id;
   String name;
-  String email;
+  String? email;
   String? password;
+  UserType userType;
   int age;
   String username;
   String? avatarUrl;
@@ -14,12 +21,14 @@ class User {
   DateTime lastSeen;
   int? followingsCount;
   int? followersCount;
+  ObjectId? createdBy; // Add this field
 
   User({
     required this.$_id,
     required this.name,
-    required this.email,
+    this.email,
     required this.password,
+    required this.userType,
     required this.age,
     required this.username,
     this.avatarUrl,
@@ -28,14 +37,22 @@ class User {
     required this.lastSeen,
     required this.followingsCount,
     required this.followersCount,
+    this.createdBy, // Add this parameter
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
+    final userTypeString = json['userType'] as String?;
     return User(
       $_id: toObjectId(json['_id']),
       name: json['name'] as String? ?? '',
-      email: json['email'] as String,
+      email: json['email'] as String?,
       password: json['password'] as String?,
+      userType: userTypeString != null
+          ? UserType.values.firstWhere(
+              (type) => type.name.toLowerCase() == userTypeString.toLowerCase(),
+              orElse: () => UserType.user,
+            )
+          : UserType.user,
       age: json['age'] as int? ?? 0,
       username: json['username'] as String? ?? '',
       avatarUrl: json['avatarUrl'] as String?,
@@ -46,6 +63,8 @@ class User {
           : DateTime.now(),
       followingsCount: json['followingsCount'] as int?,
       followersCount: json['followersCount'] as int?,
+      createdBy:
+          json['createdBy'] != null ? toObjectId(json['createdBy']) : null,
     );
   }
 
@@ -55,6 +74,7 @@ class User {
       'name': name,
       'email': email,
       'password': password,
+      'userType': userType.name,
       'age': age,
       'username': username,
       'avatarUrl': avatarUrl,
@@ -63,6 +83,7 @@ class User {
       'lastSeen': lastSeen.toString(),
       'followingsCount': followingsCount,
       'followersCount': followersCount,
+      'createdBy': createdBy,
     };
   }
 
@@ -71,6 +92,7 @@ class User {
     String? name,
     String? email,
     String? password,
+    UserType? userType,
     int? age,
     String? username,
     String? avatarUrl,
@@ -79,12 +101,14 @@ class User {
     DateTime? lastSeen,
     int? followingsCount,
     int? followersCount,
+    ObjectId? createdBy,
   }) {
     return User(
       $_id: $_id ?? this.$_id,
       name: name ?? this.name,
       email: email ?? this.email,
       password: password ?? this.password,
+      userType: userType ?? this.userType,
       age: age ?? this.age,
       username: username ?? this.username,
       avatarUrl: avatarUrl ?? this.avatarUrl,
@@ -93,6 +117,7 @@ class User {
       lastSeen: lastSeen ?? this.lastSeen,
       followingsCount: followingsCount ?? this.followingsCount,
       followersCount: followersCount ?? this.followersCount,
+      createdBy: createdBy ?? this.createdBy,
     );
   }
 
@@ -102,6 +127,7 @@ class User {
       name: 'John Doe',
       email: 'johndoe@gmail.com',
       password: 'password',
+      userType: UserType.user,
       age: 25,
       username: 'johndoe',
       avatarUrl: 'https://picsum.photos/200',
@@ -115,7 +141,7 @@ class User {
 
   void validate() {
     Validator.validateRequiredString(name, fieldName: 'Name');
-    Validator.validateEmail(email);
+    Validator.validateEmail(email!);
     Validator.validatePassword(password!);
     Validator.validateRequiredString(username, fieldName: 'Username');
   }

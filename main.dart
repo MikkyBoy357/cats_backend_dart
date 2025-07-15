@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cats_backend/common/common.dart';
 import 'package:cats_backend/helpers/helpers.dart';
 import 'package:cats_backend/services/services.dart';
+import 'package:cats_backend/util/util.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<void> init(InternetAddress ip, int port) async {
@@ -14,8 +15,15 @@ Future<void> init(InternetAddress ip, int port) async {
   printBlue('Init -> IP: $ip, Port: $port');
   printGreen('URL: http://$ipAddress:$port');
 
-  // Initialize the MongoDB service
-  await mongoDbService.initializeMongo();
+  setupLocator();
+  printMagenta('Initializing mongoDbPoolService...');
+  await mongoDbPoolService.initialize();
+  printGreen('mongoDbPoolService initialized ✅ ');
+
+  // await mongoDbService.setupConnections();
+  //
+  // // Initialize the MongoDB service
+  // await mongoDbService.initializeMongo();
 
   // Initialize the firebase
   await FirebaseService.initializeFirebase();

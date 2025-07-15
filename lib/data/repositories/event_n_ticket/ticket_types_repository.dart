@@ -13,6 +13,13 @@ abstract class TicketTypeRepositoryImpl {
     required List<ObjectId> ticketTypeIds,
   });
   Future<bool> deleteTicketType({required ObjectId ticketTypeId});
+  Future<bool> updateSoldOutStatus({
+    required ObjectId ticketTypeId,
+    required bool soldOut,
+  });
+  Future<List<TicketType>> getTicketTypesForUser({
+    required ObjectId userId,
+  });
 }
 
 class TicketTypeRepository extends TicketTypeRepositoryImpl {
@@ -34,6 +41,21 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
     printGreen('TicketTypes: $res');
 
     final ticketTypes = res.map((e) => TicketTypeResponse.fromJson(e)).toList();
+
+    return ticketTypes;
+  }
+
+  @override
+  Future<List<TicketType>> getTicketTypesForUser({
+    required ObjectId userId,
+  }) async {
+    final res = await _ticketTypesCollection.find({
+      'createdBy': userId,
+    }).toList();
+
+    printGreen('TicketTypes for user $userId: $res');
+
+    final ticketTypes = res.map((e) => TicketType.fromJson(e)).toList();
 
     return ticketTypes;
   }
@@ -78,6 +100,22 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
     }
 
     return TicketType.fromJson(result);
+  }
+
+  @override
+  Future<bool> updateSoldOutStatus({
+    required ObjectId ticketTypeId,
+    required bool soldOut,
+  }) async {
+    final res = await _ticketTypesCollection.updateOne(
+      where.eq('_id', ticketTypeId),
+      {
+        r'$set': {
+          'soldOut': soldOut,
+        },
+      },
+    );
+    return res.isSuccess;
   }
 
   @override

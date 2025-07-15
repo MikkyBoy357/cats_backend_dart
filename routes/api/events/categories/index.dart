@@ -9,7 +9,7 @@ Future<Response> onRequest(RequestContext context) async {
   final method = request.method;
 
   final eventCategoryRepository = EventCategoryRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
 
   final handler = EventCategoryRequestHandlerImpl(

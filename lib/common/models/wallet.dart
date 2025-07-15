@@ -142,10 +142,10 @@ class Wallet {
 
   int get saintPoints {
     /// saintPoint is a score based on the
-    /// wallet transaction frequency, streaks, and amount, etc.
+    /// wallet transactions frequency, streaks, and amount, etc.
     ///
-    /// user gets 3 points for every transaction where user is sender
-    /// user gets 1 point for every transaction where user is receiver
+    /// user gets 3 points for every transactions where user is sender
+    /// user gets 1 point for every transactions where user is receiver
     ///
     /// user gets 5 points bonus for every 5 _transactionsSent in 24 hours
     ///
@@ -165,12 +165,12 @@ class Wallet {
 
     var points = 0;
 
-    /// user gets 3 points for every transaction where user is sender
+    /// user gets 3 points for every transactions where user is sender
     for (final _ in transactionsSent) {
       points += 3;
     }
 
-    /// user gets 1 point for every transaction where user is receiver
+    /// user gets 1 point for every transactions where user is receiver
     for (final _ in transactionsReceived) {
       points += 1;
     }

@@ -1,50 +1,6 @@
-import 'package:cats_backend/common/common.dart';
-import 'package:cats_backend/config/config.dart';
-import 'package:mongo_dart/mongo_dart.dart';
+import 'package:cats_backend/util/util.dart';
+import 'package:mongo_pool/mongo_pool.dart';
 
-final mongoDbService = MongoService();
+// Use GetIt to access the MongoService instance
 
-class MongoService {
-  MongoService();
-
-  bool _initialized = false;
-  Db? _database;
-
-  bool get isInitialized => _initialized;
-
-  Db get database {
-    assert(_database != null, 'MongoDB is not initialized');
-    return _database!;
-  }
-
-  Future<void> initializeMongo() async {
-    if (!_initialized) {
-      _database = await Db.create(Config.mongoDBUrl);
-      _initialized = true;
-
-      await open();
-    }
-    printGreen(
-      '==================> Connected to MongoDB ✅ <==================',
-    );
-  }
-
-  Future<void> open() async {
-    if (_database!.state == State.open) {
-      printBlue('========> ⚠️ MongoDB is already OPEN <========');
-      return;
-    }
-    await _database!.open();
-  }
-
-  Future<void> close() async {
-    if (_database!.state == State.closed) {
-      printYellow('========> ⚠️ MongoDB is already CLOSED <========');
-      return;
-    }
-    await _database!.close();
-    printRed(
-      '******************> Closed MongoDB Connection <******************',
-    );
-  }
-}
+final mongoDbPoolService = getIt<MongoDbPoolService>();

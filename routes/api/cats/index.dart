@@ -13,7 +13,8 @@ Future<Response> onRequest(RequestContext context) async {
     );
   }
 
-  final catRepository = CatRepository(database: mongoDbService.database);
+  final catRepository =
+      CatRepository(database: await mongoDbPoolService.acquire());
   final request = context.request;
   final method = request.method;
   final queryParams = request.uri.queryParameters;

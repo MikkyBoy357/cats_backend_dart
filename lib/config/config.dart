@@ -19,4 +19,7 @@ class Config {
   static const String gmailPassword = 'mcch jvae nevl kduq';
 
   static const String qrCodeKey = 'my 32 length key................';
+
+  static const String paystackSecretKey =
+      'sk_test_0cb92fb940717732e1b6b992e10486a0dab8e9ff';
 }

@@ -6,7 +6,8 @@ import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context, String username) async {
-  final userRepository = UserRepository(database: mongoDbService.database);
+  final userRepository =
+      UserRepository(database: await mongoDbPoolService.acquire());
   final request = context.request;
   final method = request.method;
   final handler = UserRequestHandlerImpl(userRepository: userRepository);

@@ -11,6 +11,21 @@ abstract class TicketRequestHandler {
   Future<Response> handleBuyTicket({
     required TicketBuyRequest ticketBuyRequest,
   });
+  Future<Response> handleGetTicketsByEventId({required ObjectId eventId});
+  Future<Response> handleScanTicket({
+    required ObjectId ticketId,
+    required ObjectId userId,
+    required ObjectId eventId,
+  });
+  Future<bool> checkTicketTypeSoldOut({required ObjectId ticketTypeId});
+  Future<Response> handleGetTicketsByTicketTypes({
+    required ObjectId ticketTypeId,
+  });
+  Future<Response> handleScanTicketByNumber({
+    required String ticketNumber,
+    required ObjectId userId,
+    required ObjectId eventId,
+  });
 }
 
 class TicketRequestHandlerImpl implements TicketRequestHandler {
@@ -42,6 +57,112 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
   }
 
   @override
+  Future<Response> handleGetTicketsByEventId({
+    required ObjectId eventId,
+  }) async {
+    final event = await _eventRepository.getEventById(
+      eventId: eventId,
+    );
+
+    if (event == null) {
+      return Response.json(
+        body: 'Event with ID `$eventId` not found',
+        statusCode: 404,
+      );
+    }
+
+    final tickets = await _ticketRepository.getTicketsByEventId(
+      eventId: eventId,
+    );
+
+    return Response.json(
+      body: tickets,
+    );
+  }
+
+  @override
+  Future<Response> handleGetTicketsByTicketTypes({
+    required ObjectId ticketTypeId,
+  }) async {
+    final ticketType = await _ticketTypeRepository.getTicketTypeById(
+      ticketTypeId: ticketTypeId,
+    );
+
+    if (ticketType == null) {
+      return Response.json(
+        body: 'TicketType with ID `$ticketTypeId` not found',
+        statusCode: 404,
+      );
+    }
+
+    final tickets = await _ticketRepository.getTicketsByTicketType(
+      ticketTypeId: ticketTypeId,
+    );
+
+    return Response.json(
+      body: tickets,
+    );
+  }
+
+  @override
+  Future<Response> handleScanTicketByNumber({
+    required String ticketNumber,
+    required ObjectId userId,
+    required ObjectId eventId,
+  }) async {
+    final ticket = await _ticketRepository.getTicketByTicketNumber(
+      ticketNumber: ticketNumber,
+    );
+
+    if (ticket == null) {
+      return Response.json(
+        body: {
+          'message': 'Ticket with number `$ticketNumber` not found',
+        },
+        statusCode: 404,
+      );
+    }
+    if (ticket.event.fold((id) => id, (event) => event.id) != eventId) {
+      return Response.json(
+        body: {
+          'message': 'Ticket does not belong to this event',
+        },
+        statusCode: 404,
+      );
+    }
+    if (ticket.isScanned) {
+      return Response.json(
+        body: {
+          'message': 'Ticket has already been scanned',
+          'ticket': ticket,
+        },
+        statusCode: 400,
+      );
+    }
+
+    final updatedTicket = await _ticketRepository.scanTicket(
+      ticketId: ticket.id,
+      scannedBy: userId,
+    );
+
+    if (updatedTicket == null) {
+      return Response.json(
+        body: {
+          'message': 'Failed to Scan Ticket',
+        },
+        statusCode: 500,
+      );
+    }
+
+    return Response.json(
+      body: {
+        'message': 'Ticket scanned successfully',
+        'ticket': updatedTicket,
+      },
+    );
+  }
+
+  @override
   Future<Response> handleGetTicketById({required ObjectId ticketId}) async {
     final ticket = await _ticketRepository.getTicketById(
       ticketId: ticketId,
@@ -57,6 +178,27 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
     return Response.json(
       body: ticket,
     );
+  }
+
+  @override
+  Future<bool> checkTicketTypeSoldOut({required ObjectId ticketTypeId}) async {
+    final ticketType = await _ticketTypeRepository.getTicketTypeById(
+      ticketTypeId: ticketTypeId,
+    );
+
+    if (ticketType == null) {
+      return true;
+    }
+
+    final issuedTickets = await _ticketRepository.getTicketsByTicketType(
+      ticketTypeId: ticketTypeId,
+    );
+
+    if (ticketType.totalSupply == 0) {
+      return false;
+    }
+
+    return issuedTickets.length >= ticketType.totalSupply;
   }
 
   @override
@@ -88,6 +230,23 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
         statusCode: 404,
       );
     }
+    if (ticketType.soldOut) {
+      return Response.json(
+        body: {'message': 'This ticket type is sold out', 'soldOut': true},
+        statusCode: 400,
+      );
+    }
+
+    final isSoldOut = await checkTicketTypeSoldOut(
+      ticketTypeId: ticketRequest.ticketType,
+    );
+
+    if (isSoldOut) {
+      return Response.json(
+        body: {'message': 'This ticket type is sold out', 'soldOut': true},
+        statusCode: 400,
+      );
+    }
 
     final nextTicketNumber = await _ticketRepository.getNextTicketNumber(
       ticketType: ticketType,
@@ -112,6 +271,57 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
   }
 
   @override
+  Future<Response> handleScanTicket({
+    required ObjectId ticketId,
+    required ObjectId userId,
+    required ObjectId eventId,
+  }) async {
+    final ticket = await _ticketRepository.getTicketById(ticketId: ticketId);
+
+    if (ticket == null) {
+      return Response.json(
+        body: 'Ticket with ID `$ticketId` not found',
+        statusCode: 404,
+      );
+    }
+    if (ticket.event.fold((id) => id, (event) => event.id) != eventId) {
+      return Response.json(
+        body: 'Ticket does not belong to this event',
+        statusCode: 404,
+      );
+    }
+
+    if (ticket.isScanned) {
+      return Response.json(
+        body: {
+          'message': 'Ticket has already been scanned',
+          'ticket': ticket,
+        },
+        statusCode: 403,
+      );
+    }
+
+    final updatedTicket = await _ticketRepository.scanTicket(
+      ticketId: ticketId,
+      scannedBy: userId,
+    );
+
+    if (updatedTicket == null) {
+      return Response.json(
+        body: 'Failed to scan ticket',
+        statusCode: 500,
+      );
+    }
+
+    return Response.json(
+      body: {
+        'message': 'Ticket scanned successfully',
+        'ticket': updatedTicket,
+      },
+    );
+  }
+
+  @override
   Future<Response> handleBuyTicket({
     required TicketBuyRequest ticketBuyRequest,
   }) async {
@@ -127,7 +337,24 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
         statusCode: 404,
       );
     }
+    if (ticketType.soldOut) {
+      return Response.json(
+        body: {'message': 'This ticket type is sold out', 'soldOut': true},
+        statusCode: 400,
+      );
+    }
 
+    // Check if we need to update the sold out status
+    final isSoldOut = await checkTicketTypeSoldOut(
+      ticketTypeId: ticketBuyRequest.ticketRequest.ticketType,
+    );
+
+    if (isSoldOut) {
+      return Response.json(
+        body: {'message': 'This ticket type is sold out', 'soldOut': true},
+        statusCode: 400,
+      );
+    }
     final event = await _eventRepository.getEventById(
       eventId: ticketBuyRequest.ticketRequest.event,
     );
@@ -142,7 +369,7 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
 
     // first we collect payment
     ticketBuyRequest.paymentTransaction.amount = ticketType.price;
-    ticketBuyRequest.paymentTransaction.description = '*Achat de Tické* '
+    ticketBuyRequest.paymentTransaction.description = '*Achat Tické* '
         'Ë: ${event.name}';
     ticketBuyRequest.ticketRequest.issuedTo.phone =
         ticketBuyRequest.paymentTransaction.tel;

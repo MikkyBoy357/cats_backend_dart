@@ -8,7 +8,7 @@ Future<Response> onRequest(RequestContext context) async {
   final method = request.method;
 
   final collectionRepository = SckalerCollectionRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
   final handler = SckalerRequestHandlerImpl(
     sckalerCollectionRepository: collectionRepository,

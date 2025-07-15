@@ -8,17 +8,16 @@ import 'package:dart_frog/dart_frog.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   final userRepository = UserRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
 
   try {
     final request = context.request;
-    final mongoDbService = await context.read<Future<MongoService>>();
     printGreen('passed mongoDbService initialization');
 
     if (request.method == HttpMethod.post) {
-      await mongoDbService.open();
-      printGreen('DB is initialized: ${mongoDbService.isInitialized}');
+      // await mongoDbService.open();
+      // printGreen('DB is initialized: ${mongoDbService.isInitialized}');
 
       printBlue('passed mongoDbService open');
 
@@ -27,11 +26,21 @@ Future<Response> onRequest(RequestContext context) async {
       final requestData = jsonDecode(requestBody) as Map<String, dynamic>;
       printYellow('requestData: $requestBody');
 
-      printBlue('finding user with email: ${requestData['email']}...');
-      final foundUser = await userRepository.getQuery(
-        UserQuery.email,
-        requestData['email'] as String,
+      // Allow login with either email or username
+      final identifier = requestData['identifier'] as String;
+      final password = requestData['password'] as String;
+      // Determine if identifier is email or username
+      final isEmail = identifier.contains('@');
+
+      printBlue(
+        'Find user ${isEmail ? 'email' : 'username'}: $identifier...',
       );
+
+      final foundUser = await userRepository.getQuery(
+        isEmail ? UserQuery.email : UserQuery.username,
+        identifier,
+      );
+
       printBlue('foundUser: $foundUser');
 
       if (foundUser == null) {
@@ -46,21 +55,20 @@ Future<Response> onRequest(RequestContext context) async {
       }
 
       final foundUserPassword = foundUser.password;
-      final hashedPassword = (requestData['password'] as String).hashValue;
+      final hashedPassword = password.hashValue;
 
       if (hashedPassword != foundUserPassword) {
         return Response.json(
           statusCode: 400,
           body: {
             'status': 400,
-            'message': 'Incorrect email or password',
-            'error': 'incorrect_email_password',
+            'message': 'Incorrect credentials',
+            'error': 'incorrect_credentials',
           },
         );
       }
 
       final foundUserId = foundUser.$_id.oid;
-
       final token = issueToken(foundUserId);
 
       return Response.json(
@@ -68,6 +76,7 @@ Future<Response> onRequest(RequestContext context) async {
           'status': 200,
           'message': 'User logged in successfully',
           'token': token,
+          'user': foundUser,
         },
       );
     } else {
@@ -80,6 +89,7 @@ Future<Response> onRequest(RequestContext context) async {
       );
     }
   } catch (e) {
+    printRed('Error: $e');
     return Response.json(
       statusCode: 500,
       body: {

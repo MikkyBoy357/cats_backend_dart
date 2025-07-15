@@ -15,7 +15,8 @@ Future<Response> onRequest(RequestContext context) async {
 
   final saint = authValidationResponse.user!;
 
-  final chatRepository = ChatRepository(database: mongoDbService.database);
+  final chatRepository =
+      ChatRepository(database: await mongoDbPoolService.acquire());
   final request = context.request;
   final method = request.method;
   final handler = ChatRequestHandlerImpl(chatRepository: chatRepository);

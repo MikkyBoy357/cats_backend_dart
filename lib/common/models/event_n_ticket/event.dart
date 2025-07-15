@@ -8,6 +8,7 @@ class Event {
   String owner;
   String description;
   String location;
+  Visibility visibility;
   DateTime date;
   List<Either<ObjectId, EventCategory>> categories;
   List<Either<ObjectId, TicketType>> ticketTypes;
@@ -22,12 +23,16 @@ class Event {
   DateTime lastUpdated;
   List<String> mediaUrls;
 
+  // Sales
+  EventSales? sales;
+
   Event({
     required this.id,
     required this.name,
     required this.owner,
     required this.description,
     required this.location,
+    this.visibility = Visibility.public,
     required this.date,
     required this.categories,
     required this.ticketTypes,
@@ -39,6 +44,7 @@ class Event {
     this.bookmarks = 0,
     required this.lastUpdated,
     required this.mediaUrls,
+    this.sales,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -48,6 +54,10 @@ class Event {
       owner: json['owner'] as String,
       description: json['description'] as String,
       location: json['location'] as String,
+      visibility: Visibility.values.firstWhere(
+        (e) => e.name == json['visibility'],
+        orElse: () => Visibility.public,
+      ),
       date: json['date'] != null
           ? DateTime.parse(json['date'].toString())
           : DateTime.now(),
@@ -72,6 +82,9 @@ class Event {
           : DateTime.now(),
       mediaUrls:
           (json['mediaUrls'] as List?)?.map((e) => e as String).toList() ?? [],
+      sales: json['sales'] != null
+          ? EventSales.fromJson(json['sales'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -82,6 +95,7 @@ class Event {
       'owner': owner,
       'description': description,
       'location': location,
+      'visibility': visibility.name,
       'date': date.toString(),
       'categories':
           categories.map((e) => e.fold((l) => l, (r) => r.toJson())).toList(),
@@ -95,6 +109,7 @@ class Event {
       'bookmarks': bookmarks,
       'lastUpdated': lastUpdated.toString(),
       'mediaUrls': mediaUrls,
+      'sales': sales?.toJson(),
     };
   }
 
@@ -104,6 +119,7 @@ class Event {
     String? owner,
     String? description,
     String? location,
+    Visibility? visibility,
     DateTime? date,
     List<Either<ObjectId, EventCategory>>? categories,
     List<Either<ObjectId, TicketType>>? ticketTypes,
@@ -115,6 +131,7 @@ class Event {
     int? bookmarks,
     DateTime? lastUpdated,
     List<String>? mediaUrls,
+    EventSales? sales,
   }) {
     return Event(
       id: id ?? this.id,
@@ -122,6 +139,7 @@ class Event {
       owner: owner ?? this.owner,
       description: description ?? this.description,
       location: location ?? this.location,
+      visibility: visibility ?? this.visibility,
       date: date ?? this.date,
       categories: categories ?? this.categories,
       ticketTypes: ticketTypes ?? this.ticketTypes,
@@ -133,6 +151,7 @@ class Event {
       bookmarks: bookmarks ?? this.bookmarks,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       mediaUrls: mediaUrls ?? this.mediaUrls,
+      sales: sales ?? this.sales,
     );
   }
 
@@ -167,6 +186,7 @@ class EventRequest {
   final String owner;
   final String description;
   final String location;
+  final Visibility visibility;
   final DateTime date;
   final List<ObjectId> categories;
   final List<ObjectId> ticketTypes;
@@ -178,6 +198,7 @@ class EventRequest {
     required this.owner,
     required this.description,
     required this.location,
+    required this.visibility,
     required this.date,
     required this.categories,
     required this.ticketTypes,
@@ -191,6 +212,10 @@ class EventRequest {
       owner: json['owner'] as String,
       description: json['description'] as String,
       location: json['location'] as String,
+      visibility: Visibility.values.firstWhere(
+        (e) => e.name == json['visibility'],
+        orElse: () => Visibility.public,
+      ),
       date: json['date'] != null
           ? DateTime.parse(json['date'].toString())
           : DateTime.now(),
@@ -213,6 +238,7 @@ class EventRequest {
       'owner': owner,
       'description': description,
       'location': location,
+      'visibility': visibility.name,
       'date': date.toString(),
       'categories': categories,
       'ticketTypes': ticketTypes,

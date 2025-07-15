@@ -4,21 +4,22 @@ import 'package:cats_backend/services/services.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
-Future<Response> onRequest(RequestContext context, String id) async {
+Future<Response> onRequest(RequestContext context, String eventId) async {
   final hello = context.request.uri.pathSegments.last;
   printMagenta('Hello $hello');
 
-  final eventId = ObjectId.tryParse(id);
-  if (eventId == null) {
+  final id = ObjectId.tryParse(eventId);
+  if (id == null) {
     return Response(
-      body: 'Invalid event id: $id',
+      body: 'Invalid event id: $eventId',
       statusCode: 400,
     );
   }
 
-  final eventRepository = EventRepository(database: mongoDbService.database);
+  final eventRepository =
+      EventRepository(database: await mongoDbPoolService.acquire());
   final ticketTypeRepository = TicketTypeRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
   final request = context.request;
   final method = request.method;
@@ -30,7 +31,7 @@ Future<Response> onRequest(RequestContext context, String id) async {
   return switch (method) {
     HttpMethod.get => () async {
         return handler.handleGetEventById(
-          eventId: eventId,
+          eventId: id,
         );
       }(),
     _ => Future.value(

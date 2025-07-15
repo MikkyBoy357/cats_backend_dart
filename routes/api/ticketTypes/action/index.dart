@@ -15,7 +15,7 @@ Future<Response> onRequest(RequestContext context) async {
   }
 
   final ticketTypeRepository = TicketTypeRepository(
-    database: mongoDbService.database,
+    database: await mongoDbPoolService.acquire(),
   );
   final request = context.request;
   final method = request.method;
@@ -49,12 +49,19 @@ Future<Response> onRequest(RequestContext context) async {
         final price = body['price'] as num;
         final name = body['name'] as String;
         final description = body['description'] as String;
+        final totalSupply = body['totalSupply'] as int? ?? 69;
+        final visibility = Visibility.values.firstWhere(
+          (e) => e.name == body['visibility'],
+          orElse: () => Visibility.public,
+        );
         final codePrefix = body['codePrefix'] as String? ?? 'STR';
 
         final ticketTypeRequest = TicketTypeRequest(
           price: price,
           name: name,
           description: description,
+          totalSupply: totalSupply,
+          visibility: visibility,
           codePrefix: codePrefix,
           createdBy: saint.$_id,
         );

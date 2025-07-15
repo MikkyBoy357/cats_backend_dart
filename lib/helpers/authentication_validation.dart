@@ -37,7 +37,7 @@ Future<AuthValidationResponse> getAuthResult({
   }
 
   try {
-    final db = mongoDbService.database;
+    final db = await mongoDbPoolService.acquire();
     final jwtClaim = verifyJwtHS256Signature(
       token,
       Config.jwtSecret,

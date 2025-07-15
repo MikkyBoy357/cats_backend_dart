@@ -71,9 +71,14 @@ extension DbCollectionExtension on DbCollection {
   /// Populate multiple fields from their respective
   /// collections using `PopulateField` class.
   Future<List<Map<String, dynamic>>> findAndPopulateRikky(
-    List<PopulateField> fieldsToPopulate,
-  ) async {
-    final docs = await find().toList();
+    List<PopulateField> fieldsToPopulate, {
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final skip = (page - 1) * limit;
+    final docs = await find(
+      where.sortBy('createdAt').skip(skip).limit(limit),
+    ).toList();
 
     for (final doc in docs) {
       await _populateFieldsRecursively(doc, fieldsToPopulate);

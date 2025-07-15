@@ -9,6 +9,13 @@ abstract class EventRequestHandler {
   Future<Response> handleGetAllEvents({
     List<ObjectId>? categoryIds,
   });
+  Future<Response> handleGetUserEvents({
+    required ObjectId userId,
+    String? searchTerm,
+    List<ObjectId>? categoryIds,
+    int page = 1,
+    int limit = 20,
+  });
   Future<Response> handleCreateEvent({
     required EventRequest eventRequest,
     required User saint,
@@ -26,6 +33,13 @@ abstract class EventRequestHandler {
   Future<Response> handleIncrementClicks({required ObjectId eventId});
   Future<Response> handleIncrementShares({required ObjectId eventId});
   Future<Response> handleIncrementBookmarks({required ObjectId eventId});
+  Future<Response> handleGetUserEventsToday({
+    required ObjectId userId,
+    String? searchTerm,
+    List<ObjectId>? categoryIds,
+    int page = 1,
+    int limit = 20,
+  });
 }
 
 class EventRequestHandlerImpl implements EventRequestHandler {
@@ -41,9 +55,34 @@ class EventRequestHandlerImpl implements EventRequestHandler {
   @override
   Future<Response> handleGetAllEvents({
     List<ObjectId>? categoryIds,
+    int page = 1,
+    int limit = 20,
   }) async {
     final events = await _eventRepository.getEvents(
       categoryIds: categoryIds,
+      page: page,
+      limit: limit,
+    );
+
+    return Response.json(
+      body: events,
+    );
+  }
+
+  @override
+  Future<Response> handleGetUserEvents({
+    required ObjectId userId,
+    String? searchTerm,
+    List<ObjectId>? categoryIds,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final events = await _eventRepository.getUserEvents(
+      userId: userId,
+      searchTerm: searchTerm,
+      categoryIds: categoryIds,
+      page: page,
+      limit: limit,
     );
 
     return Response.json(
@@ -107,11 +146,17 @@ class EventRequestHandlerImpl implements EventRequestHandler {
   }
 
   @override
-  Future<Response> handleGetEventById({required ObjectId eventId}) async {
+  Future<Response> handleGetEventById({
+    required ObjectId eventId,
+    User? currentUser,
+  }) async {
     // Track event view
     await _eventRepository.incrementViews(eventId: eventId);
 
-    final event = await _eventRepository.getEventById(eventId: eventId);
+    final event = await _eventRepository.getEventById(
+      eventId: eventId,
+      currentUser: currentUser,
+    );
 
     return Response.json(
       body: event,
@@ -126,6 +171,27 @@ class EventRequestHandlerImpl implements EventRequestHandler {
     return Response.json(
       body: isDeleted,
       statusCode: isDeleted ? 200 : 404,
+    );
+  }
+
+  @override
+  Future<Response> handleGetUserEventsToday({
+    required ObjectId userId,
+    String? searchTerm,
+    List<ObjectId>? categoryIds,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final events = await _eventRepository.getUserEventsToday(
+      userId: userId,
+      searchTerm: searchTerm,
+      categoryIds: categoryIds,
+      page: page,
+      limit: limit,
+    );
+
+    return Response.json(
+      body: events,
     );
   }
 

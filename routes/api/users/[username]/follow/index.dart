@@ -17,7 +17,8 @@ Future<Response> onRequest(RequestContext context, String username) async {
 
   final saint = authValidationResponse.user!;
 
-  final userRepository = UserRepository(database: mongoDbService.database);
+  final userRepository =
+      UserRepository(database: await mongoDbPoolService.acquire());
   final request = context.request;
   final method = request.method;
   final handler = UserRequestHandlerImpl(userRepository: userRepository);
