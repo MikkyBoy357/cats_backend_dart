@@ -23,7 +23,7 @@ dependencies:
   mailer: ^6.4.1
   mongo_dart: ^0.10.5
   mongo_pool:
-    path: packages/mongo_pool
+    path: ./packages/mongo_pool
   paystack: ^0.0.2
   qr: ^3.0.2
   shelf_cors_headers: ^0.1.5
