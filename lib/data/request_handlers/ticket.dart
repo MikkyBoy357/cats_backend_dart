@@ -299,7 +299,12 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
     required ObjectId userId,
     required ObjectId eventId,
   }) async {
-    final ticket = await _ticketRepository.getTicketById(ticketId: ticketId);
+    final ticket = await _ticketRepository.getTicketById(
+      ticketId: ticketId,
+      fieldsToPopulate: [
+        PopulateField(fieldName: 'event', collectionName: 'events'),
+      ],
+    );
 
     if (ticket == null) {
       return Response.json(

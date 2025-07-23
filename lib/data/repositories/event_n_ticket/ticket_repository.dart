@@ -7,7 +7,10 @@ abstract class TicketRepositoryImpl {
   Future<List<Ticket>> getTickets();
   Future<List<Ticket>> getTicketsByTicketType({required ObjectId ticketTypeId});
   Future<String?> getNextTicketNumber({required TicketType ticketType});
-  Future<Ticket?> getTicketById({required ObjectId ticketId});
+  Future<Ticket?> getTicketById({
+    required ObjectId ticketId,
+    List<PopulateField>? fieldsToPopulate,
+  });
   Future<Ticket?> getTicketByTicketNumber({
     required String ticketNumber,
     bool populate = true,
@@ -142,14 +145,25 @@ class TicketRepository extends TicketRepositoryImpl {
   }
 
   @override
-  Future<Ticket?> getTicketById({required ObjectId ticketId}) async {
+  Future<Ticket?> getTicketById({
+    required ObjectId ticketId,
+    List<PopulateField>? fieldsToPopulate,
+  }) async {
     final result = await _ticketsCollection.findOneAndPopulateRikky(
       {
         '_id': ticketId,
       },
-      fieldsToPopulate: [
-        ..._ticketPopulateFields,
-      ],
+      fieldsToPopulate: () {
+        if (fieldsToPopulate != null) {
+          return fieldsToPopulate;
+        }
+
+        if (fieldsToPopulate == null) {
+          return _ticketPopulateFields;
+        }
+
+        return <PopulateField>[];
+      }(),
     );
 
     printGreen('Ticket: $result');
