@@ -110,8 +110,17 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
     required ObjectId userId,
     required ObjectId eventId,
   }) async {
+    final stopwatch = Stopwatch()..start();
+
     final ticket = await _ticketRepository.getTicketByTicketNumber(
       ticketNumber: ticketNumber,
+      populate: false,
+    );
+
+    final canBeScannedData = ticket?.canBeScanned;
+    printYellow(canBeScannedData.toString());
+    printYellow(
+      'time taken to get ticket: ${stopwatch.elapsedMilliseconds} ms',
     );
 
     if (ticket == null) {
@@ -130,15 +139,25 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
         statusCode: 404,
       );
     }
-    if (ticket.isScanned) {
+    if (!canBeScannedData!.canScan) {
       return Response.json(
         body: {
-          'message': 'Ticket has already been scanned',
+          'message': 'Ticket cannot be scanned',
+          'reason': canBeScannedData.message,
           'ticket': ticket,
         },
-        statusCode: 400,
+        statusCode: 403,
       );
     }
+    // if (ticket.isScanned) {
+    //   return Response.json(
+    //     body: {
+    //       'message': 'Ticket has already been scanned',
+    //       'ticket': ticket,
+    //     },
+    //     statusCode: 403,
+    //   );
+    // }
 
     final updatedTicket = await _ticketRepository.scanTicket(
       ticketId: ticket.id,
@@ -153,6 +172,10 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
         statusCode: 500,
       );
     }
+
+    printBlue('ScanTicketByNumber took: ${stopwatch.elapsedMilliseconds} ms');
+    printMagenta('scanHistory -> ${updatedTicket.scanHistory}');
+    stopwatch.stop();
 
     return Response.json(
       body: {

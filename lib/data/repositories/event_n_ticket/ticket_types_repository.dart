@@ -6,7 +6,9 @@ abstract class TicketTypeRepositoryImpl {
   // TicketTypes
   Future<List<TicketTypeResponse>> getTicketTypes();
   Future<List<TicketType>> getTicketTypesByEventId({required ObjectId eventId});
-  Future<TicketType?> createTicketType({required TicketType ticketType});
+  Future<TicketType?> createTicketType({
+    required TicketType ticketType,
+  });
   Future<TicketType?> getTicketTypeById({required ObjectId ticketTypeId});
   Future<({List<TicketType> ticketTypes, List<ObjectId> missingIds})>
       getMultipleTicketTypeById({
@@ -78,6 +80,7 @@ class TicketTypeRepository extends TicketTypeRepositoryImpl {
 
   @override
   Future<TicketType?> createTicketType({required TicketType ticketType}) async {
+    print('toJson -> ${ticketType.toJson()}');
     final result = await _ticketTypesCollection.insertOne(ticketType.toJson());
 
     if (result.writeError != null) {

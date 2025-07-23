@@ -2,6 +2,39 @@ import 'package:cats_backend/common/common.dart';
 import 'package:dartz/dartz.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
+typedef CanBeScannedData = ({
+  bool canScan,
+  String message,
+});
+
+class ScanEntry {
+  DateTime scannedAt;
+  bool success; // True if scan was successful, false if it was an error
+  String? message; // Message in case of error
+
+  ScanEntry({
+    required this.scannedAt,
+    required this.success,
+    this.message,
+  });
+
+  factory ScanEntry.fromJson(Map<String, dynamic> json) {
+    return ScanEntry(
+      scannedAt: DateTime.parse(json['scannedAt'].toString()),
+      success: bool.tryParse(json['success'].toString()) ?? false,
+      message: json['message'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'scannedAt': scannedAt.toString(),
+      'success': success,
+      'message': message,
+    };
+  }
+}
+
 class Ticket {
   ObjectId id;
   Either<ObjectId, Event> event;
@@ -12,6 +45,105 @@ class Ticket {
   bool isScanned;
   DateTime? scannedAt;
   Either<ObjectId, User>? scannedBy;
+  List<ScanEntry> scanHistory;
+
+  // Helper getter to determine if the ticket can currently be scanned
+  CanBeScannedData get canBeScanned {
+    // If the ticket is already marked as fully used, it cannot be scanned.
+    // if (isUsed) {
+    //   printRed('Ticket is already fully used. ❌');
+    //   return false;
+    // }
+
+    final ticketTypeData = ticketType.fold(
+      (l) => null, // If it's just an ObjectId, we can't get the rules here.
+      (r) => r, // If the full TicketType object is embedded, use it.
+    );
+
+    print('omo -> $ticketTypeData');
+
+    // If ticketTypeData is null, it means the TicketType object wasn't embedded
+    // or couldn't be retrieved. This scenario needs to be handled by fetching
+    // the TicketType from the database in the API layer, not within the model.
+    if (ticketTypeData == null) {
+      printRed('Ticket Type data is not available for validation. ❌ \n'
+          'Ensure TicketType is eagerly loaded or fetched separately.');
+      return (
+        canScan: false,
+        message: 'Ticket Type data is not available for validation. ❌ \n'
+            'Ensure TicketType is eagerly loaded or fetched separately.',
+      );
+    }
+
+    final now = DateTime.now();
+
+    // --- 1. Check Date Validity Range ---
+    final validFrom = ticketTypeData.validFrom;
+    final validUntil = ticketTypeData.validUntil;
+
+    // If validFrom is set and current time is before it, not valid.
+    if (validFrom != null && now.isBefore(validFrom)) {
+      printRed('Ticket is not yet valid. Valid from: ${validFrom.toLocal()} ❌');
+      return (
+        canScan: false,
+        message:
+            'Ticket is not yet valid. Valid from: ${validFrom.toLocal()} ❌',
+      );
+    }
+
+    // If validUntil is set and current time is after it, not valid.
+    if (validUntil != null && now.isAfter(validUntil)) {
+      printRed('Ticket has expired. Valid until: ${validUntil.toLocal()} ❌');
+      return (
+        canScan: false,
+        message: 'Ticket has expired. Valid until: ${validUntil.toLocal()} ❌',
+      );
+    }
+
+    printGreen('Date Validity criteria is met! ✅');
+
+    // --- 2. Check Daily Scan Limit ---
+    if (ticketTypeData.maxScansPerDay != null) {
+      final startOfToday = DateTime(now.year, now.month, now.day, 0, 0, 0);
+      final endOfToday = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+      // Count only successful scans within the current day
+      final timesScannedToday = scanHistory.where((scan) {
+        return scan.success &&
+            scan.scannedAt.isAfter(
+              startOfToday.subtract(const Duration(milliseconds: 1)),
+            ) && // Inclusive start
+            scan.scannedAt.isBefore(
+              endOfToday.add(
+                const Duration(milliseconds: 1),
+              ),
+            ); // Inclusive end
+      }).length;
+
+      printBlue('maxScansPerDay: ${ticketTypeData.maxScansPerDay}');
+      printBlue('timesScannedToday: $timesScannedToday');
+      if (timesScannedToday >= ticketTypeData.maxScansPerDay!) {
+        printRed(
+          'Ticket has reached its daily scan limit \n(${ticketTypeData.maxScansPerDay} scans today). ❌ ',
+        );
+        return (
+          canScan: false,
+          message:
+              'Ticket has reached its daily scan limit \n(${ticketTypeData.maxScansPerDay} scans today). ❌ ',
+        );
+      }
+      printGreen(
+          'Daily scan limit criteria is met! Scanned $timesScannedToday times today. ✅');
+    } else {
+      printGreen('No daily scan limit set for this ticket type. ✅');
+    }
+
+    // If all checks pass, the ticket can be scanned.
+    return (
+      canScan: true,
+      message: 'Ticket can be scanned. ✅',
+    );
+  }
 
   Ticket({
     required this.id,
@@ -23,6 +155,7 @@ class Ticket {
     this.isScanned = false,
     this.scannedAt,
     this.scannedBy,
+    this.scanHistory = const <ScanEntry>[],
   });
 
   factory Ticket.fromJson(Map<String, dynamic> json) {
@@ -43,6 +176,10 @@ class Ticket {
       scannedBy: json['scannedBy'] != null
           ? parseEither<User>(json['scannedBy'], User.fromJson)
           : null,
+      scanHistory: (json['scanHistory'] as List?)
+              ?.map((e) => ScanEntry.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 
@@ -57,6 +194,7 @@ class Ticket {
       'isScanned': isScanned,
       'scannedAt': scannedAt?.toString(),
       'scannedBy': scannedBy?.fold((l) => l, (r) => r.toJson()),
+      'scanHistory': scanHistory.map((scan) => scan.toJson()).toList(),
     };
   }
 
@@ -70,6 +208,7 @@ class Ticket {
     bool? isScanned,
     DateTime? scannedAt,
     Either<ObjectId, User>? scannedBy,
+    List<ScanEntry>? scanHistory,
   }) {
     return Ticket(
       id: id ?? this.id,
@@ -81,6 +220,7 @@ class Ticket {
       isScanned: isScanned ?? this.isScanned,
       scannedAt: scannedAt ?? this.scannedAt,
       scannedBy: scannedBy ?? this.scannedBy,
+      scanHistory: scanHistory ?? this.scanHistory,
     );
   }
 }

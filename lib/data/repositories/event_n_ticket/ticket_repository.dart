@@ -8,7 +8,10 @@ abstract class TicketRepositoryImpl {
   Future<List<Ticket>> getTicketsByTicketType({required ObjectId ticketTypeId});
   Future<String?> getNextTicketNumber({required TicketType ticketType});
   Future<Ticket?> getTicketById({required ObjectId ticketId});
-  Future<Ticket?> getTicketByTicketNumber({required String ticketNumber});
+  Future<Ticket?> getTicketByTicketNumber({
+    required String ticketNumber,
+    bool populate = true,
+  });
   Future<Ticket?> createTicket({required TicketRequest ticketRequest});
   Future<List<Ticket>> getTicketsByEventId({required ObjectId eventId});
   Future<Ticket?> scanTicket({
@@ -62,11 +65,14 @@ class TicketRepository extends TicketRepositoryImpl {
   Future<List<Ticket>> getTicketsByEventId({
     required ObjectId eventId,
   }) async {
-    final queryDocs =
-        _ticketsCollection.find(where.eq('event', eventId)).toList();
+    final queryDocs = _ticketsCollection
+        .find(
+          where.eq('event', eventId),
+        )
+        .toList();
 
     final populatedDocs = await _ticketsCollection.findAndPopulateLol(
-      _ticketPopulateFields,
+      [],
       queryDocs,
     );
 
@@ -101,32 +107,38 @@ class TicketRepository extends TicketRepositoryImpl {
   Future<String?> getNextTicketNumber({
     required TicketType ticketType,
   }) async {
-    final ticketsOfType = await getTicketsByTicketType(
-      ticketTypeId: ticketType.id,
+    // --- OPTIMIZED CODE START ---
+    final lastTicketDoc = await _ticketsCollection.findOne(
+      where
+          .eq('ticketType', ticketType.id)
+          .sortBy(
+            'ticketNumber',
+            descending: true,
+          ) // Sort by ticketNumber descending
+          .limit(1), // Get only the first (i.e., last) document
     );
 
-    if (ticketsOfType.isEmpty) {
+    if (lastTicketDoc == null) {
       return '${ticketType.codePrefix}-000001'; // First ticket number
     }
 
-    // Sort tickets by ticket number
-    ticketsOfType.sort((a, b) => a.ticketNumber.compareTo(b.ticketNumber));
-
-    // Get the last ticket and its ticket number
-    final lastTicket = ticketsOfType.last;
-    final lastTicketNumber = lastTicket.ticketNumber;
+    final lastTicketNumber = lastTicketDoc['ticketNumber'] as String;
 
     // Extract the numeric suffix (after the dash)
     final suffix = lastTicketNumber.split('-').last;
-    printMagenta('Suffix: $suffix');
+    printMagenta(
+      'Last Ticket Suffix: $suffix',
+    ); // Changed print message for clarity
 
     // Convert the suffix to an integer and increment it
+    // Ensure the suffix length is maintained for proper padding
     final nextSuffix =
         (int.parse(suffix) + 1).toString().padLeft(suffix.length, '0');
-    printMagenta('Next suffix: $nextSuffix');
+    printMagenta('Next Suffix: $nextSuffix');
 
     final nextTicketNumber = '${ticketType.codePrefix}-$nextSuffix';
     return nextTicketNumber;
+    // --- OPTIMIZED CODE END ---
   }
 
   @override
@@ -154,7 +166,14 @@ class TicketRepository extends TicketRepositoryImpl {
     required ObjectId ticketId,
     required ObjectId scannedBy,
   }) async {
+    final stopwatch = Stopwatch()..start();
+
     final now = DateTime.now();
+    final scanEntry = ScanEntry(
+      scannedAt: now,
+      success: true,
+    );
+
     final updateResult = await _ticketsCollection.updateOne(
       where.eq('_id', ticketId),
       {
@@ -163,6 +182,9 @@ class TicketRepository extends TicketRepositoryImpl {
           'scannedAt': now.toString(),
           'scannedBy': scannedBy,
         },
+        r'$push': {
+          'scanHistory': scanEntry.toJson(),
+        },
       },
     );
 
@@ -170,19 +192,26 @@ class TicketRepository extends TicketRepositoryImpl {
       return getTicketById(ticketId: ticketId);
     }
 
+    printRed('UpdateResult: ${updateResult.writeError?.errmsg.toString()}');
+
+    stopwatch.stop();
+    printBlue('ScanTicket took: ${stopwatch.elapsedMilliseconds} ms');
+
     return null;
   }
 
   @override
   Future<Ticket?> getTicketByTicketNumber({
     required String ticketNumber,
+    bool populate = true,
   }) async {
     final result = await _ticketsCollection.findOneAndPopulateRikky(
       {
         'ticketNumber': ticketNumber,
       },
       fieldsToPopulate: [
-        ..._ticketPopulateFields,
+        if (populate) ..._ticketPopulateFields,
+        PopulateField(fieldName: 'ticketType', collectionName: 'ticketTypes'),
       ],
     );
 

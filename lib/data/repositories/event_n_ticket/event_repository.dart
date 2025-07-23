@@ -19,6 +19,10 @@ abstract class EventRepositoryImpl {
     required EventRequest eventRequest,
     required List<String> mediaUrls,
   });
+  Future<bool> addTicketTypeToEvent({
+    required ObjectId eventId,
+    required TicketType ticketType,
+  });
   Future<Event?> getEventById({required ObjectId eventId});
   Future<bool> deleteEvent({required ObjectId eventId});
 
@@ -315,6 +319,26 @@ class EventRepository extends EventRepositoryImpl {
     }
 
     return null;
+  }
+
+  @override
+  Future<bool> addTicketTypeToEvent({
+    required ObjectId eventId,
+    required TicketType ticketType,
+  }) async {
+    final result = await _eventsCollection.updateOne(
+      where.id(eventId),
+      modify.push('ticketTypes', ticketType.id).set(
+            'lastUpdated',
+            DateTime.now(),
+          ),
+    );
+
+    if (result.writeError != null) {
+      return false;
+    }
+
+    return true;
   }
 
   @override

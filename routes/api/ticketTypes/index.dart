@@ -9,8 +9,12 @@ Future<Response> onRequest(RequestContext context) async {
   final ticketTypeRepository = TicketTypeRepository(
     database: await mongoDbPoolService.acquire(),
   );
+  final eventRepository = EventRepository(
+    database: await mongoDbPoolService.acquire(),
+  );
   final handler = TicketTypeRequestHandlerImpl(
     ticketTypeRepository: ticketTypeRepository,
+    eventRepository: eventRepository,
   );
 
   return switch (method) {

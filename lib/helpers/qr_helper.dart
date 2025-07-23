@@ -21,7 +21,7 @@ Future<QrResult> generateQrCode(String data) async {
 
   final size = qrCode.moduleCount * 10;
   final image = img.Image(width: size, height: size, numChannels: 4);
-  img.fill(image, color: img.ColorUint8.rgb(255, 255, 255));
+  img.fill(image, color: img.ColorUint8.rgb(0, 0, 0));
 
   for (var y = 0; y < qrImage.moduleCount; y++) {
     for (var x = 0; x < qrImage.moduleCount; x++) {
@@ -31,7 +31,7 @@ Future<QrResult> generateQrCode(String data) async {
             image.setPixel(
               x * 10 + i,
               y * 10 + j,
-              img.ColorUint8.rgb(146, 115, 235),
+              img.ColorUint8.rgb(225, 225, 235),
             );
           }
         }

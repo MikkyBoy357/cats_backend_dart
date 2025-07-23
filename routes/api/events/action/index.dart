@@ -32,6 +32,7 @@ Future<Response> onRequest(RequestContext context) async {
 
   return switch (method) {
     HttpMethod.post => () async {
+        printYellow('Event -------->');
         final formData = await request.formData();
         final files = formData.files;
 
@@ -44,8 +45,20 @@ Future<Response> onRequest(RequestContext context) async {
           orElse: () => Visibility.public,
         );
         final dateString = formData.fields['date'];
+        printBlue('dateString -> $dateString');
         final categoriesString = formData.fields['categories'];
         final ticketTypesString = formData.fields['ticketTypes'];
+        printYellow(
+          'categories -> ${(jsonDecode(categoriesString!) as List).map((e) => e)}',
+        );
+
+        final validFrom = formData.fields['validFrom'];
+        final validUntil = formData.fields['validUntil'];
+        final maxScansPerDay = formData.fields['maxScansPerDay'];
+
+        printYellow('validFrom -> $validFrom');
+        printYellow('validUntil -> $validUntil');
+        printYellow('maxScansPerDay -> $maxScansPerDay');
 
         if ([
           name,
@@ -64,6 +77,8 @@ Future<Response> onRequest(RequestContext context) async {
         }
 
         final date = DateTime.tryParse(dateString!) ?? DateTime.now();
+        printBlue(
+            'categories -> ${(jsonDecode(categoriesString!) as List).map((e) => e)}');
 
         final categories = (jsonDecode(categoriesString!) as List)
             .map((id) => id.toString())

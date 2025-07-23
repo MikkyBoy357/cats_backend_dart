@@ -48,6 +48,7 @@ Future<Response> onRequest(RequestContext context) async {
 
   return switch (method) {
     HttpMethod.post => () async {
+        printMagenta('=========> Scan Request Started <=========');
         final body = await request.tryJson;
         if (body == null) {
           return Response.json(

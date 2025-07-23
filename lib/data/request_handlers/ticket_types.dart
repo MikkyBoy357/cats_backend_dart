@@ -16,10 +16,13 @@ abstract class TicketTypeRequestHandler {
 
 class TicketTypeRequestHandlerImpl implements TicketTypeRequestHandler {
   final TicketTypeRepository _ticketTypeRepository;
+  final EventRepository _eventRepository;
 
   const TicketTypeRequestHandlerImpl({
     required TicketTypeRepository ticketTypeRepository,
-  }) : _ticketTypeRepository = ticketTypeRepository;
+    required EventRepository eventRepository,
+  })  : _ticketTypeRepository = ticketTypeRepository,
+        _eventRepository = eventRepository;
 
   @override
   Future<Response> handleGetAllTicketTypes() async {
@@ -34,14 +37,34 @@ class TicketTypeRequestHandlerImpl implements TicketTypeRequestHandler {
   Future<Response> handleCreateTicketType({
     required TicketType ticketType,
     required User saint,
+    ObjectId? eventId,
   }) async {
     final finalTicketType = ticketType.copyWith(createdBy: saint.$_id);
     final createdTicketType = await _ticketTypeRepository.createTicketType(
       ticketType: finalTicketType,
     );
+    printBlue('lol -> ${finalTicketType.validUntil}');
+
+    if (createdTicketType != null && eventId != null) {
+      // add ticket type to event
+      final updateEvent = await _eventRepository.addTicketTypeToEvent(
+        eventId: eventId,
+        ticketType: createdTicketType,
+      );
+
+      if (!updateEvent) {
+        Response.json(
+          body: {
+            'message': 'Ticket type created but failed to add to event',
+            'ticketType': createdTicketType.toJson(),
+          },
+          statusCode: 201,
+        );
+      }
+    }
 
     return Response.json(
-      body: createdTicketType,
+      body: createdTicketType?.toJson(),
       statusCode: createdTicketType != null ? 201 : 400,
     );
   }
