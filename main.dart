@@ -16,9 +16,8 @@ Future<void> init(InternetAddress ip, int port) async {
   printGreen('URL: http://$ipAddress:$port');
 
   setupLocator();
-  printMagenta('Initializing mongoDbPoolService...');
-  await mongoDbPoolService.initialize();
-  printGreen('mongoDbPoolService initialized ✅ ');
+  // we don't await this so that the server can start immediately
+  mongoDbPoolService.initialize();
 
   // Initialize Firebase
   await FirebaseService.initializeFirebase();

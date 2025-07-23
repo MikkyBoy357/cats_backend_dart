@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:meta/meta.dart';
 import 'package:mongo_pool/mongo_pool.dart';
 import 'package:mongo_pool/src/base/mongo_pool_base.dart';
@@ -54,7 +56,9 @@ class MongoDbPoolService {
       throw PoolAlreadyOpenMongoPoolException();
     }
     try {
+      log('🔄 Initializing MongoDbPoolService with ${config.poolSize} connections.');
       await _pool.initialize();
+      log('✅ MongoDbPoolService initialized with ${_pool.available.length} connections.');
     } on Exception catch (e) {
       throw Exception('Error opening pool: $e');
     }
