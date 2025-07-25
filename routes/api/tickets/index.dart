@@ -32,7 +32,25 @@ Future<Response> onRequest(RequestContext context) async {
   );
 
   return switch (method) {
-    HttpMethod.get => handler.handleGetAllTickets(),
+    HttpMethod.get => () async {
+        final queryParams = request.uri.queryParameters;
+
+        final ticketNumber = queryParams['ticketNumber'];
+        final comboCardNumber = queryParams['comboCardNumber'];
+
+        if (ticketNumber != null || comboCardNumber != null) {
+          final query = <String, dynamic>{
+            if (ticketNumber != null) 'ticketNumber': ticketNumber,
+            if (comboCardNumber != null) 'comboCardNumber': comboCardNumber,
+          };
+
+          return handler.handleGetAllTicketsByQueries(
+            queries: query,
+          );
+        }
+
+        return handler.handleGetAllTickets();
+      }(),
     _ => Future.value(
         Response(body: 'Unsupported request method: $method', statusCode: 405),
       ),

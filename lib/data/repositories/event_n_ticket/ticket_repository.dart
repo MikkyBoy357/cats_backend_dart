@@ -5,6 +5,10 @@ import 'package:mongo_dart/mongo_dart.dart';
 abstract class TicketRepositoryImpl {
   // Tickets
   Future<List<Ticket>> getTickets();
+  Future<List<Ticket>> getTicketsbyQuery({
+    required Map<String, dynamic> query,
+    List<PopulateField>? fieldsToPopulate,
+  });
   Future<List<Ticket>> getTicketsByTicketType({required ObjectId ticketTypeId});
   Future<String?> getNextTicketNumber({required TicketType ticketType});
   Future<Ticket?> getTicketById({
@@ -60,6 +64,27 @@ class TicketRepository extends TicketRepositoryImpl {
     printGreen('Tickets: $res');
 
     final tickets = res.map((e) => Ticket.fromJson(e)).toList();
+
+    return tickets;
+  }
+
+  @override
+  Future<List<Ticket>> getTicketsbyQuery({
+    required Map<String, dynamic> query,
+    List<PopulateField>? fieldsToPopulate,
+  }) async {
+    SelectorBuilder selector = where; // Start with an empty selector
+    query.forEach((key, value) {
+      selector = selector.eq(key, value); // Chain .eq for each key-value pair
+    });
+    final queryDocs = _ticketsCollection.find(selector).toList();
+
+    final populatedDocs = await _ticketsCollection.findAndPopulateLol(
+      fieldsToPopulate ?? _ticketPopulateFields,
+      queryDocs,
+    );
+
+    final tickets = populatedDocs.map((doc) => Ticket.fromJson(doc)).toList();
 
     return tickets;
   }
@@ -184,6 +209,7 @@ class TicketRepository extends TicketRepositoryImpl {
 
     final now = DateTime.now();
     final scanEntry = ScanEntry(
+      scannedBy: scannedBy,
       scannedAt: now,
       success: true,
     );

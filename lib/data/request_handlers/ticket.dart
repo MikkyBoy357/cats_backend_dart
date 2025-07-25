@@ -6,6 +6,9 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 abstract class TicketRequestHandler {
   Future<Response> handleGetAllTickets();
+  Future<Response> handleGetAllTicketsByQueries({
+    Map<String, dynamic>? queries,
+  });
   Future<Response> handleGetTicketById({required ObjectId ticketId});
   Future<Response> handleCreateTicket({required TicketRequest ticketRequest});
   Future<Response> handleBuyTicket({
@@ -73,6 +76,19 @@ class TicketRequestHandlerImpl implements TicketRequestHandler {
 
     final tickets = await _ticketRepository.getTicketsByEventId(
       eventId: eventId,
+    );
+
+    return Response.json(
+      body: tickets,
+    );
+  }
+
+  @override
+  Future<Response> handleGetAllTicketsByQueries({
+    Map<String, dynamic>? queries,
+  }) async {
+    final tickets = await _ticketRepository.getTicketsbyQuery(
+      query: queries ?? {},
     );
 
     return Response.json(

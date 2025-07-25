@@ -53,6 +53,7 @@ Future<Response> onRequest(RequestContext context) async {
         body['createdBy'] = saint.$_id.oid;
 
         final ticketRequest = TicketRequest.fromJson(body);
+        printBlue('combo: ${ticketRequest.comboCardNumber}');
         printGreen('TicketType: ${ticketRequest.ticketType}');
 
         printMagenta('OMO: ${ticketRequest.toJson()}');

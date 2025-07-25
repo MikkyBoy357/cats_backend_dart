@@ -8,11 +8,13 @@ typedef CanBeScannedData = ({
 });
 
 class ScanEntry {
+  ObjectId? scannedBy;
   DateTime scannedAt;
   bool success; // True if scan was successful, false if it was an error
   String? message; // Message in case of error
 
   ScanEntry({
+    this.scannedBy,
     required this.scannedAt,
     required this.success,
     this.message,
@@ -20,6 +22,7 @@ class ScanEntry {
 
   factory ScanEntry.fromJson(Map<String, dynamic> json) {
     return ScanEntry(
+      scannedBy: json['scannedBy'] as ObjectId?,
       scannedAt: DateTime.parse(json['scannedAt'].toString()),
       success: bool.tryParse(json['success'].toString()) ?? false,
       message: json['message'] as String?,
@@ -28,6 +31,7 @@ class ScanEntry {
 
   Map<String, dynamic> toJson() {
     return {
+      'scannedBy': scannedBy,
       'scannedAt': scannedAt.toString(),
       'success': success,
       'message': message,
@@ -46,6 +50,11 @@ class Ticket {
   DateTime? scannedAt;
   Either<ObjectId, User>? scannedBy;
   List<ScanEntry> scanHistory;
+
+  // COMBO
+  String? comboTicketId;
+  String? comboId;
+  String? comboCardNumber;
 
   // Helper getter to determine if the ticket can currently be scanned
   CanBeScannedData get canBeScanned {
@@ -156,6 +165,11 @@ class Ticket {
     this.scannedAt,
     this.scannedBy,
     this.scanHistory = const <ScanEntry>[],
+
+    // COMBO
+    this.comboTicketId,
+    this.comboId,
+    this.comboCardNumber,
   });
 
   factory Ticket.fromJson(Map<String, dynamic> json) {
@@ -164,9 +178,13 @@ class Ticket {
       event: parseEither<Event>(json['event'], Event.fromJson),
       ticketType:
           parseEither<TicketType>(json['ticketType'], TicketType.fromJson),
-      issuedTo: TicketOwner.fromJson(json['issuedTo'] as Map<String, dynamic>),
+      issuedTo: TicketOwner.fromJson(
+        json['issuedTo'] != null
+            ? json['issuedTo'] as Map<String, dynamic>
+            : TicketOwner.sampleData().toJson(),
+      ),
       issuedAt: json['issuedAt'] != null
-          ? DateTime.parse(json['issuedAt'] as String)
+          ? DateTime.parse(json['issuedAt'].toString())
           : DateTime.now(),
       ticketNumber: json['ticketNumber'] as String,
       isScanned: json['isScanned'] as bool? ?? false,
@@ -180,6 +198,11 @@ class Ticket {
               ?.map((e) => ScanEntry.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+
+      // COMBO
+      comboTicketId: json['comboTicketId'] as String?,
+      comboId: json['comboId'] as String?,
+      comboCardNumber: json['comboCardNumber'] as String?,
     );
   }
 
@@ -195,6 +218,11 @@ class Ticket {
       'scannedAt': scannedAt?.toString(),
       'scannedBy': scannedBy?.fold((l) => l, (r) => r.toJson()),
       'scanHistory': scanHistory.map((scan) => scan.toJson()).toList(),
+
+      // COMBO
+      'comboTicketId': comboTicketId,
+      'comboId': comboId,
+      'comboCardNumber': comboCardNumber,
     };
   }
 
@@ -209,6 +237,11 @@ class Ticket {
     DateTime? scannedAt,
     Either<ObjectId, User>? scannedBy,
     List<ScanEntry>? scanHistory,
+
+    // COMBO
+    String? comboTicketId,
+    String? comboId,
+    String? comboCardNumber,
   }) {
     return Ticket(
       id: id ?? this.id,
@@ -221,6 +254,11 @@ class Ticket {
       scannedAt: scannedAt ?? this.scannedAt,
       scannedBy: scannedBy ?? this.scannedBy,
       scanHistory: scanHistory ?? this.scanHistory,
+
+      // COMBO
+      comboTicketId: comboTicketId ?? this.comboTicketId,
+      comboId: comboId ?? this.comboId,
+      comboCardNumber: comboCardNumber ?? this.comboCardNumber,
     );
   }
 }
@@ -232,12 +270,22 @@ class TicketRequest {
   DateTime issuedAt;
   String ticketNumber;
 
+  // COMBO
+  String? comboTicketId;
+  String? comboId;
+  String? comboCardNumber;
+
   TicketRequest({
     required this.event,
     required this.ticketType,
     required this.issuedTo,
     required this.issuedAt,
     required this.ticketNumber,
+
+    // COMBO
+    this.comboTicketId,
+    this.comboId,
+    this.comboCardNumber,
   });
 
   factory TicketRequest.fromJson(Map<String, dynamic> json) {
@@ -251,6 +299,11 @@ class TicketRequest {
       ticketNumber: json['ticketNumber'] == null
           ? 'STR-00000000'
           : json['ticketNumber'] as String,
+
+      // COMBO
+      comboTicketId: json['comboTicketId'] as String?,
+      comboId: json['comboId'] as String?,
+      comboCardNumber: json['comboCardNumber'] as String?,
     );
   }
 
@@ -261,6 +314,11 @@ class TicketRequest {
       'issuedTo': issuedTo.toJson(),
       'issuedAt': issuedAt.toString(),
       'ticketNumber': ticketNumber,
+
+      // COMBO
+      'comboTicketId': comboTicketId,
+      'comboId': comboId,
+      'comboCardNumber': comboCardNumber,
     };
   }
 
@@ -270,6 +328,11 @@ class TicketRequest {
     TicketOwner? issuedTo,
     DateTime? issuedAt,
     String? ticketNumber,
+
+    // COMBO
+    String? comboTicketId,
+    String? comboId,
+    String? comboCardNumber,
   }) {
     return TicketRequest(
       event: event ?? this.event,
@@ -277,6 +340,11 @@ class TicketRequest {
       issuedTo: issuedTo ?? this.issuedTo,
       issuedAt: issuedAt ?? this.issuedAt,
       ticketNumber: ticketNumber ?? this.ticketNumber,
+
+      // COMBO
+      comboTicketId: comboTicketId ?? this.comboTicketId,
+      comboId: comboId ?? this.comboId,
+      comboCardNumber: comboCardNumber ?? this.comboCardNumber,
     );
   }
 

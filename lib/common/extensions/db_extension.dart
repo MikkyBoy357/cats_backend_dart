@@ -16,6 +16,7 @@ extension DbX on Db {
   DbCollection get eventCategoriesCollection => collection('eventCategories');
   DbCollection get ticketTypesCollection => collection('ticketTypes');
   DbCollection get ticketsCollection => collection('tickets');
+  DbCollection get comboTicketsCollection => collection('comboTickets');
   DbCollection get sckalerCollectionsCollection =>
       collection('sckalerCollections');
   DbCollection get paystackTransactionsCollection =>

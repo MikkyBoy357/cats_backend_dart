@@ -13,7 +13,7 @@ void setupLocator() {
           maxLifetimeMilliseconds: 900000,
           leakDetectionThreshold: 100000,
           uriString: Config.mongoDBUrl,
-          poolSize: 10,
+          poolSize: 20,
         ),
       ),
     )
